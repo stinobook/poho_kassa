@@ -13,6 +13,7 @@
     "vite": "^5.0.8"
   },
   "dependencies": {
-    "@material/web": "^1.1.1"
+    "@material/web": "^1.1.1",
+    "@vaadin/router": "^1.7.5"
   }
 }

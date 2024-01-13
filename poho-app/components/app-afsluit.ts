@@ -3,8 +3,8 @@ import {customElement, property} from 'lit/decorators.js'
 import '@material/web/list/list.js';
 
 
-@customElement('app-kassatelling')
-export class appKassaTelling extends LitElement
+@customElement('app-afsluit')
+export class appKassaAfsluit extends LitElement
 {
     static styles : CSSResult = css`
     :host {
