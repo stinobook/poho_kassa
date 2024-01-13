@@ -4,16 +4,24 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "watch": "rollup -c .config/dev.rollup.config.js -w",
+    "build": "rollup -c .config/rollup.config.js",
+    "serve": "node server.js"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
+    "chokidar": "^3.5.3",
+    "custom-element-decorator": "^0.6.0",
+    "glob": "^10.3.10",
+    "rollup": "^4.9.5",
+    "rollup-plugin-material-symbols": "^2.1.5",
+    "tslib": "^2.6.2",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "websocket": "^1.0.34"
   },
   "dependencies": {
     "@material/web": "^1.1.1",
-    "@vaadin/router": "^1.7.5"
+    "@vandeurenglenn/lit-elements": "^0.3.9",
+    "lit": "^3.1.1"
   }
 }
