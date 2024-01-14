@@ -4,14 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "watch": "rollup -c .config/dev.rollup.config.js -w",
-    "build": "rollup -c .config/rollup.config.js",
+    "watch": "cross-env NODE_ENV=development rollup -c -w",
+    "build": "cross-env NODE_ENV=production rollup -c",
     "serve": "node server.js"
   },
   "devDependencies": {
+    "@material-symbols/svg-400": "^0.14.5",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "chokidar": "^3.5.3",
+    "cross-env": "^7.0.3",
     "custom-element-decorator": "^0.6.0",
     "glob": "^10.3.10",
     "rollup": "^4.9.5",

@@ -3,6 +3,8 @@ import typescript from '@rollup/plugin-typescript'
 import materialSymbols from 'rollup-plugin-material-symbols'
 import { glob } from 'glob'
 import { mkdir, opendir, readFile, writeFile, cp } from 'fs/promises'
+import { execSync } from 'child_process'
+import { env } from 'process'
 
 try {
   await opendir('./www')
@@ -19,7 +21,7 @@ try {
 const views = await glob(['./src/views/**/*'])
 
 let index = await readFile('./src/index.html', 'utf-8')
-if (!process.env.production) {
+if (env.NODE_ENV === 'development') {
   index = index.replace(
     '<body>',
     `
@@ -33,9 +35,39 @@ if (!process.env.production) {
   </script>
   `
   )
+} else {
+  index = index.replace(
+    '<!-- service-worker-placeholder -->',
+    `<script type="module">
+    if ("serviceWorker" in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register("/sw.js", {
+          scope: "/",
+        });
+        if (registration.installing) {
+          console.log("Service worker installing");
+        } else if (registration.waiting) {
+          console.log("Service worker installed");
+        } else if (registration.active) {
+          console.log("Service worker active");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  </script>
+  <link rel="manifest" href="/manifest.json">`
+  )
 }
 
 writeFile('./www/index.html', index)
+
+const generateServiceWorker = () => ({
+  name: 'generate-service-worker',
+  writeBundle: () => {
+    if (env.NODE_ENV === 'production') execSync('npx workbox-cli generateSW workbox-config.cjs')
+  }
+})
 
 export default [
   {
@@ -49,7 +81,8 @@ export default [
         placeholderPrefix: 'symbol'
       }),
       resolve(),
-      typescript()
+      typescript(),
+      generateServiceWorker()
     ]
   }
 ]

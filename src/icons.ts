@@ -8,7 +8,7 @@ import { html } from 'lit'
  * find the name of the desired icon
  *
  * add to iconset like
- * <span name="icon_name">@symbol-icon_name></span>
+ * <span name="icon_name">@"symbol"-icon_name></span>
  *
  * use in app
  * <custom-icon icon="icon_name"></custom-icon>
