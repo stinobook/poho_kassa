@@ -7,16 +7,20 @@ import '@vandeurenglenn/lit-elements/selector.js'
 import '@vandeurenglenn/lit-elements/pages.js'
 import icons from './icons.js'
 import Router from './routing.js'
+// import default page
+import './views/sellings.js'
+import { CustomSelector } from '@vandeurenglenn/lit-elements/selector.js'
 
 @customElement('po-ho-shell')
 export class PoHoShell extends LitElement {
   router: Router
+
   #selectorSelected = ({ detail }: CustomEvent) => {
     location.href = Router.bang(detail)
   }
 
   @query('custom-selector')
-  selector
+  selector: CustomSelector
 
   @query('custom-pages')
   pages
@@ -36,7 +40,7 @@ export class PoHoShell extends LitElement {
   render() {
     return html`
       <!-- theme handler, see rollup config in .config dir, can add own theme instead... -->
-      <custom-theme></custom-theme>
+      <custom-theme laod-icons="false" load-font="false"></custom-theme>
       <!-- just cleaner -->
       ${icons}
 
