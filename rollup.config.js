@@ -27,7 +27,7 @@ if (env.NODE_ENV === 'development') {
     `
   <body>
   <script>
-    const ws = new WebSocket('ws://localhost:8080', 'reload-app')
+    const ws = new WebSocket(location.protocol === 'https:' ? 'wss://' + location.host : 'ws://' + location.host, 'reload-app')
     ws.addEventListener('open', () => {
       ws.addEventListener('message', () => location.reload())
     })
