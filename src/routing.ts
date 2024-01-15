@@ -8,7 +8,7 @@ export default class Router {
 
     globalThis.onhashchange = this.#onhashchange
     if (!location.hash) {
-      location.hash = Router.bang('sellings')
+      location.hash = Router.bang('sales')
     } else this.#onhashchange()
   }
 

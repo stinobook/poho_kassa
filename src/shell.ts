@@ -8,7 +8,7 @@ import '@vandeurenglenn/lit-elements/pages.js'
 import icons from './icons.js'
 import Router from './routing.js'
 // import default page
-import './views/sellings.js'
+import './views/sales.js'
 import { CustomSelector } from '@vandeurenglenn/lit-elements/selector.js'
 
 @customElement('po-ho-shell')
@@ -50,18 +50,18 @@ export class PoHoShell extends LitElement {
         <span slot="drawer-headline"> menu </span>
         <custom-selector
           attr-for-selected="route"
-          default-selected="sellings"
+          default-selected="sales"
           slot="drawer-content"
           @selected=${this.#selectorSelected}
         >
-          <custom-drawer-item route="sellings"> Verkoop </custom-drawer-item>
+          <custom-drawer-item route="sales"> Verkoop </custom-drawer-item>
           <custom-drawer-item route="checkout"> Afsluit </custom-drawer-item>
           <custom-drawer-item route="attendance"> Aanwezigheidslijst </custom-drawer-item>
           <custom-drawer-item route="prices"> Prijslijst </custom-drawer-item>
         </custom-selector>
 
-        <custom-pages attr-for-selected="route" default-selected="sellings">
-          <sellings-view route="sellings"> </sellings-view>
+        <custom-pages attr-for-selected="route" default-selected="sales">
+          <sales-view route="sales"> </sales-view>
           <attendance-view route="attendance"> </attendance-view>
           <checkout-view route="checkout"> </checkout-view>
           <prices-view route="prices"> </prices-view>
