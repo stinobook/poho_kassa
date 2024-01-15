@@ -39,6 +39,13 @@ export class PoHoShell extends LitElement {
 
   render() {
     return html`
+      <style>
+        custom-pages {
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+      </style>
       <!-- theme handler, see rollup config in .config dir, can add own theme instead... -->
       <custom-theme laod-icons="false" load-font="false"></custom-theme>
       <!-- just cleaner -->
