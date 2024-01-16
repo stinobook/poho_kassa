@@ -47,7 +47,7 @@ export class PoHoShell extends LitElement {
         }
       </style>
       <!-- theme handler, see rollup config in .config dir, can add own theme instead... -->
-      <custom-theme laod-icons="false" load-font="false"></custom-theme>
+      <custom-theme load-icons="false" load-font="false"></custom-theme>
       <!-- just cleaner -->
       ${icons}
 

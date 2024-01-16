@@ -15,7 +15,6 @@ export class SalesView extends LitElement {
     #saleList {
     }
     #saleNumpad {
-      min-width:250px;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; 
       grid-template-rows: 1fr 1fr 1fr 1fr 1fr; 
@@ -81,7 +80,7 @@ export class SalesView extends LitElement {
         <li>Cava</li>
         </ul>
       </custom-card>
-      <md-filled-text-field style="min-width:100%" label="Ontvangen" type="number" prefix-text="€" suffix-text=".00">
+      <md-filled-text-field label="Ontvangen" type="number" prefix-text="€">
       </md-filled-text-field>
       <div id="saleNumpad">
       <md-outlined-button>1</md-outlined-button>
