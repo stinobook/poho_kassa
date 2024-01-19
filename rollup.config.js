@@ -57,7 +57,7 @@ if (env.NODE_ENV === 'development') {
 
 writeFile('./www/index.html', index)
 const files = await glob(['www/**/*'], {
-  ignore: ['www/manifest.json', 'www/assets', 'www/assets/**/*', 'www/index.html']
+  ignore: ['www/manifest.json', 'www/assets', 'www/assets/**/*', 'www/index.html', 'www/themes', 'www/themes/**/*']
 })
 for (const file of files) {
   rm.sync(file)
