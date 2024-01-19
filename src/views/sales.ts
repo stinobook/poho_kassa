@@ -10,7 +10,7 @@ import '@material/web/tabs/primary-tab.js'
 import '@vandeurenglenn/flex-elements/row.js'
 import { prijslijst } from './prices.js'
 
-let prijslijst_categorie = [...new Set(prijslijst.map(item => item.category))];
+let prijslijst_categorie = [...new Set(prijslijst.map((item) => item.category))]
 
 @customElement('sales-view')
 export class SalesView extends LitElement {
@@ -21,15 +21,15 @@ export class SalesView extends LitElement {
     }
     #saleNumpad {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; 
-      grid-template-rows: 1fr 1fr 1fr 1fr 1fr; 
-      gap: 5px 5px; 
-      grid-template-areas: 
-        "seven seven eight eight nine nine"
-        "four four five five six six"
-        "one one two two three three"
-        "zero zero zero zero dot dot"
-        "cash cash cash payconiq payconiq payconiq"; 
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+      gap: 5px 5px;
+      grid-template-areas:
+        'seven seven eight eight nine nine'
+        'four four five five six six'
+        'one one two two three three'
+        'zero zero zero zero dot dot'
+        'cash cash cash payconiq payconiq payconiq';
     }
     md-outlined-button:nth-child(1) {
       grid-area: one;
@@ -71,62 +71,47 @@ export class SalesView extends LitElement {
       grid-area: payconiq;
       height: 50px;
     }
-
   `
-  
 
   render() {
-    return html` 
-    <flex-column>
-      <custom-card type="filled" id="saleList">
-        <ul slot="supportingText">
-        <li>Cola</li>
-        <li>Jupiler</li>
-        <li>Cava</li>
-        </ul>
-      </custom-card>
-      <md-filled-text-field label="Ontvangen" type="number" prefix-text="€">
-      </md-filled-text-field>
-      <div id="saleNumpad">
-      <md-outlined-button>1</md-outlined-button>
-      <md-outlined-button>2</md-outlined-button>
-      <md-outlined-button>3</md-outlined-button>
-      <md-outlined-button>4</md-outlined-button>
-      <md-outlined-button>5</md-outlined-button>
-      <md-outlined-button>6</md-outlined-button>
-      <md-outlined-button>7</md-outlined-button>
-      <md-outlined-button>8</md-outlined-button>
-      <md-outlined-button>9</md-outlined-button>
-      <md-outlined-button>0</md-outlined-button>
-      <md-outlined-button>.</md-outlined-button>
-      <md-filled-button>Cash</md-filled-button>
-      <md-filled-button>Payconiq</md-filled-button>
-      </div>
+    return html`
+      <flex-column>
+        <custom-card type="filled" id="saleList">
+          <ul slot="supportingText">
+            <li>Cola</li>
+            <li>Jupiler</li>
+            <li>Cava</li>
+          </ul>
+        </custom-card>
+        <md-filled-text-field label="Ontvangen" type="number" prefix-text="€"> </md-filled-text-field>
+        <div id="saleNumpad">
+          <md-outlined-button>1</md-outlined-button>
+          <md-outlined-button>2</md-outlined-button>
+          <md-outlined-button>3</md-outlined-button>
+          <md-outlined-button>4</md-outlined-button>
+          <md-outlined-button>5</md-outlined-button>
+          <md-outlined-button>6</md-outlined-button>
+          <md-outlined-button>7</md-outlined-button>
+          <md-outlined-button>8</md-outlined-button>
+          <md-outlined-button>9</md-outlined-button>
+          <md-outlined-button>0</md-outlined-button>
+          <md-outlined-button>.</md-outlined-button>
+          <md-filled-button>Cash</md-filled-button>
+          <md-filled-button>Payconiq</md-filled-button>
+        </div>
+      </flex-column>
 
-    </flex-column>
-    
-    <flex-column>
-      <md-tabs aria-label="Categorien">
-        ${prijslijst_categorie.map((category) =>
-            html`<md-primary-tab aria-controls="${category}-panel">${category}</md-primary-tab>`
-          )
-        }
-      </md-tabs>
-      <div aria-labelledby="frisdrank-panel" role="tabpanel" id="frisdrank-panel">
-testfrisdrank
-      </div>
-      <div aria-labelledby="bieren-panel" role="tabpanel" id="bieren-panel">
-testbieren
-      </div>
+      <flex-column>
+        <md-tabs aria-label="Categorien">
+          ${prijslijst_categorie.map(
+            (category) => html`<md-primary-tab aria-controls="${category}-panel">${category}</md-primary-tab>`
+          )}
+        </md-tabs>
+        <div aria-labelledby="frisdrank-panel" role="tabpanel" id="frisdrank-panel">testfrisdrank</div>
+        <div aria-labelledby="bieren-panel" role="tabpanel" id="bieren-panel">testbieren</div>
 
-      ${prijslijst.map((name) =>
-        html`${name.name}`
-      )
-    }
-    </flex-column>
-    
-    
-    
+        ${prijslijst.map((name) => html`${name.name}`)}
+      </flex-column>
     `
   }
 }
