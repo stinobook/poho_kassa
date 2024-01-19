@@ -5,12 +5,7 @@ import '@material/web/list/list-item.js'
 import '@material/web/button/filled-button.js'
 import '@material/web/button/outlined-button.js'
 import '@material/web/textfield/filled-text-field.js'
-import '@material/web/tabs/tabs.js'
-import '@material/web/tabs/primary-tab.js'
 import '@vandeurenglenn/flex-elements/row.js'
-import { prijslijst } from './prices.js'
-
-let prijslijst_categorie = [...new Set(prijslijst.map((item) => item.category))]
 
 @customElement('sales-view')
 export class SalesView extends LitElement {
@@ -99,18 +94,6 @@ export class SalesView extends LitElement {
           <md-filled-button>Cash</md-filled-button>
           <md-filled-button>Payconiq</md-filled-button>
         </div>
-      </flex-column>
-
-      <flex-column>
-        <md-tabs aria-label="Categorien">
-          ${prijslijst_categorie.map(
-            (category) => html`<md-primary-tab aria-controls="${category}-panel">${category}</md-primary-tab>`
-          )}
-        </md-tabs>
-        <div aria-labelledby="frisdrank-panel" role="tabpanel" id="frisdrank-panel">testfrisdrank</div>
-        <div aria-labelledby="bieren-panel" role="tabpanel" id="bieren-panel">testbieren</div>
-
-        ${prijslijst.map((name) => html`${name.name}`)}
       </flex-column>
     `
   }
