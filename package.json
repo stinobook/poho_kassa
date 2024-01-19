@@ -16,6 +16,7 @@
     "cross-env": "^7.0.3",
     "custom-element-decorator": "^0.6.0",
     "glob": "^10.3.10",
+    "rimraf": "^5.0.5",
     "rollup": "^4.9.5",
     "rollup-plugin-material-symbols": "^2.1.5",
     "tslib": "^2.6.2",

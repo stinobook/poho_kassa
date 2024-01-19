@@ -3,14 +3,9 @@ import typescript from '@rollup/plugin-typescript'
 import materialSymbols from 'rollup-plugin-material-symbols'
 import { glob } from 'glob'
 import { mkdir, opendir, readFile, writeFile, cp } from 'fs/promises'
+import * as rm from 'rimraf'
 import { execSync } from 'child_process'
 import { env } from 'process'
-
-try {
-  await opendir('./www')
-} catch (error) {
-  await mkdir('./www')
-}
 
 try {
   await opendir('./www/themes')
@@ -61,6 +56,12 @@ if (env.NODE_ENV === 'development') {
 }
 
 writeFile('./www/index.html', index)
+const files = await glob(['www/**/*'], {
+  ignore: ['www/manifest.json', 'www/assets', 'www/assets/**/*', 'www/index.html']
+})
+for (const file of files) {
+  rm.sync(file)
+}
 
 const generateServiceWorker = () => ({
   name: 'generate-service-worker',
