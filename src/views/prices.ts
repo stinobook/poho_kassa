@@ -64,7 +64,7 @@ export let prijslijst: priceList[] = [
   { name: 'Limoncello 1L', category: 'winkel', vat: 21, price: 40 },
   { name: 'Limoncello 1L', category: 'other', vat: 21, price: 40 }
 ]
-let prijslijst_categories = [...new Set(prijslijst.map((item) => item.category))]
+export let prijslijst_categories = [...new Set(prijslijst.map((item) => item.category))]
 
 @customElement('prices-view')
 export class PricesView extends LitElement {

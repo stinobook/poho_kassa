@@ -1,11 +1,23 @@
 import { html, css, LitElement, CSSResult } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import { customElement, property } from 'lit/decorators.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import '@material/web/button/filled-button.js'
 import '@material/web/button/outlined-button.js'
 import '@material/web/textfield/filled-text-field.js'
 import '@vandeurenglenn/flex-elements/row.js'
+import '@vandeurenglenn/flex-elements/container.js'
+import '@vandeurenglenn/lit-elements/tabs.js'
+import '@vandeurenglenn/lit-elements/tab.js'
+import '@vandeurenglenn/lit-elements/divider.js'
+import '@vandeurenglenn/lit-elements/icon-button.js'
+import '@vandeurenglenn/lit-elements/button.js'
+import { CustomTabs } from '@vandeurenglenn/lit-elements/tabs.js'
+import { prijslijst } from './prices.js'
+import { priceList } from './prices.js'
+import { prijslijst_categories } from './prices.js'
+import {repeat} from 'lit/directives/repeat.js';
+
 
 @customElement('sales-view')
 export class SalesView extends LitElement {
@@ -66,11 +78,27 @@ export class SalesView extends LitElement {
       grid-area: payconiq;
       height: 50px;
     }
+    #itemGrid {
+      display: grid;
+      margin: 0 auto;
+      grid-gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      width:100%;
+    }
+    #itemGrid-cat {
+      margin-left: 5px;
+      margin-right: 5px;
+      flex: 1 1 200px;
+    }
+    #itemGrid-item {
+      margin-left: 5px;
+      margin-right: 5px;
+    }
   `
-
+  
   render() {
     return html`
-      <flex-column>
+      <flex-column width="15%">
         <custom-card type="filled" id="saleList">
           <ul slot="supportingText">
             <li>Cola</li>
@@ -94,6 +122,16 @@ export class SalesView extends LitElement {
           <md-filled-button>Cash</md-filled-button>
           <md-filled-button>Payconiq</md-filled-button>
         </div>
+      </flex-column>
+
+      <flex-column width="85%" style="overflow: auto;">
+      <div id="itemGrid">
+      ${prijslijst_categories.map((category) => html`
+      <div id="itemGrid-cat">${category}</div>
+
+      `)}
+      </div>
+      
       </flex-column>
     `
   }
