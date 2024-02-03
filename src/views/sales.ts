@@ -15,7 +15,7 @@ import '@vandeurenglenn/lit-elements/button.js'
 import '@vandeurenglenn/lit-elements/card.js'
 import { prijslijst } from './prices.js'
 import { prijslijst_categories } from './prices.js'
-import './../components/sales-pad/pad.js'
+import '../components/sales/pad/pad.js'
 
 @customElement('sales-view')
 export class SalesView extends LitElement {

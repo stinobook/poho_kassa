@@ -7,7 +7,6 @@ import '@material/web/list/list-item.js'
 export class CheckoutView extends LitElement {
   static styles: CSSResult = css`
     :host {
-      p: '';
     }
   `
 

@@ -1,5 +1,5 @@
-import { html, LitElement } from 'lit'
-import { customElement, query } from 'lit/decorators.js'
+import { html, LiteElement, query } from '@vandeurenglenn/lite'
+import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/lit-elements/icon-set.js'
 import '@vandeurenglenn/lit-elements/theme.js'
 import '@vandeurenglenn/lit-elements/drawer-layout.js'
@@ -8,14 +8,37 @@ import '@vandeurenglenn/lit-elements/pages.js'
 import icons from './icons.js'
 import Router from './routing.js'
 // import default page
-import './views/sales.js'
+import './views/login.js'
 import { CustomSelector } from '@vandeurenglenn/lit-elements/selector.js'
+// Import the functions you need from the SDKs you need
+import { initializeApp } from 'firebase/app'
+import { getAnalytics } from 'firebase/analytics'
+import { getAuth } from 'firebase/auth'
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: 'AIzaSyCaKlJXmek0TtPBocP0FXWRuUxItL1yZx0',
+  authDomain: 'kassa-systems.firebaseapp.com',
+  projectId: 'kassa-systems',
+  storageBucket: 'kassa-systems.appspot.com',
+  messagingSenderId: '1006430419680',
+  appId: '1:1006430419680:web:03bd1a5b3266e264d76e85',
+  measurementId: 'G-0FF6DRPT6D'
+}
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig)
+const analytics = getAnalytics(app)
+console.log(app)
 
 @customElement('po-ho-shell')
-export class PoHoShell extends LitElement {
+export class PoHoShell extends LiteElement {
   router: Router
 
-  #selectorSelected = ({ detail }: CustomEvent) => {
+  selectorSelected({ detail }: CustomEvent) {
     location.href = Router.bang(detail)
   }
 
@@ -32,8 +55,12 @@ export class PoHoShell extends LitElement {
   }
 
   async connectedCallback() {
-    super.connectedCallback()
-    await this.updateComplete
+    const auth = await getAuth(app)
+    await auth.authStateReady()
+    if (!auth.currentUser) {
+      location.hash = Router.bang('login')
+    }
+    console.log(auth)
     this.router = new Router(this)
   }
 
@@ -52,14 +79,14 @@ export class PoHoShell extends LitElement {
       ${icons}
 
       <!-- see https://vandeurenglenn.github.io/custom-elements/ -->
-      <custom-drawer-layout appBarType="small">
+      <custom-drawer-layout appBarType="small" keep-closed>
         <span slot="top-app-bar-title">Poho</span>
         <span slot="drawer-headline"> menu </span>
         <custom-selector
           attr-for-selected="route"
           default-selected="sales"
           slot="drawer-content"
-          @selected=${this.#selectorSelected}
+          @selected=${this.selectorSelected}
         >
           <custom-drawer-item route="sales"> Verkoop </custom-drawer-item>
           <custom-drawer-item route="checkout"> Afsluit </custom-drawer-item>
@@ -68,6 +95,7 @@ export class PoHoShell extends LitElement {
         </custom-selector>
 
         <custom-pages attr-for-selected="route" default-selected="sales">
+          <login-view route="login"> </login-view>
           <sales-view route="sales"> </sales-view>
           <attendance-view route="attendance"> </attendance-view>
           <checkout-view route="checkout"> </checkout-view>

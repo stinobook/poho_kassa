@@ -25,59 +25,6 @@ export class SalesPad extends LitElement {
       max-width: 240px;
       width: 100%;
     }
-    #saleList {
-    }
-    #saleNumpad {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-      grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
-      gap: 5px 5px;
-      grid-template-areas:
-        'seven seven eight eight nine nine'
-        'four four five five six six'
-        'one one two two three three'
-        'zero zero zero zero dot dot'
-        'cash cash cash payconiq payconiq payconiq';
-    }
-    md-outlined-button:nth-child(1) {
-      grid-area: one;
-    }
-    md-outlined-button:nth-child(2) {
-      grid-area: two;
-    }
-    md-outlined-button:nth-child(3) {
-      grid-area: three;
-    }
-    md-outlined-button:nth-child(4) {
-      grid-area: four;
-    }
-    md-outlined-button:nth-child(5) {
-      grid-area: five;
-    }
-    md-outlined-button:nth-child(6) {
-      grid-area: six;
-    }
-    md-outlined-button:nth-child(7) {
-      grid-area: seven;
-    }
-    md-outlined-button:nth-child(8) {
-      grid-area: eight;
-    }
-    md-outlined-button:nth-child(9) {
-      grid-area: nine;
-    }
-    md-outlined-button:nth-child(10) {
-      grid-area: zero;
-    }
-    md-outlined-button:nth-child(11) {
-      grid-area: dot;
-    }
-    md-filled-button:nth-child(12) {
-      grid-area: cash;
-    }
-    md-filled-button:nth-child(13) {
-      grid-area: payconiq;
-    }
 
     flex-row {
       margin-top: 12px;
