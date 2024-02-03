@@ -24,7 +24,7 @@ export class LoginView extends LiteElement {
         min-width: auto;
         border-radius: var(--md-sys-shape-corner-extra-large);
         box-sizing: border-box;
-        padding: 16px 24px;
+        padding: 16px 32px;
       }
 
       md-outlined-text-field {
