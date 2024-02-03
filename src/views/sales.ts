@@ -98,7 +98,7 @@ export class SalesView extends LitElement {
   
   render() {
     return html`
-      <flex-column width="15%">
+      <flex-column width="25%">
         <custom-card type="filled" id="saleList">
           <ul slot="supportingText">
             <li>Cola</li>
@@ -124,10 +124,15 @@ export class SalesView extends LitElement {
         </div>
       </flex-column>
 
-      <flex-column width="85%" style="overflow: auto;">
+      <flex-column width="75%" style="overflow: auto;">
       <div id="itemGrid">
       ${prijslijst_categories.map((category) => html`
       <div id="itemGrid-cat">${category}</div>
+
+      `)}
+      ${prijslijst.map((i) => html`
+      
+      <div id="itemGrid-item">${i.name}</div>
 
       `)}
       </div>
@@ -136,3 +141,4 @@ export class SalesView extends LitElement {
     `
   }
 }
+// <div id="itemGrid-cat">${prijslijst.filter(i => i.category === category )}</div>
