@@ -12,6 +12,8 @@ import '@material/web/select/select-option.js'
 import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
 import Router from '../routing.js'
 import { queryAll } from '@vandeurenglenn/lite/query-all'
+import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
+import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
 export type Product = {
   name: string
   vat: number
@@ -48,8 +50,8 @@ export class AddProductView extends LiteElement {
 
   @queryAll('[label]')
   labels
-  back = () => {
-    history.back()
+
+  reset() {
     this.params = undefined
     for (const label of this.labels.filter((item) => item.label !== 'category' && item.label !== 'quickId')) {
       label.reset()
@@ -59,18 +61,24 @@ export class AddProductView extends LiteElement {
     }
   }
 
+  back = () => {
+    history.back()
+    this.reset()
+  }
+
   async updateView(value) {
     const product = await (await get(child(ref(getDatabase(), 'products'), value.edit))).val()
     for (const [key, value] of Object.entries(product)) {
-      const field = this.shadowRoot.querySelector(`[label=${key}]`)
+      const field = this.shadowRoot.querySelector(`[label=${key}]`) as MdFilledTextField | MdOutlinedSelect
       if (!field) alert(`property declared but no field found for: ${key}`)
       else if (key === 'category') {
         this.category = value
-        field.select(value)
-      } else field.value = value
+        field.select(value as string)
+      } else field.value = value as string
     }
-    const category = this.shadowRoot.querySelector(`[label="category"]`)
+    const category = this.shadowRoot.querySelector(`[label="category"]`) as MdOutlinedSelect
     if (!category.value) {
+      // @ts-ignore
       category.selectItem(category.options[0])
     }
   }
@@ -91,9 +99,11 @@ export class AddProductView extends LiteElement {
     const categories = await (await get(_ref)).val()
     this.categories = categories ? categories : []
     const productsRef = ref(getDatabase(), 'products')
-    this.shadowRoot.querySelector('[label="quickId"]').value = (await get(productsRef)).size
-    const category = this.shadowRoot.querySelector(`[label="category"]`)
+    const quickIdEl = this.shadowRoot.querySelector('[label="quickId"]') as MdFilledTextField
+    quickIdEl.value = String((await get(productsRef)).size)
+    const category = this.shadowRoot.querySelector(`[label="category"]`) as MdOutlinedSelect
     if (!category.value) {
+      // @ts-ignore
       category.selectItem(category.options[0])
     }
     onChildAdded(_ref, async (snap) => {
@@ -120,12 +130,16 @@ export class AddProductView extends LiteElement {
     for (const field of fields) {
       if (field.value) product[field.label] = field.value
     }
-    product.category = this.shadowRoot.querySelector('md-outlined-select').value
+    product['category'] = this.shadowRoot.querySelector('md-outlined-select').value
     if (this.editing) {
       set(child(productsRef, this.params.edit), product)
       this.params = undefined
-    } else push(productsRef, product)
-    this.back()
+      this.editing = false
+      this.back()
+    } else {
+      push(productsRef, product)
+      this.reset()
+    }
   }
 
   static styles = [
