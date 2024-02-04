@@ -58,7 +58,12 @@ export class SalesGrid extends LiteElement {
         background: var(--md-sys-color-tertiary);
         --md-text-button-label-text-color: var(--md-sys-color-on-tertiary);
         --md-text-button-pressed-label-text: var(--md-sys-color-on-tertiary);
+        --md-text-button-hover-label-text-color: var(--md-sys-color-on-tertiary);
+        --md-text-button-focus-label-text-color: var(--md-sys-color-on-tertiary);
+        --md-text-button-pressed-label-text-color: var(--md-sys-color-on-tertiary);
+        color: var(--md-sys-color-on-tertiary) !important;
       }
+
       flex-container h4:first-child {
         margin-top: 0;
       }
