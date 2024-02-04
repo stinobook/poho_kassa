@@ -125,6 +125,7 @@ export class AddProductView extends LiteElement {
       set(child(productsRef, this.params.edit), product)
       this.params = undefined
     } else push(productsRef, product)
+    this.back()
   }
 
   static styles = [
