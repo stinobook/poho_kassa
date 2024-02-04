@@ -17,9 +17,13 @@ import { html } from 'lit'
 export default html`
   <custom-icon-set>
     <template>
-      <span name="menu">@symbol-menu></span>
-      <span name="menu_open">@symbol-menu_open></span>
-      <span name="edit">@symbol-edit></span>
+      <span name="add">@symbol-add</span>
+      <span name="arrow_back">@symbol-arrow_back</span>
+      <span name="menu">@symbol-menu</span>
+      <span name="menu_open">@symbol-menu_open</span>
+      <span name="edit">@symbol-edit</span>
+      <span name="save">@symbol-save</span>
+      <span name="delete">@symbol-delete</span>
     </template>
   </custom-icon-set>
 `

@@ -1,13 +1,32 @@
-import { html, css, LiteElement } from '@vandeurenglenn/lite'
+import { html, css, LiteElement, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@material/web/button/filled-button.js'
 import '@material/web/button/outlined-button.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@vandeurenglenn/lit-elements/typography.js'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 
 @customElement('login-view')
 export class LoginView extends LiteElement {
+  @query('md-outlined-text-field[label="email"]')
+  email
+
+  @query('md-outlined-text-field[label="password"]')
+  password
+
+  cancel() {
+    this.email.value = null
+    this.password.value = null
+  }
+
+  async login() {
+    const email = this.email.value
+    const password = this.password.value
+    const auth = getAuth()
+    await signInWithEmailAndPassword(auth, email, password)
+  }
+
   static styles = [
     css`
       :host {
@@ -18,7 +37,7 @@ export class LoginView extends LiteElement {
         display: block;
       }
       flex-container {
-        background-color: var(--md-sys-color-surface-variant);
+        background-color: var(--md-sys-color-surface-container-high);
         max-width: fit-content;
         max-height: 420px;
         min-width: auto;
@@ -59,9 +78,9 @@ export class LoginView extends LiteElement {
         <md-outlined-text-field label="password" type="password"> </md-outlined-text-field>
 
         <flex-row>
-          <md-outlined-button>cancel</md-outlined-button>
+          <md-outlined-button @click=${this.cancel.bind(this)}>cancel</md-outlined-button>
           <flex-it></flex-it>
-          <md-filled-button>login</md-filled-button>
+          <md-filled-button @click=${this.login.bind(this)}>login</md-filled-button>
         </flex-row>
       </flex-container>
     `

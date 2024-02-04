@@ -22,8 +22,12 @@ export class SalesPad extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
+      background-color: var(--md-sys-color-surface-container-high);
+      border-radius: var(--md-sys-shape-corner-extra-large);
       max-width: 240px;
       width: 100%;
+      height: fit-content;
+      position: relative;
     }
 
     flex-row {
@@ -45,6 +49,7 @@ export class SalesPad extends LitElement {
 
   render() {
     return html`
+      <custom-elevation level="1"></custom-elevation>
       <sales-receipt></sales-receipt>
       <md-filled-text-field label="Ontvangen" type="number" prefix-text="€"> </md-filled-text-field>
       <flex-wrap-evenly>
