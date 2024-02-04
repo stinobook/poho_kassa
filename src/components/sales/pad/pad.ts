@@ -14,6 +14,7 @@ import '@vandeurenglenn/lit-elements/icon-button.js'
 import '@vandeurenglenn/lit-elements/button.js'
 import '@vandeurenglenn/lit-elements/card.js'
 import './receipt.js'
+import './input.js'
 import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 
 @customElement('sales-pad')
@@ -22,54 +23,23 @@ export class SalesPad extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-      background-color: var(--md-sys-color-surface-container-high);
-      border-radius: var(--md-sys-shape-corner-extra-large);
       max-width: 240px;
       width: 100%;
-      height: fit-content;
+      height: 100%;
+
       position: relative;
     }
 
-    flex-row {
-      margin-top: 12px;
-      height: 50px;
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0 12px;
-    }
-
-    .big-button {
-      width: calc((100% / 2) + 24px);
-    }
-
-    md-outlined-button {
-      margin-top: 12px;
+    sales-receipt {
+      margin-bottom: 24px;
     }
   `
 
   render() {
     return html`
-      <custom-elevation level="1"></custom-elevation>
       <sales-receipt></sales-receipt>
-      <md-filled-text-field label="Ontvangen" type="number" prefix-text="€"> </md-filled-text-field>
-      <flex-wrap-evenly>
-        <md-outlined-button>1</md-outlined-button>
-        <md-outlined-button>2</md-outlined-button>
-        <md-outlined-button>3</md-outlined-button>
-        <md-outlined-button>4</md-outlined-button>
-        <md-outlined-button>5</md-outlined-button>
-        <md-outlined-button>6</md-outlined-button>
-        <md-outlined-button>7</md-outlined-button>
-        <md-outlined-button>8</md-outlined-button>
-        <md-outlined-button>9</md-outlined-button>
-        <md-outlined-button class="big-button">0</md-outlined-button>
-        <md-outlined-button>.</md-outlined-button>
-        <flex-row>
-          <md-filled-button>Cash</md-filled-button>
-          <flex-it></flex-it>
-          <md-filled-button>Payconiq</md-filled-button>
-        </flex-row>
-      </flex-wrap-evenly>
+
+      <sales-input></sales-input>
     `
   }
 }

@@ -1,50 +1,103 @@
-import { html, css, LitElement, CSSResult } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
+import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
 
-export declare type ReceiptItem = { id: string; price: number; name: string; description?: string }
+export declare type ReceiptItem = { id: string; price: number; name: string; description?: string; amount: Number }
 
 @customElement('sales-receipt')
-export class SalesReceipt extends LitElement {
-  static styles: CSSResult = css`
-    :host {
-      display: flex;
-      max-width: 240px;
-      width: 100%;
-      padding: 12px 24px;
-      box-sizing: border-box;
-    }
-    flex-row,
-    flex-column {
-      width: 100%;
-    }
+export class SalesReceipt extends LiteElement {
+  static styles = [
+    css`
+      :host {
+        display: flex;
+        flex-direction: column;
+        max-width: 255px;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        border-radius: var(--md-sys-shape-corner-extra-large);
+      }
+      flex-container {
+        min-width: 0;
+        height: fit-content;
+        position: relative;
+        overflow: hidden;
+      }
+      flex-row,
+      flex-column {
+        width: 100%;
+      }
 
-    li {
-      display: flex;
-      width: 100%;
-    }
-  `
+      li {
+        display: flex;
+        background-color: var(--md-sys-color-surface-container-high);
+        width: 100%;
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        box-sizing: border-box;
+        padding: 4px 12px;
+        margin-top: 14px;
+      }
+
+      li span {
+        margin-left: 4px;
+        margin-right: 4px;
+      }
+
+      .total {
+        box-sizing: border-box;
+        padding: 12px 24px;
+      }
+    `
+  ]
 
   @property({ type: Array })
-  items: ReceiptItem[] = [{ name: 'cola', id: '1', price: 1 }]
+  items: ReceiptItem[] = [{ name: 'cola', id: '1', price: 1, amount: 1 }]
+
+  @property({ type: Number })
+  total
+
+  onChange(propertyKey) {
+    if (propertyKey === 'items')
+      this.total = this.items.reduce((total, item) => {
+        total += item.amount * item.price
+        return total
+      }, 0)
+  }
 
   render() {
     return html`
-      ${map(
-        this.items,
-        (item: ReceiptItem) => html`
-          <li>
-            <flex-column>
-              <flex-row>
-                ${item.name}
-                <flex-it></flex-it>
-                ${Number(item.price).toLocaleString(navigator.language, { style: 'currency', currency: 'EUR' })}
-              </flex-row>
-              ${item.description ? html`<small>${item.description}</small>` : ''}
-            </flex-column>
-          </li>
-        `
-      )}
+      <custom-elevation level="1"></custom-elevation>
+      <flex-container>
+        ${map(
+          this.items,
+          (item: ReceiptItem) => html`
+            <li>
+              <flex-column>
+                <flex-row center>
+                  ${item.name}
+                  <span>${item.amount} x</span>
+                  ${Number(item.price).toLocaleString(navigator.language, { style: 'currency', currency: 'EUR' })}
+                  <flex-it></flex-it>
+                  ${Number(item.price * item.amount).toLocaleString(navigator.language, {
+                    style: 'currency',
+                    currency: 'EUR'
+                  })}
+                </flex-row>
+                ${item.description ? html`<small>${item.description}</small>` : ''}
+              </flex-column>
+            </li>
+          `
+        )}
+      </flex-container>
+      <flex-it></flex-it>
+      <flex-row center class="total">
+        <strong>Total:</strong>
+        <flex-it></flex-it>
+        ${Number(this.total).toLocaleString(navigator.language, {
+          style: 'currency',
+          currency: 'EUR'
+        })}
+      </flex-row>
     `
   }
 }

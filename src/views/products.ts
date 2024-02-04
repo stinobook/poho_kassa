@@ -24,25 +24,27 @@ export type Products = Product[]
 
 @customElement('products-view')
 export class ProductsView extends LiteElement {
-  @property({ type: Array })
-  items: Products
+  @property({ type: Object, consumer: true, provider: true })
+  products: { [index: string]: Product }
 
   #ref = ref(getDatabase(), 'products')
 
   async connectedCallback(): Promise<void> {
-    const products = await (await get(this.#ref)).val()
-    this.items = products ? products : []
+    // const products = await (await get(this.#ref)).val()
+    // this.products = products ? products : []
     onChildAdded(this.#ref, async (snap) => {
       const key = snap.key
-      if (!this.items[key]) {
-        this.items[key] = await snap.val()
+      if (!this.products) return
+      if (!this.products[key]) {
+        this.products[key] = await snap.val()
         this.requestRender()
       }
     })
     onChildRemoved(this.#ref, async (snap) => {
       const key = await snap.key
-      if (this.items[key]) {
-        delete this.items[key]
+      if (!this.products) return
+      if (this.products[key]) {
+        delete this.products[key]
         this.requestRender()
       }
     })
@@ -113,8 +115,8 @@ export class ProductsView extends LiteElement {
     return html`
       <flex-container>
         <md-list>
-          ${this.items
-            ? Object.entries(this.items).map(
+          ${this.products
+            ? Object.entries(this.products).map(
                 ([key, item]) => html`
                   <md-list-item>
                     <span slot="headline">${item.name}</span>
