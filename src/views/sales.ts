@@ -16,6 +16,7 @@ import '@vandeurenglenn/lit-elements/card.js'
 import { prijslijst } from './prices.js'
 import { prijslijst_categories } from './prices.js'
 import '../components/sales/pad/pad.js'
+import '../components/sales/grid/grid.js'
 
 @customElement('sales-view')
 export class SalesView extends LitElement {
@@ -29,13 +30,7 @@ export class SalesView extends LitElement {
   render() {
     return html`
       <sales-pad></sales-pad>
-
-      <flex-column width="75%" style="overflow: auto;">
-        <div id="itemGrid">
-          ${prijslijst_categories.map((category) => html` <div id="itemGrid-cat">${category}</div> `)}
-          ${prijslijst.map((i) => html` <div id="itemGrid-item">${i.name}</div> `)}
-        </div>
-      </flex-column>
+      <sales-grid></sales-grid>
     `
   }
 }

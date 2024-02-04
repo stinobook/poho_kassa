@@ -1,4 +1,4 @@
-import { html, LiteElement, query } from '@vandeurenglenn/lite'
+import { html, LiteElement, query, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/lit-elements/drawer-layout.js'
 import '@vandeurenglenn/lit-elements/icon-set.js'
@@ -14,6 +14,7 @@ import './views/login.js'
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
 import { getAuth } from 'firebase/auth'
+import { get, getDatabase, ref } from 'firebase/database'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -52,12 +53,20 @@ export class PoHoShell extends LiteElement {
   @query('custom-pages')
   pages: CustomPages
 
+  @property({ provider: true })
+  products
+
   @query('custom-drawer-layout')
   drawerLayout: CustomDrawerLayout
 
-  select(selected) {
+  async select(selected) {
     console.log({ selected })
     this.selector.select(selected)
+    this.pages.select(selected)
+    if (selected === 'products' || selected === 'sales') {
+      const products = await (await get(ref(getDatabase(), 'products'))).val()
+      this.products = products
+    }
   }
 
   async connectedCallback() {
