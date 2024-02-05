@@ -72,7 +72,7 @@ const generateServiceWorker = () => ({
 
 export default [
   {
-    input: ['./src/shell.ts', ...views],
+    input: ['./src/shell.ts', ...views, 'src/firebase.ts'],
     output: {
       format: 'es',
       dir: 'www'

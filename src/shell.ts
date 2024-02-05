@@ -9,39 +9,14 @@ import icons from './icons.js'
 import Router from './routing.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
 // import default page
-import './views/login.js'
-// Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app'
-import { getAnalytics } from 'firebase/analytics'
-import { getAuth } from 'firebase/auth'
-import { get, getDatabase, ref } from 'firebase/database'
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: 'AIzaSyCaKlJXmek0TtPBocP0FXWRuUxItL1yZx0',
-  authDomain: 'kassa-systems.firebaseapp.com',
-  projectId: 'kassa-systems',
-  storageBucket: 'kassa-systems.appspot.com',
-  messagingSenderId: '1006430419680',
-  appId: '1:1006430419680:web:03bd1a5b3266e264d76e85',
-  measurementId: 'G-0FF6DRPT6D',
-  databaseURL: 'https://kassa-systems-default-rtdb.europe-west1.firebasedatabase.app/'
-}
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
-const analytics = getAnalytics(app)
-console.log(app)
+import './views/loading.js'
 
 @customElement('po-ho-shell')
 export class PoHoShell extends LiteElement {
   router: Router
 
   selectorSelected({ detail }: CustomEvent) {
-    console.log(detail)
+    console.log({ detail })
 
     this.drawerLayout.drawerOpen = false
     location.hash = Router.bang(detail)
@@ -64,25 +39,17 @@ export class PoHoShell extends LiteElement {
     this.selector.select(selected)
     this.pages.select(selected)
     if (selected === 'products' || selected === 'sales') {
-      const products = await (await get(ref(getDatabase(), 'products'))).val()
+      const products = await firebase.get('products')
       this.products = products
     }
   }
 
   async connectedCallback() {
-    const auth = await getAuth(app)
-    auth.onAuthStateChanged((user) => {
-      if (!user) location.hash = Router.bang('login')
-      else if (!location.hash) {
-        location.hash = Router.bang('sales')
-      }
-    })
-    await auth.authStateReady()
-    if (!auth.currentUser) {
-      location.hash = Router.bang('login')
+    this.drawerLayout.drawerOpen = false
+    if (!globalThis.firebase) {
+      await import('./firebase.js')
     }
     this.router = new Router(this)
-    this.drawerLayout.drawerOpen = false
   }
 
   render() {
@@ -113,6 +80,7 @@ export class PoHoShell extends LiteElement {
         </custom-selector>
 
         <custom-pages attr-for-selected="route">
+          <loading-view route="loading"> </loading-view>
           <login-view route="login"> </login-view>
           <sales-view route="sales"> </sales-view>
           <attendance-view route="attendance"> </attendance-view>

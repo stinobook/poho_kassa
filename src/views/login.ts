@@ -21,6 +21,8 @@ export class LoginView extends LiteElement {
   }
 
   async login() {
+    console.log('login')
+
     const email = this.email.value
     const password = this.password.value
     const auth = getAuth()
