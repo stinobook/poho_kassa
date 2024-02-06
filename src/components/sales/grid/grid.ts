@@ -32,10 +32,9 @@ export class SalesGrid extends LiteElement {
       :host {
         display: flex;
         width: 100%;
-        padding: 12px 24px;
+        padding: 12px;
         box-sizing: border-box;
         flex-direction: column;
-        padding-left: 12px;
       }
       md-text-button {
         height: 86.33px;
@@ -86,7 +85,12 @@ export class SalesGrid extends LiteElement {
                   <flex-row width="100%">
                     <custom-typography><h4>${category}</h4></custom-typography> </flex-row
                   ><flex-wrap-between>
-                    ${products.map((product) => html`<md-text-button @click=${() => addToReceipt(product.quickId)}> ${product.name}</md-text-button>`)}
+                    ${products.map(
+                      (product) =>
+                        html`<md-text-button @click=${() => addToReceipt(product.quickId)}>
+                          ${product.name}</md-text-button
+                        >`
+                    )}
                   </flex-wrap-between>
                 </flex-container>
               `
@@ -94,5 +98,4 @@ export class SalesGrid extends LiteElement {
         )
       : ''}`
   }
-
 }
