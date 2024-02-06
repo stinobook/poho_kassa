@@ -4,6 +4,7 @@ import '@material/web/list/list-item.js'
 import '@material/web/button/text-button.js'
 import '@vandeurenglenn/flex-elements/wrap-between.js'
 import { Product } from '../../../views/add-product.js'
+import { addToReceipt } from '../pad/receipt.js'
 
 export declare type ReceiptItem = { id: string; price: number; name: string; description?: string }
 
@@ -85,7 +86,7 @@ export class SalesGrid extends LiteElement {
                   <flex-row width="100%">
                     <custom-typography><h4>${category}</h4></custom-typography> </flex-row
                   ><flex-wrap-between>
-                    ${products.map((product) => html`<md-text-button> ${product.name}</md-text-button>`)}
+                    ${products.map((product) => html`<md-text-button @click=${() => addToReceipt(product.quickId)}> ${product.name}</md-text-button>`)}
                   </flex-wrap-between>
                 </flex-container>
               `
@@ -93,4 +94,5 @@ export class SalesGrid extends LiteElement {
         )
       : ''}`
   }
+
 }

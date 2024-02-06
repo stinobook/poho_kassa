@@ -1,11 +1,16 @@
 import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
+import { Product } from '../../../views/products.js'
 
-export declare type ReceiptItem = { id: string; price: number; name: string; description?: string; amount: Number }
+export declare type ReceiptItem = { id: string; price: number; name: string; vat?: Number; amount: Number }
+export declare type addToReceipt
 
 @customElement('sales-receipt')
 export class SalesReceipt extends LiteElement {
+  @property({ consumer: true })
+  products: { [index: string]: Product[] }
+
   static styles = [
     css`
       :host {
@@ -51,7 +56,7 @@ export class SalesReceipt extends LiteElement {
   ]
 
   @property({ type: Array })
-  items: ReceiptItem[] = [{ name: 'cola', id: '1', price: 1, amount: 1 }]
+  items: ReceiptItem[] = [{ name: 'cola', id: '1', price: 1, amount: 1, vat: 21 }]
 
   @property({ type: Number })
   total
@@ -83,7 +88,7 @@ export class SalesReceipt extends LiteElement {
                     currency: 'EUR'
                   })}
                 </flex-row>
-                ${item.description ? html`<small>${item.description}</small>` : ''}
+                ${item.vat ? html`<small>${item.vat}</small>` : ''}
               </flex-column>
             </li>
           `
@@ -99,5 +104,9 @@ export class SalesReceipt extends LiteElement {
         })}
       </flex-row>
     `
+  }
+
+  export function addToReceipt(productId: number) {
+console.log(productId)
   }
 }

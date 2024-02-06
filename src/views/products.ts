@@ -120,6 +120,7 @@ export class ProductsView extends LiteElement {
                 ([key, item]) => html`
                   <md-list-item>
                     <span slot="headline">${item.name}</span>
+                    <span slot="supporting-text">${item.vat}</span>
                     <flex-row slot="end">
                       <custom-icon-button icon="delete" target=${key} @click=${this.delete}></custom-icon-button>
 

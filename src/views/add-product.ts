@@ -19,6 +19,7 @@ export type Product = {
   vat: number
   price: number
   category: string
+  quickId: number
 }
 
 export type Products = Product[]
@@ -177,7 +178,7 @@ export class AddProductView extends LiteElement {
         <md-outlined-text-field label="quickId"></md-outlined-text-field>
         <md-outlined-text-field label="name"></md-outlined-text-field>
         <md-outlined-text-field label="price" type="number" placeholder="0"></md-outlined-text-field>
-        <md-outlined-text-field label="description" type="textarea"></md-outlined-text-field>
+        <md-outlined-text-field label="vat" type="number" placeholder="21"></md-outlined-text-field>
         <md-outlined-select label="category">
           ${this.categories
             ? map(
