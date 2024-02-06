@@ -74,6 +74,12 @@ export class SalesGrid extends LiteElement {
           width: calc(100% / 5 - 8px);
         }
       }
+
+      @media (max-width: 689px) {
+        :host {
+          padding: 0 12px;
+        }
+      }
     `
   ]
 

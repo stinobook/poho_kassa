@@ -22,10 +22,12 @@ export class SalesPad extends LitElement {
   static styles: CSSResult = css`
     :host {
       display: flex;
-      flex-direction: column;
-      max-width: 240px;
       width: 100%;
       height: 100%;
+      flex-direction: column;
+      max-width: 240px;
+      padding-right: 12px;
+      box-sizing: border-box;
 
       position: relative;
     }
@@ -38,7 +40,7 @@ export class SalesPad extends LitElement {
   render() {
     return html`
       <sales-receipt></sales-receipt>
-
+      <flex-it></flex-it>
       <sales-input></sales-input>
     `
   }

@@ -24,6 +24,7 @@ export default html`
       <span name="edit">@symbol-edit</span>
       <span name="save">@symbol-save</span>
       <span name="delete">@symbol-delete</span>
+      <span name="shopping_cart_checkout">@symbol-shopping_cart_checkout</span>
     </template>
   </custom-icon-set>
 `

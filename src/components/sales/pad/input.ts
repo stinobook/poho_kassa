@@ -25,6 +25,7 @@ export class SalesInput extends LitElement {
       height: 100%;
       max-height: 333px;
       width: 100%;
+      max-width: 228px;
       position: relative;
       background-color: var(--md-sys-color-surface-container-high);
       border-radius: var(--md-sys-shape-corner-extra-large);
