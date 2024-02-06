@@ -12,7 +12,7 @@ export class SalesView extends LiteElement {
         display: flex;
         flex-direction: row;
         box-sizing: border-box;
-        padding: 12px 24px;
+        padding: 12px 0 12px 24px;
       }
     `
   ]
@@ -24,4 +24,3 @@ export class SalesView extends LiteElement {
     `
   }
 }
-// <div id="itemGrid-cat">${prijslijst.filter(i => i.category === category )}</div>
