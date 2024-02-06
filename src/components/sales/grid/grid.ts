@@ -35,6 +35,7 @@ export class SalesGrid extends LiteElement {
         padding: 12px;
         box-sizing: border-box;
         flex-direction: column;
+        overflow-y: auto;
       }
       md-text-button {
         height: 86.33px;
