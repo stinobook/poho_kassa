@@ -44,7 +44,6 @@ export class SalesInput extends LitElement {
     .row-button {
       width: 100%;
       margin: 12px 12px 0 12px;
-      
     }
 
     md-outlined-button {
@@ -53,6 +52,11 @@ export class SalesInput extends LitElement {
     md-filled-text-field {
       --md-filled-text-field-container-shape-start-start: var(--md-sys-shape-corner-extra-large);
       --md-filled-text-field-container-shape-start-end: var(--md-sys-shape-corner-extra-large);
+    }
+    md-outlined-button,
+    md-filled-text-field,
+    md-filled-button {
+      pointer-events: auto;
     }
   `
 

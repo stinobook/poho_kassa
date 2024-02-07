@@ -11,16 +11,7 @@ import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import { get, ref, getDatabase, remove, child, onChildAdded, onChildRemoved } from 'firebase/database'
 import Router from '../routing.js'
-
-export type Product = {
-  name: string
-  vat: number
-  price: number
-  category: string
-  id: number
-}
-
-export type Products = Product[]
+import { Product } from '../types.js'
 
 @customElement('products-view')
 export class ProductsView extends LiteElement {
@@ -77,7 +68,7 @@ export class ProductsView extends LiteElement {
   }
 
   delete = (event: CustomEvent) => {
-    const paths = event.composedPath()
+    const paths = event.composedPath() as HTMLElement[]
     const target = paths[2].getAttribute('target')
     const dialog = document.querySelector('po-ho-shell').shadowRoot.querySelector('md-dialog')
     dialog.innerHTML = `
@@ -104,7 +95,7 @@ export class ProductsView extends LiteElement {
   }
 
   edit = (event: CustomEvent) => {
-    const paths = event.composedPath()
+    const paths = event.composedPath() as HTMLElement[]
 
     const target = paths[2].getAttribute('target')
     location.hash = Router.bang(`add-product?edit=${target}`)

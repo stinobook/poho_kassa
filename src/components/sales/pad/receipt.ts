@@ -1,11 +1,15 @@
 import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
-
-export declare type ReceiptItem = { id: string; price: number; name: string; vat?: Number; amount: Number }
+import type { Product, ReceiptItem } from '../../../types.js'
 
 @customElement('sales-receipt')
 export class SalesReceipt extends LiteElement {
+  @property({ type: Object })
+  items: { [key: string]: ReceiptItem } = {}
+
+  @property({ type: Number })
+  total: number
 
   static styles = [
     css`
@@ -51,44 +55,53 @@ export class SalesReceipt extends LiteElement {
     `
   ]
 
-  @property({ type: Array })
-  items: ReceiptItem[] = [{ name: 'cola', id: '1', price: 1, amount: 1, vat: 21 }]
-
-  @property({ type: Number })
-  total
-
   onChange(propertyKey) {
     if (propertyKey === 'items')
-      this.total = this.items.reduce((total, item) => {
+      this.total = Object.values(this.items).reduce((total: number, item: ReceiptItem) => {
         total += item.amount * item.price
         return total
       }, 0)
   }
 
+  addProduct = async (productKey: string) => {
+    console.log(productKey)
+
+    if (this.items[productKey]) this.items[productKey].amount += 1
+    else {
+      const product = (await firebase.get(`products/${productKey}`)) as Product
+      this.items[productKey] = { ...product, amount: 1 }
+    }
+    this.requestRender()
+  }
+
   render() {
+    console.log(this.items)
+
     return html`
       <custom-elevation level="1"></custom-elevation>
       <flex-container>
-        ${map(
-          this.items,
-          (item: ReceiptItem) => html`
-            <li>
-              <flex-column>
-                <flex-row center>
-                  ${item.name}
-                  <span>${item.amount} x</span>
-                  ${Number(item.price).toLocaleString(navigator.language, { style: 'currency', currency: 'EUR' })}
-                  <flex-it></flex-it>
-                  ${Number(item.price * item.amount).toLocaleString(navigator.language, {
-                    style: 'currency',
-                    currency: 'EUR'
-                  })}
-                </flex-row>
-                ${item.vat ? html`<small>${item.vat}</small>` : ''}
-              </flex-column>
-            </li>
-          `
-        )}
+        ${this.items
+          ? map(
+              Object.values(this.items),
+              (item: ReceiptItem) => html`
+                <li>
+                  <flex-column>
+                    <flex-row center>
+                      ${item.name}
+                      <span>${item.amount} x</span>
+                      ${Number(item.price).toLocaleString(navigator.language, { style: 'currency', currency: 'EUR' })}
+                      <flex-it></flex-it>
+                      ${Number(item.price * item.amount).toLocaleString(navigator.language, {
+                        style: 'currency',
+                        currency: 'EUR'
+                      })}
+                    </flex-row>
+                    ${item.vat ? html`<small>${item.vat}</small>` : ''}
+                  </flex-column>
+                </li>
+              `
+            )
+          : ''}
       </flex-container>
       <flex-it></flex-it>
       <flex-row center class="total">
@@ -101,10 +114,4 @@ export class SalesReceipt extends LiteElement {
       </flex-row>
     `
   }
-
-  export function addToReceipt(productId: number) {
-    const newItem = { name: 'cola', id: '1', price: 1, amount: 1, vat: 21 };
-    this.items = [...this.items, newItem];
-  }
-
 }

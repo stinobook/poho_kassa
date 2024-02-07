@@ -1,12 +1,9 @@
 import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@material/web/list/list-item.js'
-import '@material/web/button/text-button.js'
+import '@material/web/button/filled-button.js'
 import '@vandeurenglenn/flex-elements/wrap-between.js'
-import { Product } from '../../../views/add-product.js'
-import { addToReceipt } from '../pad/receipt.js'
-
-export declare type ReceiptItem = { id: string; price: number; name: string; description?: string }
+import { Product } from '../../../types.js'
 
 @customElement('sales-grid')
 export class SalesGrid extends LiteElement {
@@ -19,12 +16,21 @@ export class SalesGrid extends LiteElement {
         if (!set[item['category']]) set[item['category']] = []
         item['key'] = key
         set[item['category']].push(item)
-        console.log(set)
-
         return set
       }, {})
     }
     return value
+  }
+
+  connectedCallback() {
+    this.addEventListener('click', (event) => {
+      const paths = event.composedPath() as HTMLElement[]
+      const key = paths[3].getAttribute('key')
+      console.log({ key })
+      console.log(paths)
+
+      this.dispatchEvent(new CustomEvent('product-click', { detail: key }))
+    })
   }
 
   static styles = [
@@ -37,10 +43,13 @@ export class SalesGrid extends LiteElement {
         flex-direction: column;
         overflow-y: auto;
       }
-      md-text-button {
+      md-filled-button {
+        pointer-events: auto;
         height: 86.33px;
-        background: var(--md-sys-color-on-secondary);
-        color: var(--md-sys-color-on-secondary-container);
+        --md-filled-button-container-color: var(--md-sys-color-on-secondary);
+        --md-filled-button-label-text-color: var(--md-sys-color-on-secondary-container);
+        --md-filled-button-focus-label-text-color: var(--md-sys-color-on-secondary-container);
+        --md-filled-button-hover-label-text-color: var(--md-sys-color-on-secondary-container);
         margin: 4px;
         justify-content: between;
 
@@ -55,13 +64,13 @@ export class SalesGrid extends LiteElement {
       flex-container {
         max-width: -webkit-fill-available;
       }
-      flex-container:nth-child(even) md-text-button {
-        background: var(--md-sys-color-tertiary);
-        --md-text-button-label-text-color: var(--md-sys-color-on-tertiary);
-        --md-text-button-pressed-label-text: var(--md-sys-color-on-tertiary);
-        --md-text-button-hover-label-text-color: var(--md-sys-color-on-tertiary);
-        --md-text-button-focus-label-text-color: var(--md-sys-color-on-tertiary);
-        --md-text-button-pressed-label-text-color: var(--md-sys-color-on-tertiary);
+      flex-container:nth-child(even) md-filled-button {
+        --md-filled-button-container-color: var(--md-sys-color-tertiary);
+        --md-filled-button-label-text-color: var(--md-sys-color-on-tertiary);
+        --md-filled-button-pressed-label-text: var(--md-sys-color-on-tertiary);
+        --md-filled-button-hover-label-text-color: var(--md-sys-color-on-tertiary);
+        --md-filled-button-focus-label-text-color: var(--md-sys-color-on-tertiary);
+        --md-filled-button-pressed-label-text-color: var(--md-sys-color-on-tertiary);
         color: var(--md-sys-color-on-tertiary) !important;
       }
 
@@ -70,7 +79,7 @@ export class SalesGrid extends LiteElement {
       }
 
       @media (min-width: 1200px) {
-        md-text-button {
+        md-filled-button {
           width: calc(100% / 5 - 8px);
         }
       }
@@ -93,10 +102,7 @@ export class SalesGrid extends LiteElement {
                     <custom-typography><h4>${category}</h4></custom-typography> </flex-row
                   ><flex-wrap-between>
                     ${products.map(
-                      (product) =>
-                        html`<md-text-button @click=${() => addToReceipt(product.quickId)}>
-                          ${product.name}</md-text-button
-                        >`
+                      (product) => html`<md-filled-button key=${product.key}> ${product.name}</md-filled-button>`
                     )}
                   </flex-wrap-between>
                 </flex-container>

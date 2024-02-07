@@ -10,6 +10,10 @@ import '../components/sales/grid/grid.js'
 export class SalesView extends LiteElement {
   static styles = [
     css`
+      * {
+        pointer-events: none;
+        user-select: none;
+      }
       :host {
         display: flex;
         flex-direction: row;
@@ -62,15 +66,25 @@ export class SalesView extends LiteElement {
   @query('sales-pad')
   pad
 
+  @query('sales-grid')
+  grid
+
   togglePad = () => {
     if (this.classList.contains('shown')) this.classList.remove('shown')
     else this.pad.classList.add('shown')
   }
 
+  addProductToReceipt = (event) => {
+    console.log({ event })
+    console.log(this.pad)
+
+    this.pad.addProduct(event.detail)
+  }
+
   render() {
     return html`
       <sales-pad></sales-pad>
-      <sales-grid></sales-grid>
+      <sales-grid @product-click=${(event) => this.addProductToReceipt(event)}></sales-grid>
 
       <md-fab @click=${() => this.togglePad()}>
         <custom-icon icon="shopping_cart_checkout" slot="icon"></custom-icon>

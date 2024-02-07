@@ -16,6 +16,7 @@ import '@vandeurenglenn/lit-elements/card.js'
 import './receipt.js'
 import './input.js'
 import '@vandeurenglenn/flex-elements/wrap-evenly.js'
+import { query } from '@vandeurenglenn/lite'
 
 @customElement('sales-pad')
 export class SalesPad extends LitElement {
@@ -36,6 +37,13 @@ export class SalesPad extends LitElement {
       margin-bottom: 24px;
     }
   `
+
+  @query('sales-receipt')
+  receipt
+
+  addProduct(product) {
+    this.receipt.addProduct(product)
+  }
 
   render() {
     return html`
