@@ -51,7 +51,7 @@ export class SalesReceipt extends LiteElement {
     `
   ]
 
-  @property({ type: Array, consumer: true, provider: true})
+  @property({ type: Array })
   items: ReceiptItem[] = [{ name: 'cola', id: '1', price: 1, amount: 1, vat: 21 }]
 
   @property({ type: Number })
@@ -103,9 +103,8 @@ export class SalesReceipt extends LiteElement {
   }
 
   export function addToReceipt(productId: number) {
-
-    this.items = [...this.items,
-      {name: 'cola', id: productId, price: 1, amount: 1, vat: 21 }];
-
+    const newItem = { name: 'cola', id: '1', price: 1, amount: 1, vat: 21 };
+    this.items = [...this.items, newItem];
   }
+
 }
