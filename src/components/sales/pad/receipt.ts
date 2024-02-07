@@ -39,8 +39,8 @@ export class SalesReceipt extends LiteElement {
         width: 100%;
         border-radius: var(--md-sys-shape-corner-extra-large);
         box-sizing: border-box;
-        padding: 4px 12px;
-        margin-top: 14px;
+        padding: 6px 24px;
+        margin-top: 8px;
       }
 
       li span {
@@ -64,8 +64,6 @@ export class SalesReceipt extends LiteElement {
   }
 
   addProduct = async (productKey: string) => {
-    console.log(productKey)
-
     if (this.items[productKey]) this.items[productKey].amount += 1
     else {
       const product = (await firebase.get(`products/${productKey}`)) as Product
@@ -75,8 +73,6 @@ export class SalesReceipt extends LiteElement {
   }
 
   render() {
-    console.log(this.items)
-
     return html`
       <custom-elevation level="1"></custom-elevation>
       <flex-container>
@@ -88,15 +84,19 @@ export class SalesReceipt extends LiteElement {
                   <flex-column>
                     <flex-row center>
                       ${item.name}
+                      <flex-it></flex-it>
                       <span>${item.amount} x</span>
                       ${Number(item.price).toLocaleString(navigator.language, { style: 'currency', currency: 'EUR' })}
+                    </flex-row>
+                    <flex-row>
+                      ${item.vat ? html`<small>${item.vat}</small>` : ''}
+
                       <flex-it></flex-it>
                       ${Number(item.price * item.amount).toLocaleString(navigator.language, {
                         style: 'currency',
                         currency: 'EUR'
                       })}
                     </flex-row>
-                    ${item.vat ? html`<small>${item.vat}</small>` : ''}
                   </flex-column>
                 </li>
               `
