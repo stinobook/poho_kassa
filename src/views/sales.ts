@@ -62,11 +62,9 @@ export class SalesView extends LiteElement {
   @query('sales-pad')
   pad
 
-  showPad = () => {
-    console.log('show')
-    console.log(this)
-
-    this.pad.classList.add('shown')
+  togglePad = () => {
+    if (this.classList.contains('shown')) this.classList.remove('shown')
+    else this.pad.classList.add('shown')
   }
 
   render() {
@@ -74,7 +72,7 @@ export class SalesView extends LiteElement {
       <sales-pad></sales-pad>
       <sales-grid></sales-grid>
 
-      <md-fab @click=${() => this.showPad()}>
+      <md-fab @click=${() => this.togglePad()}>
         <custom-icon icon="shopping_cart_checkout" slot="icon"></custom-icon>
       </md-fab>
     `
