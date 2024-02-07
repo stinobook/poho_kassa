@@ -23,7 +23,7 @@ export class SalesInput extends LitElement {
       display: flex;
       flex-direction: column;
       height: 100%;
-      max-height: 333px;
+      max-height: 407px;
       width: 100%;
       max-width: 228px;
       position: relative;
@@ -41,6 +41,11 @@ export class SalesInput extends LitElement {
     .big-button {
       width: calc((100% / 2) + 24px);
     }
+    .row-button {
+      width: 100%;
+      margin: 12px 12px 0 12px;
+      
+    }
 
     md-outlined-button {
       margin-top: 12px;
@@ -56,6 +61,7 @@ export class SalesInput extends LitElement {
       <custom-elevation level="1"></custom-elevation>
       <md-filled-text-field label="Ontvangen" type="number" prefix-text="€"> </md-filled-text-field>
       <flex-wrap-evenly>
+        <md-filled-button class="row-button">Multiply</md-filled-button>
         <md-outlined-button>1</md-outlined-button>
         <md-outlined-button>2</md-outlined-button>
         <md-outlined-button>3</md-outlined-button>

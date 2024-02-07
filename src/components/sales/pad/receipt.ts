@@ -1,15 +1,11 @@
 import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
-import { Product } from '../../../views/products.js'
 
 export declare type ReceiptItem = { id: string; price: number; name: string; vat?: Number; amount: Number }
-export declare type addToReceipt
 
 @customElement('sales-receipt')
 export class SalesReceipt extends LiteElement {
-  @property({ consumer: true })
-  products: { [index: string]: Product[] }
 
   static styles = [
     css`
@@ -55,7 +51,7 @@ export class SalesReceipt extends LiteElement {
     `
   ]
 
-  @property({ type: Array })
+  @property({ type: Array, consumer: true, provider: true})
   items: ReceiptItem[] = [{ name: 'cola', id: '1', price: 1, amount: 1, vat: 21 }]
 
   @property({ type: Number })
@@ -107,6 +103,9 @@ export class SalesReceipt extends LiteElement {
   }
 
   export function addToReceipt(productId: number) {
-console.log(productId)
+
+    this.items = [...this.items,
+      {name: 'cola', id: productId, price: 1, amount: 1, vat: 21 }];
+
   }
 }
