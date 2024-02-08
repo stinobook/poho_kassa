@@ -72,7 +72,10 @@ export class SalesReceipt extends LiteElement {
       this.items[productKey] = { ...product, amount: 1 }
     }
     this.requestRender()
+    const scrollAnchor = document.querySelector("body > po-ho-shell").shadowRoot.querySelector("custom-drawer-layout > custom-pages > sales-view").shadowRoot.querySelector("sales-pad").shadowRoot.querySelector("sales-receipt").shadowRoot.querySelector("#scrollAnchor") as HTMLDivElement | null;
+    scrollAnchor.scrollIntoView({block: "nearest", inline: "nearest"});
   }
+
 
   render() {
     return html`
@@ -104,6 +107,7 @@ export class SalesReceipt extends LiteElement {
               `
             )
           : ''}
+      <div id="scrollAnchor"></div>
       </flex-container>
       <flex-it></flex-it>
       <flex-row center class="total">

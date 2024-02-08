@@ -47,7 +47,7 @@ export class LoadingView extends LiteElement {
   render() {
     return html`
       <h1>Loading...</h1>
-      <h3>hang on there!</h3>
+      <h3>hang in there!</h3>
       <div class="loader"></div>
     `
   }
