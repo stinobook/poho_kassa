@@ -1,4 +1,4 @@
-import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
+import { html, css, LiteElement, property, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
 import type { Product, ReceiptItem } from '../../../types.js'
@@ -10,6 +10,9 @@ export class SalesReceipt extends LiteElement {
 
   @property({ type: Number })
   total: number
+
+  @query('flex-container')
+  _container
 
   static styles = [
     css`
@@ -77,19 +80,22 @@ export class SalesReceipt extends LiteElement {
   }
 
   addProduct = async (productKey: string) => {
-    if (this.items[productKey]) this.items[productKey].amount += 1
-    else {
+    if (this.items[productKey]) {
+      this.items[productKey].amount += 1
+
+      await this.requestRender()
+      const index = Object.keys(this.items).indexOf(productKey)
+      this._container.scroll(0, index * 76)
+    } else {
       const product = (await firebase.get(`products/${productKey}`)) as Product
-      this.items[productKey] = { ...product, amount: 1 }
+      this.items[productKey] = { ...product, amount: 1, key: productKey }
+
+      await this.requestRender()
+      const index = Object.keys(this.items).indexOf(productKey)
+      this._container.scroll(0, index * (76 * 2))
     }
-    this.requestRender()
-    const scrollAnchor = document
-      .querySelector('body > po-ho-shell')
-      .shadowRoot.querySelector('custom-drawer-layout > custom-pages > sales-view')
-      .shadowRoot.querySelector('sales-pad')
-      .shadowRoot.querySelector('sales-receipt')
-      .shadowRoot.querySelector('#scrollAnchor') as HTMLDivElement | null
-    scrollAnchor.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+
+    // this.scrollIntoView()
   }
 
   render() {
@@ -100,7 +106,7 @@ export class SalesReceipt extends LiteElement {
           ? map(
               Object.values(this.items),
               (item: ReceiptItem) => html`
-                <li>
+                <li key=${item.key}>
                   <flex-column>
                     <flex-row center>
                       ${item.name}
@@ -126,7 +132,6 @@ export class SalesReceipt extends LiteElement {
               `
             )
           : ''}
-        <div id="scrollAnchor"></div>
       </flex-container>
       <flex-it></flex-it>
       <flex-row center class="total">
