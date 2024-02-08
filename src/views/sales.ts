@@ -10,7 +10,6 @@ import '../components/sales/grid/grid.js'
 export class SalesView extends LiteElement {
   static styles = [
     css`
-      }
       :host {
         display: flex;
         flex-direction: row;

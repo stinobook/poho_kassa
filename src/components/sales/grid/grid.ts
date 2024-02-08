@@ -28,8 +28,9 @@ export class SalesGrid extends LiteElement {
       const key = paths[3].getAttribute('key')
       console.log({ key })
       console.log(paths)
-
+      if ( key != null ) {
       this.dispatchEvent(new CustomEvent('product-click', { detail: key }))
+      }
     })
   }
 

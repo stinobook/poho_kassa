@@ -20,22 +20,15 @@ export class SalesReceipt extends LiteElement {
         width: 100%;
         height: 100%;
         max-height: calc(100% - 407px);
-        overflow-y: auto;
         position: relative;
         border-radius: var(--md-sys-shape-corner-extra-large);
-        overflow-anchor: none;
       }
-
-      #anchor {
-        overflow-anchor: auto;
-        height: 1px;
-      }
-      
       flex-container {
         min-width: 0;
         height: fit-content;
         position: relative;
         overflow: hidden;
+        overflow-y: auto;
       }
       flex-row,
       flex-column {
@@ -111,7 +104,6 @@ export class SalesReceipt extends LiteElement {
               `
             )
           : ''}
-          <div id="receiptAnchor"></div>
       </flex-container>
       <flex-it></flex-it>
       <flex-row center class="total">
