@@ -23,6 +23,17 @@ export class SalesReceipt extends LiteElement {
         position: relative;
         border-radius: var(--md-sys-shape-corner-extra-large);
       }
+
+      ::-webkit-scrollbar {
+        width: 8px;
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        background-color: var(--md-sys-color-surface-container-highest);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--md-sys-color-on-surface-container-highest);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.5) inset;
+      }
       flex-container {
         min-width: 0;
         height: fit-content;
@@ -72,10 +83,14 @@ export class SalesReceipt extends LiteElement {
       this.items[productKey] = { ...product, amount: 1 }
     }
     this.requestRender()
-    const scrollAnchor = document.querySelector("body > po-ho-shell").shadowRoot.querySelector("custom-drawer-layout > custom-pages > sales-view").shadowRoot.querySelector("sales-pad").shadowRoot.querySelector("sales-receipt").shadowRoot.querySelector("#scrollAnchor") as HTMLDivElement | null;
-    scrollAnchor.scrollIntoView({block: "nearest", inline: "nearest"});
+    const scrollAnchor = document
+      .querySelector('body > po-ho-shell')
+      .shadowRoot.querySelector('custom-drawer-layout > custom-pages > sales-view')
+      .shadowRoot.querySelector('sales-pad')
+      .shadowRoot.querySelector('sales-receipt')
+      .shadowRoot.querySelector('#scrollAnchor') as HTMLDivElement | null
+    scrollAnchor.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   }
-
 
   render() {
     return html`
@@ -90,7 +105,12 @@ export class SalesReceipt extends LiteElement {
                     <flex-row center>
                       ${item.name}
                       <flex-it></flex-it>
-                      <small>${Number(item.price).toLocaleString(navigator.language, { style: 'currency', currency: 'EUR' })}</small>
+                      <small
+                        >${Number(item.price).toLocaleString(navigator.language, {
+                          style: 'currency',
+                          currency: 'EUR'
+                        })}</small
+                      >
                     </flex-row>
                     <flex-row>
                       ${item.amount ? html`<span>x ${item.amount}</span>` : ''}
@@ -106,7 +126,7 @@ export class SalesReceipt extends LiteElement {
               `
             )
           : ''}
-      <div id="scrollAnchor"></div>
+        <div id="scrollAnchor"></div>
       </flex-container>
       <flex-it></flex-it>
       <flex-row center class="total">
