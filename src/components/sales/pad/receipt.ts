@@ -9,7 +9,7 @@ export class SalesReceipt extends LiteElement {
   items: { [key: string]: ReceiptItem } = {}
 
   @property({ type: Number })
-  total: number
+  total: number = 0
 
   @query('flex-container')
   _container
@@ -70,30 +70,21 @@ export class SalesReceipt extends LiteElement {
       }
     `
   ]
-
-  onChange(propertyKey) {
-    if (propertyKey === 'items')
-      this.total = Object.values(this.items).reduce((total: number, item: ReceiptItem) => {
-        total += item.amount * item.price
-        return total
-      }, 0)
-  }
-
   addProduct = async (productKey: string) => {
     if (this.items[productKey]) {
       this.items[productKey].amount += 1
-
-      await this.requestRender()
+      this.total += Number(this.items[productKey].price)
       const index = Object.keys(this.items).indexOf(productKey)
       this._container.scroll(0, index * 76)
     } else {
       const product = (await firebase.get(`products/${productKey}`)) as Product
       this.items[productKey] = { ...product, amount: 1, key: productKey }
 
-      await this.requestRender()
+      this.total += Number(product.price)
       const index = Object.keys(this.items).indexOf(productKey)
       this._container.scroll(0, index * (76 * 2))
     }
+    this.requestRender()
 
     // this.scrollIntoView()
   }
