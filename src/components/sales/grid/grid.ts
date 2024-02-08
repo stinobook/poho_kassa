@@ -25,11 +25,9 @@ export class SalesGrid extends LiteElement {
   connectedCallback() {
     this.addEventListener('click', (event) => {
       const paths = event.composedPath() as HTMLElement[]
-      const key = paths[3].getAttribute('key')
-      console.log({ key })
-      console.log(paths)
-      if ( key != null ) {
-      this.dispatchEvent(new CustomEvent('product-click', { detail: key }))
+      const key = paths[2]?.hasAttribute ? paths[2].getAttribute('key') : paths[3].getAttribute('key')
+      if (key != null) {
+        this.dispatchEvent(new CustomEvent('product-click', { detail: key }))
       }
     })
   }
