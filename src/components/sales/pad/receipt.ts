@@ -75,16 +75,17 @@ export class SalesReceipt extends LiteElement {
       this.items[productKey].amount += 1
       this.total += Number(this.items[productKey].price)
       const index = Object.keys(this.items).indexOf(productKey)
+      this.requestRender()
       this._container.scroll(0, index * 76)
     } else {
       const product = (await firebase.get(`products/${productKey}`)) as Product
       this.items[productKey] = { ...product, amount: 1, key: productKey }
-
+      this.requestRender()
       this.total += Number(product.price)
-      const index = Object.keys(this.items).indexOf(productKey)
-      this._container.scroll(0, index * (76 * 2))
+      requestAnimationFrame(() => {
+        this._container.scroll(0, this._container.scrollHeight)
+      })
     }
-    this.requestRender()
 
     // this.scrollIntoView()
   }
