@@ -90,11 +90,10 @@ export class SalesReceipt extends LiteElement {
                     <flex-row center>
                       ${item.name}
                       <flex-it></flex-it>
-                      <span>${item.amount} x</span>
-                      ${Number(item.price).toLocaleString(navigator.language, { style: 'currency', currency: 'EUR' })}
+                      <small>${Number(item.price).toLocaleString(navigator.language, { style: 'currency', currency: 'EUR' })}</small>
                     </flex-row>
                     <flex-row>
-                      ${item.vat ? html`<small>${item.vat}</small>` : ''}
+                      ${item.amount ? html`<span>x ${item.amount}</span>` : ''}
 
                       <flex-it></flex-it>
                       ${Number(item.price * item.amount).toLocaleString(navigator.language, {
