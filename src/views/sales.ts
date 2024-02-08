@@ -10,9 +10,6 @@ import '../components/sales/grid/grid.js'
 export class SalesView extends LiteElement {
   static styles = [
     css`
-      * {
-        pointer-events: none;
-        user-select: none;
       }
       :host {
         display: flex;
