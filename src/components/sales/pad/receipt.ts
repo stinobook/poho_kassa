@@ -22,7 +22,7 @@ export class SalesReceipt extends LiteElement {
         max-width: 255px;
         width: 100%;
         height: 100%;
-        max-height: calc(100% - 262px);
+        max-height: calc(100% - 274px);
         position: relative;
         border-radius: var(--md-sys-shape-corner-extra-large);
       }
@@ -72,7 +72,6 @@ export class SalesReceipt extends LiteElement {
   ]
   addProduct = async (productKey: string, amount: number) => {
     if (this.items[productKey]) {
-      console.log(amount)
       if (amount == undefined) {
       this.items[productKey].amount += 1
       this.total += Number(this.items[productKey].price)
@@ -133,7 +132,7 @@ export class SalesReceipt extends LiteElement {
       </flex-container>
       <flex-it></flex-it>
       <flex-row center class="total">
-        <strong>Total:</strong>
+        <strong>Totaal:</strong>
         <flex-it></flex-it>
         ${Number(this.total).toLocaleString(navigator.language, {
           style: 'currency',
