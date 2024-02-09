@@ -41,13 +41,14 @@ export class SalesPad extends LitElement {
   @query('sales-receipt')
   receipt
 
+ 
   addProduct(product) {
+    this.currentSelectedProduct = product
     this.receipt.addProduct(product)
   }
 
-
-  inputTap = (event) => {
-    console.log({event})
+  inputTap({detail}: CustomEvent) {
+    this.receipt.addProduct(this.currentSelectedProduct, detail)
   }
 
   render() {

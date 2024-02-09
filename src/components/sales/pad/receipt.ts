@@ -70,10 +70,16 @@ export class SalesReceipt extends LiteElement {
       }
     `
   ]
-  addProduct = async (productKey: string) => {
+  addProduct = async (productKey: string, amount: number) => {
     if (this.items[productKey]) {
+      console.log(amount)
+      if (amount == undefined) {
       this.items[productKey].amount += 1
       this.total += Number(this.items[productKey].price)
+      } else {
+        this.items[productKey].amount += Number(amount) -1
+        this.total += Number(this.items[productKey].price * (amount - 1))
+      }
       const index = Object.keys(this.items).indexOf(productKey)
       this.requestRender()
       this._container.scroll(0, index * 76)

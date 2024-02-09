@@ -32,7 +32,7 @@ export class SalesInput extends LiteElement {
       display: flex;
       flex-direction: column;
       height: 100%;
-      max-height: 262px;
+      max-height: 274px;
       width: 100%;
       max-width: 228px;
       position: relative;
@@ -42,6 +42,7 @@ export class SalesInput extends LiteElement {
       background-color: var(--md-sys-color-surface-container-high);
       border-radius: var(--md-sys-shape-corner-extra-large);
       padding: 6px 0;
+      margin-bottom: 12px;
     }
     flex-row {
       margin-top: 12px;
