@@ -1,4 +1,4 @@
-import { html, css, LitElement, CSSResult } from 'lit'
+import { html, css, LiteElement } from '@vandeurenglenn/lite'
 import { customElement, property } from 'lit/decorators.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
@@ -17,13 +17,23 @@ import './receipt.js'
 import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 
 @customElement('sales-input')
-export class SalesInput extends LitElement {
-  static styles: CSSResult = css`
+export class SalesInput extends LiteElement {
+
+  connectedCallback() {
+    this.addEventListener('click', (event) => {
+      const paths = event.composedPath() as HTMLElement[]
+      const inputNumber = paths[2]?.hasAttribute ? paths[2].getAttribute('inputNumber') : paths[3].getAttribute('inputNumber')
+        this.dispatchEvent(new CustomEvent('input-click', { detail: inputNumber }))
+    })
+  }
+
+  static styles = [
+    css`
     :host {
       display: flex;
       flex-direction: column;
       height: 100%;
-      max-height: 407px;
+      max-height: 333px;
       width: 100%;
       max-width: 228px;
       position: relative;
@@ -41,10 +51,6 @@ export class SalesInput extends LitElement {
     .big-button {
       width: calc((100% / 2) + 24px);
     }
-    .row-button {
-      width: 100%;
-      margin: 12px 12px 0 12px;
-    }
 
     md-outlined-button {
       margin-top: 12px;
@@ -59,24 +65,24 @@ export class SalesInput extends LitElement {
       pointer-events: auto;
     }
   `
+  ]
 
   render() {
     return html`
       <custom-elevation level="1"></custom-elevation>
-      <md-filled-text-field label="Ontvangen" type="number" prefix-text="€"> </md-filled-text-field>
+      <md-filled-text-field id="inputSales" label="Input" type="number" prefix-text=""> </md-filled-text-field>
       <flex-wrap-evenly>
-        <md-filled-button class="row-button">Multiply</md-filled-button>
-        <md-outlined-button>1</md-outlined-button>
-        <md-outlined-button>2</md-outlined-button>
-        <md-outlined-button>3</md-outlined-button>
-        <md-outlined-button>4</md-outlined-button>
-        <md-outlined-button>5</md-outlined-button>
-        <md-outlined-button>6</md-outlined-button>
-        <md-outlined-button>7</md-outlined-button>
-        <md-outlined-button>8</md-outlined-button>
-        <md-outlined-button>9</md-outlined-button>
-        <md-outlined-button class="big-button">0</md-outlined-button>
-        <md-outlined-button>.</md-outlined-button>
+        <md-outlined-button inputNumber="1">1</md-outlined-button>
+        <md-outlined-button inputNumber="2">2</md-outlined-button>
+        <md-outlined-button inputNumber="3">3</md-outlined-button>
+        <md-outlined-button inputNumber="4">4</md-outlined-button>
+        <md-outlined-button inputNumber="5">5</md-outlined-button>
+        <md-outlined-button inputNumber="6">6</md-outlined-button>
+        <md-outlined-button inputNumber="7">7</md-outlined-button>
+        <md-outlined-button inputNumber="8">8</md-outlined-button>
+        <md-outlined-button inputNumber="9">9</md-outlined-button>
+        <md-outlined-button inputNumber="0" class="big-button">0</md-outlined-button>
+        <md-outlined-button inputNumber=".">.</md-outlined-button>
         <flex-row>
           <md-filled-button>Cash</md-filled-button>
           <flex-it></flex-it>
@@ -85,4 +91,6 @@ export class SalesInput extends LitElement {
       </flex-wrap-evenly>
     `
   }
+
+
 }
