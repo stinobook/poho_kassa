@@ -14,15 +14,21 @@ export class SalesReceipt extends LiteElement {
   @query('flex-container')
   _container
 
+  #lastSelected
+
   static styles = [
     css`
+      * {
+        pointer-events: none;
+      }
       :host {
+        pointer-events: none;
         display: flex;
         flex-direction: column;
         max-width: 255px;
         width: 100%;
         height: 100%;
-        max-height: calc(100% - 274px);
+        max-height: calc(100% - 354px);
         position: relative;
         border-radius: var(--md-sys-shape-corner-extra-large);
       }
@@ -39,7 +45,7 @@ export class SalesReceipt extends LiteElement {
       }
       flex-container {
         min-width: 0;
-        height: fit-content;
+        height: -webkit-fill-available;
         position: relative;
         overflow: hidden;
         overflow-y: auto;
@@ -49,17 +55,26 @@ export class SalesReceipt extends LiteElement {
         width: 100%;
       }
 
-      li {
+      button {
+        pointer-events: auto;
+        position: relative;
+        background: transparent;
+        color: inherit;
+        border: none;
         display: flex;
-        background-color: var(--md-sys-color-surface-container-high);
         width: 100%;
         border-radius: var(--md-sys-shape-corner-extra-large);
         box-sizing: border-box;
         padding: 6px 24px;
         margin-top: 8px;
+        cursor: pointer;
       }
 
-      li span {
+      button:hover {
+        --md-elevation-level: 2;
+      }
+
+      button span {
         margin-left: 4px;
         margin-right: 4px;
       }
@@ -68,9 +83,16 @@ export class SalesReceipt extends LiteElement {
         box-sizing: border-box;
         padding: 12px 24px;
       }
+
+      button[active] {
+        background-color: var(--md-sys-color-surface-container-high);
+        --md-elevation-level: 3;
+      }
     `
   ]
   addProduct = async (productKey: string, amount: number = 1) => {
+    amount = Number(amount)
+    this.#lastSelected = productKey
     if (this.items[productKey]) {
       this.total -= this.items[productKey].price * this.items[productKey].amount
       this.items[productKey].amount = amount
@@ -92,6 +114,15 @@ export class SalesReceipt extends LiteElement {
     // this.scrollIntoView()
   }
 
+  connectedCallback() {
+    this.addEventListener('click', (event) => {
+      const paths = event.composedPath() as HTMLElement[]
+      this.#lastSelected = paths[0].getAttribute('key')
+      this.requestRender()
+      this.dispatchEvent(new CustomEvent('selection', { detail: this.#lastSelected }))
+    })
+  }
+
   render() {
     return html`
       <custom-elevation level="1"></custom-elevation>
@@ -100,7 +131,9 @@ export class SalesReceipt extends LiteElement {
           ? map(
               Object.values(this.items),
               (item: ReceiptItem) => html`
-                <li key=${item.key}>
+                <button key=${item.key} ?active=${item.key === this.#lastSelected}>
+                  <md-ripple></md-ripple>
+                  <custom-elevation></custom-elevation>
                   <flex-column>
                     <flex-row center>
                       ${item.name}
@@ -122,7 +155,7 @@ export class SalesReceipt extends LiteElement {
                       })}
                     </flex-row>
                   </flex-column>
-                </li>
+                </button>
               `
             )
           : ''}
