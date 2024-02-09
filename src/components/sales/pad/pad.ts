@@ -78,7 +78,11 @@ export class SalesPad extends LitElement {
       default:
         if (this.currentSelectedProduct) {
           this.currentProductAmount += detail
-          this.receipt.addProduct(this.currentSelectedProduct, this.currentProductAmount)
+          if (this.currentProductAmount !== '0') {
+            this.receipt.addProduct(this.currentSelectedProduct, this.currentProductAmount)
+          } else {
+            this.receipt.removeProduct(this.currentSelectedProduct)
+          }
         }
 
         break

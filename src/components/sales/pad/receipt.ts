@@ -90,6 +90,18 @@ export class SalesReceipt extends LiteElement {
       }
     `
   ]
+
+  removeProduct = (productKey) => {
+    if (!this.items[productKey]) return
+    const amount = this.items[productKey].amount
+    const price = this.items[productKey].price
+    this.total -= price * amount
+    delete this.items[productKey]
+    const keys = Object.keys(this.items)
+    this.#lastSelected = keys[keys.length - 1]
+    this.requestRender()
+  }
+
   addProduct = async (productKey: string, amount: number = 1) => {
     amount = Number(amount)
     this.#lastSelected = productKey
