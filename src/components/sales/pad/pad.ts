@@ -45,11 +45,16 @@ export class SalesPad extends LitElement {
     this.receipt.addProduct(product)
   }
 
+
+  inputTap = (event) => {
+    console.log({event})
+  }
+
   render() {
     return html`
       <sales-receipt></sales-receipt>
       <flex-it></flex-it>
-      <sales-input></sales-input>
+      <sales-input @input-click=${(event) => this.inputTap(event)}></sales-input>
     `
   }
 }

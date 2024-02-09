@@ -22,7 +22,7 @@ export class SalesReceipt extends LiteElement {
         max-width: 255px;
         width: 100%;
         height: 100%;
-        max-height: calc(100% - 333px);
+        max-height: calc(100% - 262px);
         position: relative;
         border-radius: var(--md-sys-shape-corner-extra-large);
       }

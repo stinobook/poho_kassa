@@ -4,7 +4,6 @@ import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import '@material/web/button/filled-button.js'
 import '@material/web/button/outlined-button.js'
-import '@material/web/textfield/filled-text-field.js'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/lit-elements/tabs.js'
@@ -22,8 +21,8 @@ export class SalesInput extends LiteElement {
   connectedCallback() {
     this.addEventListener('click', (event) => {
       const paths = event.composedPath() as HTMLElement[]
-      const inputNumber = paths[2]?.hasAttribute ? paths[2].getAttribute('inputNumber') : paths[3].getAttribute('inputNumber')
-        this.dispatchEvent(new CustomEvent('input-click', { detail: inputNumber }))
+      const inputDetail = paths[2]?.hasAttribute ? paths[2].getAttribute('input-tap') : paths[3].getAttribute('input-tap')
+        this.dispatchEvent(new CustomEvent('input-click', { detail: inputDetail }))
     })
   }
 
@@ -33,12 +32,16 @@ export class SalesInput extends LiteElement {
       display: flex;
       flex-direction: column;
       height: 100%;
-      max-height: 333px;
+      max-height: 262px;
       width: 100%;
       max-width: 228px;
       position: relative;
+      border-radius: var(--md-sys-shape-corner-extra-large);
+    }
+    flex-wrap-evenly {
       background-color: var(--md-sys-color-surface-container-high);
       border-radius: var(--md-sys-shape-corner-extra-large);
+      padding: 6px 0;
     }
     flex-row {
       margin-top: 12px;
@@ -53,14 +56,11 @@ export class SalesInput extends LiteElement {
     }
 
     md-outlined-button {
-      margin-top: 12px;
-    }
-    md-filled-text-field {
-      --md-filled-text-field-container-shape-start-start: var(--md-sys-shape-corner-extra-large);
-      --md-filled-text-field-container-shape-start-end: var(--md-sys-shape-corner-extra-large);
+      margin-top: 6px;
+      height: 50px;
+      margin-bottom: 6px;
     }
     md-outlined-button,
-    md-filled-text-field,
     md-filled-button {
       pointer-events: auto;
     }
@@ -70,25 +70,22 @@ export class SalesInput extends LiteElement {
   render() {
     return html`
       <custom-elevation level="1"></custom-elevation>
-      <md-filled-text-field id="inputSales" label="Input" type="number" prefix-text=""> </md-filled-text-field>
       <flex-wrap-evenly>
-        <md-outlined-button inputNumber="1">1</md-outlined-button>
-        <md-outlined-button inputNumber="2">2</md-outlined-button>
-        <md-outlined-button inputNumber="3">3</md-outlined-button>
-        <md-outlined-button inputNumber="4">4</md-outlined-button>
-        <md-outlined-button inputNumber="5">5</md-outlined-button>
-        <md-outlined-button inputNumber="6">6</md-outlined-button>
-        <md-outlined-button inputNumber="7">7</md-outlined-button>
-        <md-outlined-button inputNumber="8">8</md-outlined-button>
-        <md-outlined-button inputNumber="9">9</md-outlined-button>
-        <md-outlined-button inputNumber="0" class="big-button">0</md-outlined-button>
-        <md-outlined-button inputNumber=".">.</md-outlined-button>
-        <flex-row>
-          <md-filled-button>Cash</md-filled-button>
-          <flex-it></flex-it>
-          <md-filled-button>Payconiq</md-filled-button>
-        </flex-row>
+        <md-outlined-button input-tap="1">1</md-outlined-button>
+        <md-outlined-button input-tap="2">2</md-outlined-button>
+        <md-outlined-button input-tap="3">3</md-outlined-button>
+        <md-outlined-button input-tap="4">4</md-outlined-button>
+        <md-outlined-button input-tap="5">5</md-outlined-button>
+        <md-outlined-button input-tap="6">6</md-outlined-button>
+        <md-outlined-button input-tap="7">7</md-outlined-button>
+        <md-outlined-button input-tap="8">8</md-outlined-button>
+        <md-outlined-button input-tap="9">9</md-outlined-button>
       </flex-wrap-evenly>
+      <flex-row>
+      <md-filled-button input-tap="cash">Cash</md-filled-button>
+      <flex-it></flex-it>
+      <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
+    </flex-row>
     `
   }
 

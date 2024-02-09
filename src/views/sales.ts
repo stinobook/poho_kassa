@@ -88,14 +88,9 @@ export class SalesView extends LiteElement {
     this.pad.addProduct(event.detail)
   }
 
-  inputTap = (event) => {
-
-    console.log({event})
-  }
-  
   render() {
     return html`
-      <sales-pad @input-click=${(event) => this.inputTap(event)}></sales-pad>
+      <sales-pad></sales-pad>
       <sales-grid @product-click=${(event) => this.addProductToReceipt(event)}></sales-grid>
 
       <md-fab @click=${() => this.togglePad()}>
