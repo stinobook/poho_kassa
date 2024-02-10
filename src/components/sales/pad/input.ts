@@ -18,12 +18,9 @@ import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 @customElement('sales-input')
 export class SalesInput extends LiteElement {
   connectedCallback() {
-    this.addEventListener('click', (event) => {
-      const paths = event.composedPath() as HTMLElement[]
-      const inputDetail = paths[2]?.hasAttribute
-        ? paths[2].getAttribute('input-tap')
-        : paths[3].getAttribute('input-tap')
-      this.dispatchEvent(new CustomEvent('input-click', { detail: inputDetail }))
+    this.shadowRoot.addEventListener('click', ({ target }: CustomEvent) => {
+      // @ts-ignore
+      this.dispatchEvent(new CustomEvent('input-click', { detail: target.getAttribute('input-tap') }))
     })
   }
 

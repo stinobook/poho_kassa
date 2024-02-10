@@ -82,9 +82,6 @@ export class SalesView extends LiteElement {
   }
 
   addProductToReceipt = (event) => {
-    console.log({ event })
-    console.log(this.pad)
-
     this.pad.addProduct(event.detail)
   }
 
