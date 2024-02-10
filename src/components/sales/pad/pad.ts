@@ -44,10 +44,11 @@ export class SalesPad extends LitElement {
   receipt
 
   addProduct(product) {
-    this.currentProductAmount = ''
     this.currentSelectedProduct = product
-    const amount = this.receipt.items[product] ? this.receipt.items[product].amount : 0
-    this.receipt.addProduct(product, amount + 1)
+    const amount = this.receipt.items[product] ? this.receipt.items[product].amount : 1
+
+    this.currentProductAmount = ''
+    this.receipt.addProduct(product, amount)
   }
 
   onReceiptSelection({ detail }: CustomEvent) {
@@ -56,6 +57,8 @@ export class SalesPad extends LitElement {
   }
 
   inputTap({ detail }: CustomEvent) {
+    console.log(detail)
+
     switch (detail) {
       case 'cash':
       case 'payconiq':
@@ -81,9 +84,11 @@ export class SalesPad extends LitElement {
           if (this.currentProductAmount !== '0') {
             this.receipt.addProduct(this.currentSelectedProduct, this.currentProductAmount)
           } else {
-            this.currentProductAmount = ''
-            this.currentSelectedProduct = undefined
             this.receipt.removeProduct(this.currentSelectedProduct)
+            this.currentProductAmount = ''
+
+            const keys = Object.keys(this.receipt.items)
+            this.currentSelectedProduct = keys[keys.length - 1]
           }
         }
 
