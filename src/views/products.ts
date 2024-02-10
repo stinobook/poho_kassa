@@ -15,7 +15,7 @@ import { Product } from '../types.js'
 
 @customElement('products-view')
 export class ProductsView extends LiteElement {
-  @property({ type: Object, consumer: true, provider: true })
+  @property({ type: Object, consumer: true })
   products: { [index: string]: Product }
 
   #ref = ref(getDatabase(), 'products')
