@@ -66,6 +66,7 @@ export class SalesPad extends LitElement {
         if (this.receipt.items[this.currentSelectedProduct]) {
           const amount = Number(this.receipt.items[this.currentSelectedProduct].amount) + Number(detail)
           this.receipt.addProduct(this.currentSelectedProduct, amount)
+          this.currentProductAmount = ''
         }
         break
       case 'E':
