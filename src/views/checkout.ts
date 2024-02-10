@@ -1,5 +1,5 @@
-import { html, css, LiteElement } from '@vandeurenglenn/lite'
-import { customElement, property } from 'lit/decorators.js'
+import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
+import { customElement } from 'lit/decorators.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import '@vandeurenglenn/flex-elements/row.js'
@@ -10,9 +10,6 @@ import '@vandeurenglenn/flex-elements/column.js'
 export class CheckoutView extends LiteElement {
   static styles = [
     css`
-      * {
-        pointer-events: none;
-      }
       :host {
         pointer-events: none;
         display: flex;
@@ -37,27 +34,32 @@ export class CheckoutView extends LiteElement {
       }
       flex-container {
         min-width: 0;
+        width: 100%;
         height: -webkit-fill-available;
         position: relative;
         overflow: hidden;
         overflow-y: auto;
       }
-      flex-row,
       flex-column {
-        width: 100%;
+        width: 50%;
       }
       `
     ]
 
-  @property({ type: Array })
-  muntEenheid = ['€100', '€50', '€20', '€10', '€5', '€2', '€1', '€0.50', '€0.20', '€0.10']
-
   render() {
     return html`
       <flex-container>
-        <flex-column>
+        <flex-column width="30%">
           <md-list>
-            ${this.muntEenheid.map((waarde) => html`<md-list-item><span slot="headline">${waarde}</span></md-list-item>`)}
+          <md-list-item>&euro;</md-list-item>
+          <md-list-item>&euro;</md-list-item>
+          <md-list-item>&euro;</md-list-item>
+          <md-list-item>&euro;</md-list-item>
+          <md-list-item>&euro;</md-list-item>
+          <md-list-item>&euro;</md-list-item>
+          <md-list-item>&euro;</md-list-item>
+          <md-list-item>&euro;</md-list-item>
+          <md-list-item>&euro;</md-list-item>
           </md-list>
         </flex-column>
         <flex-column>
@@ -81,8 +83,15 @@ export class CheckoutView extends LiteElement {
           <md-list>
             <md-list-item>(Winkel/lidgeld) Payconiq</md-list-item>
             <md-divider></md-divider>
-            <md-list-item></md-list-item>
-            <md-list-item></md-list-item>
+            <md-list-item>Zwan 3&euro;</md-list-item>
+            <md-list-item>
+              <div slot="headline">Lidgeld 120&euro;</div>
+              <div slot="supporting-text">Mary Jane met Robin</div>
+            </md-list-item>
+            <md-list-item>
+              <div slot="headline">Extra lid 10&euro;</div>
+              <div slot="supporting-text">Peter Parker</div>
+            </md-list-item>
             <md-list-item></md-list-item>
           </md-list>
           </flex-row>
