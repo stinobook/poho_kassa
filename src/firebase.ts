@@ -2,7 +2,16 @@
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
 import { getAuth } from 'firebase/auth'
-import { get as _get, push as _push, set as _set, remove as _remove, getDatabase, ref } from 'firebase/database'
+import {
+  get as _get,
+  push as _push,
+  set as _set,
+  remove as _remove,
+  getDatabase,
+  ref,
+  onChildAdded as _onChildAdded,
+  onChildRemoved as _onChildRemoved
+} from 'firebase/database'
 import Router from './routing.js'
 
 const firebaseConfig = {
@@ -55,7 +64,12 @@ await auth.authStateReady()
 if (!auth.currentUser) {
   location.hash = Router.bang('login')
 }
-
+const onChildAdded = (target, cb) => {
+  _onChildAdded(ref(database, target), cb)
+}
+const onChildRemoved = (target, cb) => {
+  _onChildRemoved(ref(database, target), cb)
+}
 const _firebase = {
   get,
   push,
@@ -63,7 +77,9 @@ const _firebase = {
   remove,
   auth,
   login,
-  logout
+  logout,
+  onChildAdded,
+  onChildRemoved
 }
 
 globalThis.firebase = _firebase

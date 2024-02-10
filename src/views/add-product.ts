@@ -8,6 +8,7 @@ import '@vandeurenglenn/lit-elements/divider.js'
 import '@vandeurenglenn/lit-elements/icon-button.js'
 import '@material/web/fab/fab.js'
 import '@material/web/select/outlined-select.js'
+import '@material/web/textfield/outlined-text-field.js'
 import '@material/web/select/select-option.js'
 import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
 import Router from '../routing.js'
@@ -35,8 +36,8 @@ export class AddProductView extends LiteElement {
   @property({ type: Object })
   params
 
-  @property({ type: Array })
-  categories: string[] = []
+  @property({ type: Array, consumer: true })
+  categories: string[]
 
   @query('md-outlined-select')
   select
@@ -82,6 +83,7 @@ export class AddProductView extends LiteElement {
       // @ts-ignore
       category.selectItem(category.options[0])
     }
+    this.requestRender()
   }
 
   async onChange(propertyKey, value) {
@@ -97,8 +99,6 @@ export class AddProductView extends LiteElement {
 
   async connectedCallback(): Promise<void> {
     const _ref = ref(getDatabase(), 'categories')
-    const categories = await (await get(_ref)).val()
-    this.categories = categories ? categories : []
     const productsRef = ref(getDatabase(), 'products')
     const quickIdEl = this.shadowRoot.querySelector('[label="quickId"]') as MdFilledTextField
     quickIdEl.value = String((await get(productsRef)).size)

@@ -10,7 +10,8 @@ import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import '@material/web/fab/fab.js'
 import '@material/web/dialog/dialog.js'
-import { get, ref, set, getDatabase, onChildAdded, query, onChildMoved, onChildRemoved } from 'firebase/database'
+import '@material/web/button/outlined-button.js'
+import { ref, set, getDatabase } from 'firebase/database'
 export type Product = {
   name: string
   vat: number
@@ -22,32 +23,13 @@ export type Products = Product[]
 
 @customElement('categories-view')
 export class CategoriesView extends LiteElement {
-  @property({ type: Array })
-  categories: string[] = []
+  @property({ type: Array, consumer: true })
+  categories: string[]
 
   @property()
   targetEdit
 
   #ref = ref(getDatabase(), 'categories')
-
-  async connectedCallback(): Promise<void> {
-    const categories = await (await get(this.#ref)).val()
-    this.categories = categories ? categories : []
-    onChildAdded(this.#ref, async (snap) => {
-      const val = await snap.val()
-      if (!this.categories.includes(val)) {
-        this.categories.push(val)
-        this.requestRender()
-      }
-    })
-    onChildRemoved(this.#ref, async (snap) => {
-      const val = await snap.val()
-      if (this.categories.includes(val)) {
-        this.categories.splice(this.categories.indexOf(val))
-        this.requestRender()
-      }
-    })
-  }
 
   static styles = [
     css`
@@ -92,7 +74,7 @@ export class CategoriesView extends LiteElement {
   save = async () => {
     const field = this.shadowRoot.querySelector('md-outlined-text-field').value
     if (!field) return
-    this.categories.splice(this.targetEdit)
+    this.categories.splice(this.categories.indexOf(this.targetEdit), 1)
     if (!this.categories.includes(field)) {
       this.categories.push(field)
       await set(this.#ref, this.categories)

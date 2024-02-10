@@ -10,6 +10,7 @@ import Router from './routing.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
 // import default page
 import './views/loading.js'
+import { onChildAdded, onChildRemoved } from 'firebase/database'
 
 @customElement('po-ho-shell')
 export class PoHoShell extends LiteElement {
@@ -31,6 +32,9 @@ export class PoHoShell extends LiteElement {
   @property({ provider: true })
   products
 
+  @property({ provider: true })
+  categories
+
   @query('custom-drawer-layout')
   drawerLayout: CustomDrawerLayout
 
@@ -41,6 +45,35 @@ export class PoHoShell extends LiteElement {
     if (selected === 'products' || selected === 'sales') {
       const products = await firebase.get('products')
       this.products = products
+
+      firebase.onChildAdded('products', async (snap) => {
+        const val = await snap.val()
+        if (!this.products.includes(val)) {
+          this.products.push(val)
+        }
+      })
+      firebase.onChildRemoved('products', async (snap) => {
+        const val = await snap.val()
+        if (this.products.includes(val)) {
+          this.products.splice(this.products.indexOf(val))
+        }
+      })
+    } else if (selected === 'add-product' || selected === 'categories') {
+      const categories = await firebase.get('categories')
+      this.categories = categories
+
+      firebase.onChildAdded('categories', async (snap) => {
+        const val = await snap.val()
+        if (!this.categories.includes(val)) {
+          this.categories.push(val)
+        }
+      })
+      firebase.onChildRemoved('categories', async (snap) => {
+        const val = await snap.val()
+        if (this.categories.includes(val)) {
+          this.categories.splice(this.categories.indexOf(val))
+        }
+      })
     }
   }
 
