@@ -85,9 +85,6 @@ export class SalesPad extends LitElement {
             this.currentProductAmount = ''
             this.currentSelectedProduct = undefined
             this.receipt.removeProduct(this.currentSelectedProduct)
-            const keys = Object.keys(this.receipt.items)
-            this.currentSelectedProduct = keys[keys.length - 1]
-            this.currentProductAmount = ''
           }
         }
 
