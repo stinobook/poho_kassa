@@ -82,6 +82,8 @@ export class SalesPad extends LitElement {
           if (this.currentProductAmount !== '0') {
             this.receipt.addProduct(this.currentSelectedProduct, this.currentProductAmount)
           } else {
+            this.currentProductAmount = ''
+            this.currentSelectedProduct = undefined
             this.receipt.removeProduct(this.currentSelectedProduct)
             const keys = Object.keys(this.receipt.items)
             this.currentSelectedProduct = keys[keys.length - 1]
