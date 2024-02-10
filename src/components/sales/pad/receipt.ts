@@ -127,7 +127,7 @@ export class SalesReceipt extends LiteElement {
   }
 
   connectedCallback() {
-    this.addEventListener('click', (event) => {
+    this.shadowRoot.addEventListener('click', (event) => {
       const paths = event.composedPath() as HTMLElement[]
       this.#lastSelected = paths[0].getAttribute('key')
       this.requestRender()
