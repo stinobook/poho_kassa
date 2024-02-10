@@ -26,6 +26,9 @@ export class SalesInput extends LiteElement {
 
   static styles = [
     css`
+      * {
+        pointer-events: none;
+      }
       :host {
         display: flex;
         flex-direction: column;
