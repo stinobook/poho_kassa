@@ -154,8 +154,7 @@ export class SalesReceipt extends LiteElement {
                         >${Number(item.price).toLocaleString(navigator.language, {
                           style: 'currency',
                           currency: 'EUR'
-                        })}</small
-                      >
+                        })}</small>
                     </flex-row>
                     <flex-row>
                       ${item.amount ? html`<span>x ${item.amount}</span>` : ''}

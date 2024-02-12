@@ -2,22 +2,25 @@ import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
+import '@material/web/textfield/filled-text-field.js'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
+import { Currency } from 'firebase/analytics'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
+  @property()
+  totaal: Currency = 0;
+
   static styles = [
     css`
       :host {
         pointer-events: none;
         display: flex;
-        flex-direction: column;
-        max-width: 255px;
+        flex-direction: row;
         width: 100%;
         height: 100%;
-        max-height: calc(100% - 354px);
         position: relative;
         border-radius: var(--md-sys-shape-corner-extra-large);
       }
@@ -33,37 +36,86 @@ export class CheckoutView extends LiteElement {
         box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.5) inset;
       }
       flex-container {
-        min-width: 0;
-        width: 100%;
+        min-width: 100%;
         height: -webkit-fill-available;
+        width: -webkit-fill-available;
         position: relative;
+        flex-direction: row;
         overflow: hidden;
         overflow-y: auto;
       }
-      flex-column {
-        width: 50%;
+      .cashtelling {
+        max-width: 300px;
+      }
+      .variasales {
+        width: -webkit-fill-available;
+      }
+      .cashtelling md-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+      .cashtelling md-list-item {
+        width: 24%
+      }
+      .cashtelling md-filled-text-field {
+        width: 74%
+      }
+      .total {
+        box-sizing: border-box;
+        padding: 12px 24px;
+        width: 100%;
       }
       `
     ]
+  connectedCallback() {
+    this.shadowRoot.addEventListener('input', ({ target }: CustomEvent) => {
+      // @ts-ignore
+      this.dispatchEvent(new CustomEvent('input-cash', { detail: target.getAttribute('input-cash') }))
+      console.log(target)
+    })
+  }
+
+  inputCash({detail}: CustomEvent) {
+
+    console.log(detail)
+  }
+
 
   render() {
     return html`
       <flex-container>
-        <flex-column width="30%">
+        <flex-column class="cashtelling">
           <md-list>
-          <md-list-item>&euro;</md-list-item>
-          <md-list-item>&euro;</md-list-item>
-          <md-list-item>&euro;</md-list-item>
-          <md-list-item>&euro;</md-list-item>
-          <md-list-item>&euro;</md-list-item>
-          <md-list-item>&euro;</md-list-item>
-          <md-list-item>&euro;</md-list-item>
-          <md-list-item>&euro;</md-list-item>
-          <md-list-item>&euro;</md-list-item>
+          <md-list-item>&euro;100</md-list-item><md-filled-text-field value="0" input-cash="100"></md-filled-text-field>
+          <md-list-item>&euro;50</md-list-item><md-filled-text-field value="0" input-cash="50"></md-filled-text-field>
+          <md-list-item>&euro;20</md-list-item><md-filled-text-field value="0" input-cash="20"></md-filled-text-field>
+          <md-list-item>&euro;10</md-list-item><md-filled-text-field value="0" input-cash="10"></md-filled-text-field>
+          <md-list-item>&euro;5</md-list-item><md-filled-text-field value="0" input-cash="5"></md-filled-text-field>
+          <md-list-item>&euro;2</md-list-item><md-filled-text-field value="0" input-cash="2"></md-filled-text-field>
+          <md-list-item>&euro;1</md-list-item><md-filled-text-field value="0" input-cash="1"></md-filled-text-field>
+          <md-list-item>&euro;0.5</md-list-item><md-filled-text-field value="0" input-cash="0.5"></md-filled-text-field>
+          <md-list-item>&euro;0.2</md-list-item><md-filled-text-field value="0" input-cash="0.2"></md-filled-text-field>
+          <md-list-item>&euro;0.1</md-list-item><md-filled-text-field value="0" input-cash="0.1"></md-filled-text-field>
           </md-list>
+          <flex-row center class="total">
+            <strong>Totaal:</strong>
+            <flex-it></flex-it>
+            0&euro;
+          </flex-row>
+          <flex-row center class="total">
+            <strong>Overdracht:</strong>
+            <flex-it></flex-it>
+            0&euro;
+          </flex-row>
+          <flex-row center class="total">
+            <strong>Startgeld:</strong>
+            <flex-it></flex-it>
+            0&euro;
+          </flex-row>
         </flex-column>
-        <flex-column>
-          <flex-row>
+        <flex-column class="variasales">
+          <flex-column>
           <md-list>
             <md-list-item>(Winkel/lidgeld) Cash</md-list-item>
             <md-divider></md-divider>
@@ -78,8 +130,8 @@ export class CheckoutView extends LiteElement {
             </md-list-item>
             <md-list-item></md-list-item>
           </md-list>
-          </flex-row>
-          <flex-row>
+          </flex-column>
+          <flex-column>
           <md-list>
             <md-list-item>(Winkel/lidgeld) Payconiq</md-list-item>
             <md-divider></md-divider>
@@ -94,7 +146,7 @@ export class CheckoutView extends LiteElement {
             </md-list-item>
             <md-list-item></md-list-item>
           </md-list>
-          </flex-row>
+          </flex-column>
         </flex-column>
       </flex-container>
     `
