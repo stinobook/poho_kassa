@@ -56,15 +56,21 @@ export class CheckoutView extends LiteElement {
         width: 100%;
       }
       .cashtelling md-list-item {
-        width: 24%
+        width: 30%
       }
       .cashtelling md-filled-text-field {
-        width: 74%
+        width: 69%
       }
       .total {
         box-sizing: border-box;
         padding: 12px 24px;
         width: 100%;
+      }
+      md-list {
+        width: 100%;
+      }
+      md-list-item {
+        border-bottom: 1px solid rgba(255,255,255,0.1);
       }
       `
     ]
@@ -94,12 +100,23 @@ export class CheckoutView extends LiteElement {
           <md-list-item>&euro;5</md-list-item><md-filled-text-field value="0" input-cash="5"></md-filled-text-field>
           <md-list-item>&euro;2</md-list-item><md-filled-text-field value="0" input-cash="2"></md-filled-text-field>
           <md-list-item>&euro;1</md-list-item><md-filled-text-field value="0" input-cash="1"></md-filled-text-field>
-          <md-list-item>&euro;0.5</md-list-item><md-filled-text-field value="0" input-cash="0.5"></md-filled-text-field>
-          <md-list-item>&euro;0.2</md-list-item><md-filled-text-field value="0" input-cash="0.2"></md-filled-text-field>
-          <md-list-item>&euro;0.1</md-list-item><md-filled-text-field value="0" input-cash="0.1"></md-filled-text-field>
+          <md-list-item>&euro;0.50</md-list-item><md-filled-text-field value="0" input-cash="0.50"></md-filled-text-field>
+          <md-list-item>&euro;0.20</md-list-item><md-filled-text-field value="0" input-cash="0.20"></md-filled-text-field>
+          <md-list-item>&euro;0.10</md-list-item><md-filled-text-field value="0" input-cash="0.10"></md-filled-text-field>
+          <md-list-item>&euro;0.05</md-list-item><md-filled-text-field value="0" input-cash="0.05"></md-filled-text-field>
           </md-list>
           <flex-row center class="total">
             <strong>Totaal:</strong>
+            <flex-it></flex-it>
+            0&euro;
+          </flex-row>
+          <flex-row center class="total">
+            <strong>Verwacht:</strong>
+            <flex-it></flex-it>
+            0&euro;
+          </flex-row>
+          <flex-row center class="total">
+            <strong>Verschil:</strong>
             <flex-it></flex-it>
             0&euro;
           </flex-row>
@@ -117,35 +134,71 @@ export class CheckoutView extends LiteElement {
         <flex-column class="variasales">
           <flex-column>
           <md-list>
-            <md-list-item>(Winkel/lidgeld) Cash</md-list-item>
+            <md-list-item>Winkel</md-list-item>
             <md-divider></md-divider>
-            <md-list-item>Zwan 3&euro;</md-list-item>
             <md-list-item>
-              <div slot="headline">Lidgeld 120&euro;</div>
-              <div slot="supporting-text">John Doe met Rocky</div>
-            </md-list-item>
-            <md-list-item>
-              <div slot="headline">Extra lid 10&euro;</div>
-              <div slot="supporting-text">Jane Doe</div>
-            </md-list-item>
-            <md-list-item></md-list-item>
+              <span slot="start">Zwan</span>
+              <span slot="end">3&euro;</span>
+              <span slot="trailing-supporting-text">Payconiq</span>
+           </md-list-item>
+           <md-list-item>
+             <span slot="start">Groot been</span>
+             <span slot="end">3&euro;</span>
+             <span slot="trailing-supporting-text">Payconiq</span>
+          </md-list-item>
+          <md-list-item>
+            <span slot="start">Klein been</span>
+            <span slot="end">3&euro;</span>
+            <span slot="trailing-supporting-text">Cash</span>
+         </md-list-item>
+         <md-list-item>
+           <span slot="start">Rodiworst</span>
+           <span slot="end">3&euro;</span>
+           <span slot="trailing-supporting-text">Cash</span>
+        </md-list-item>
           </md-list>
+          <flex-row center class="total">
+          <strong>Totaal:</strong>
+          <flex-it></flex-it>
+          <span style="margin-right: 14px">Cash: 0&euro;</span>
+          <span>Payconiq: 0&euro;</span>
+        </flex-row>
           </flex-column>
           <flex-column>
           <md-list>
-            <md-list-item>(Winkel/lidgeld) Payconiq</md-list-item>
+            <md-list-item>Lidgeld</md-list-item>
             <md-divider></md-divider>
-            <md-list-item>Zwan 3&euro;</md-list-item>
             <md-list-item>
-              <div slot="headline">Lidgeld 120&euro;</div>
-              <div slot="supporting-text">Mary Jane met Robin</div>
+              <span slot="headline">Lidgeld</span>
+              <span slot="supporting-text">Mary Jane met Robin</span>
+              <span slot="end">120&euro;</span>
+              <span slot="trailing-supporting-text">Payconiq</span>
             </md-list-item>
             <md-list-item>
-              <div slot="headline">Extra lid 10&euro;</div>
-              <div slot="supporting-text">Peter Parker</div>
+              <span slot="headline">Extra lid</span>
+              <span slot="supporting-text">Peter Parker</span>
+              <span slot="end">10&euro;</span>
+              <span slot="trailing-supporting-text">Payconiq</span>
             </md-list-item>
-            <md-list-item></md-list-item>
+            <md-list-item>
+              <span slot="headline">Lidgeld</span>
+              <span slot="supporting-text">Carmen Waterslaeghers met Nero</span>
+              <span slot="end">120&euro;</span>
+              <span slot="trailing-supporting-text">Cash</span>
+            </md-list-item>
+            <md-list-item>
+              <span slot="headline">Extra lid</span>
+              <span slot="supporting-text">Xavier Waterslaeghers</span>
+              <span slot="end">10&euro;</span>
+              <span slot="trailing-supporting-text">Cash</span>
+            </md-list-item>
           </md-list>
+          <flex-row center class="total">
+          <strong>Totaal:</strong>
+          <flex-it></flex-it>
+          <span style="margin-right: 14px">Cash: 0&euro;</span>
+          <span>Payconiq: 0&euro;</span>
+        </flex-row>
           </flex-column>
         </flex-column>
       </flex-container>

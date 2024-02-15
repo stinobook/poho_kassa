@@ -46,7 +46,6 @@ export class SalesPad extends LitElement {
   addProduct(product) {
     this.currentSelectedProduct = product
     const amount = this.receipt.items[product] ? this.receipt.items[product].amount + 1 : 1
-    console.log(amount)
     this.receipt.addProduct(product, amount)
     this.currentProductAmount = ''
   }
