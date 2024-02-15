@@ -94,7 +94,7 @@ export class SalesInput extends LiteElement {
         <md-outlined-button input-tap="+1"><custom-typography>+1</custom-typography></md-outlined-button>
         <md-outlined-button input-tap="0">0</md-outlined-button>
 
-        <md-outlined-button input-tap="E">E</md-outlined-button>
+        <md-outlined-button input-tap="R">R</md-outlined-button>
       </flex-wrap-evenly>
       <flex-row center>
         <custom-elevation level="2"></custom-elevation>

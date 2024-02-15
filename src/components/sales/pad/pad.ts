@@ -44,10 +44,10 @@ export class SalesPad extends LitElement {
   receipt
 
   addProduct(product) {
+    let amount = this.receipt.items[product] ? this.receipt.items[product].amount + 1 : 1
     this.currentSelectedProduct = product
-    const amount = this.receipt.items[product] ? this.receipt.items[product].amount + 1 : 1
-    this.receipt.addProduct(product, amount)
     this.currentProductAmount = ''
+    this.receipt.addProduct(product, amount)
   }
 
   onReceiptSelection({ detail }: CustomEvent) {
@@ -66,13 +66,21 @@ export class SalesPad extends LitElement {
         break
       case '+1':
         if (this.receipt.items[this.currentSelectedProduct]) {
-          const amount = Number(this.receipt.items[this.currentSelectedProduct].amount) + Number(detail)
+          let amount
+          if (this.currentProductAmount.length > 0) {
+            amount = Number(this.currentProductAmount) + Number(detail)
+
+            this.currentProductAmount = String(amount)
+          } else {
+            amount = Number(this.receipt.items[this.currentSelectedProduct].amount) + Number(detail)
+          }
           this.receipt.addProduct(this.currentSelectedProduct, amount)
         }
         break
-      case 'E':
-        if (this.receipt.items[this.currentSelectedProduct] && this.currentProductAmount.length > 0) {
-          this.receipt.addProduct(this.currentSelectedProduct, this.currentProductAmount)
+      case 'R':
+        if (this.receipt.items[this.currentSelectedProduct]) {
+          this.currentProductAmount = ''
+          this.receipt.addProduct(this.currentSelectedProduct, 1)
         }
         this.currentProductAmount = ''
         break
