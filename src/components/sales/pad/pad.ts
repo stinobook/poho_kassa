@@ -1,4 +1,4 @@
-import { html, css, LitElement, CSSResult } from 'lit'
+import { html, css, LiteElement } from '@vandeurenglenn/lite'
 import { customElement, property } from 'lit/decorators.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
@@ -13,17 +13,18 @@ import '@vandeurenglenn/lit-elements/divider.js'
 import '@vandeurenglenn/lit-elements/icon-button.js'
 import '@vandeurenglenn/lit-elements/button.js'
 import '@vandeurenglenn/lit-elements/card.js'
+import '@vandeurenglenn/lit-elements/dialog.js'
 import './receipt.js'
 import './input.js'
 import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 import { query } from '@vandeurenglenn/lite'
-import '@material/web/dialog/dialog.js'
 
 @customElement('sales-pad')
-export class SalesPad extends LitElement {
+export class SalesPad extends LiteElement {
   currentSelectedProduct: string
   currentProductAmount: string = ''
-  static styles: CSSResult = css`
+  static styles = [
+   css`
     :host {
       display: flex;
       width: 100%;
@@ -39,6 +40,7 @@ export class SalesPad extends LitElement {
       margin-bottom: 24px;
     }
   `
+  ]
 
   @query('sales-receipt')
   receipt
@@ -60,6 +62,9 @@ export class SalesPad extends LitElement {
 
     switch (detail) {
       case 'cash':
+        let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
+        dialogCash.open = true
+        break
       case 'payconiq':
         let popupCash = this.shadowRoot.querySelector('#popupcash') as HTMLDialogElement
         popupCash.open = true
@@ -103,23 +108,35 @@ export class SalesPad extends LitElement {
     }
   }
 
+  connectedCallback() {
+    let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
+    dialogCash.addEventListener('close', (event) => {
+      this.cashWrite({event})
+    })
+  }
+
+  cashWrite({ event }) {
+    console.log(event.detail)
+  }
+
+
   render() {
     return html`
       <sales-receipt @selection=${(event) => this.onReceiptSelection(event)}></sales-receipt>
       <flex-it></flex-it>
       <sales-input @input-click=${(event) => this.inputTap(event)}></sales-input>
-      <md-dialog id="popupcash">
-        <div slot="headline">Cash Ontvangst</div>
-        <form slot="content" id="form-id" method="dialog">
-          <md-filled-button form="form-id" value="50">&euro;50</md-filled-button>
-          <md-filled-button form="form-id" value="20">&euro;20</md-filled-button>
-          <md-filled-button form="form-id" value="10">&euro;10</md-filled-button>
-          <md-filled-button form="form-id" value="5">&euro;5</md-filled-button>
-        </form>
-        <div slot="actions">
-          <md-outlined-button form="form-id" value="">Gepast</md-outlined-button>
-        </div>
-      </md-dialog>
+      <flex-container style='z-index:1000'>
+              <custom-dialog class="dialogCash" has-actions="" has-header="">
+                <span slot="title">Cash Ontvangst</span>
+                <flex-row slot="actions" direction="row">
+                <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
+                <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
+                <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
+                <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
+                <custom-button label="Gepast" action="gepast" has-label="">Gepast</custom-button>
+                </flex-row>
+              </custom-dialog>
+      <flex-container>
     `
   }
 }
