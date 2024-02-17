@@ -112,7 +112,7 @@ export class SalesReceipt extends LiteElement {
       this.total = 0
       this.textTotalorChange = 'Totaal'
     }
-    if (this.items[productKey]) {
+    if (this.items[productKey] && !this.items[productKey].description) {
       this.total -= this.items[productKey].price * this.items[productKey].amount
       this.items[productKey].amount = amount
       this.total += this.items[productKey].price * amount
@@ -122,7 +122,10 @@ export class SalesReceipt extends LiteElement {
       this._container.scroll(0, index * 76)
     } else {
       const product = (await firebase.get(`products/${productKey}`)) as Product
-      this.items[productKey] = { ...product, amount, key: productKey }
+      if ( product.description ) {
+        product.description = prompt("Input")
+      }
+      this.items[productKey] = { ...product, amount, key: productKey}
       this.requestRender()
       this.total += product.price * amount
       requestAnimationFrame(() => {
