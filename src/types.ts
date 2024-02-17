@@ -3,7 +3,6 @@ export type Product = {
   vat: number
   price: number
   category: string
-  id: string
   key: string
   description?: string
 }
@@ -19,7 +18,6 @@ export type Transactions = Transactions[]
 export interface Transaction {
   key?: string;
   paymentMethod: 'cash' | 'payconiq';
-  transactionItems: { 
-    transactionItem: ReceiptItem[] 
-  }
+  paymentAmount: number;
+  transactionItems: ReceiptItem[] 
 }

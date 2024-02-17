@@ -10,26 +10,18 @@ import '@material/web/fab/fab.js'
 import '@material/web/select/outlined-select.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@material/web/select/select-option.js'
+import '@material/web/checkbox/checkbox.js'
 import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
 import Router from '../routing.js'
 import { queryAll } from '@vandeurenglenn/lite/query-all'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
-export type Product = {
-  name: string
-  vat: number
-  price: number
-  category: string
-  quickId: number
-}
+import { Product } from '../types.js'
 
 export type Products = Product[]
 
 @customElement('add-product-view')
 export class AddProductView extends LiteElement {
-  @property({ type: Number })
-  quickId: Number
-
   @state()
   category
 
@@ -55,7 +47,7 @@ export class AddProductView extends LiteElement {
 
   reset() {
     this.params = undefined
-    for (const label of this.labels.filter((item) => item.label !== 'category' && item.label !== 'quickId')) {
+    for (const label of this.labels.filter((item) => item.label !== 'category')) {
       label.reset()
       if (label.placeholder) {
         label.value = label.placeholder
@@ -100,8 +92,6 @@ export class AddProductView extends LiteElement {
   async connectedCallback(): Promise<void> {
     const _ref = ref(getDatabase(), 'categories')
     const productsRef = ref(getDatabase(), 'products')
-    const quickIdEl = this.shadowRoot.querySelector('[label="quickId"]') as MdFilledTextField
-    quickIdEl.value = String((await get(productsRef)).size)
     const category = this.shadowRoot.querySelector(`[label="category"]`) as MdOutlinedSelect
     if (!category.value) {
       // @ts-ignore
@@ -126,12 +116,15 @@ export class AddProductView extends LiteElement {
   save = async () => {
     const productsRef = await ref(getDatabase(), 'products')
     const product = {}
-
+    const descriptBox = this.shadowRoot.querySelector("#description") as HTMLInputElement
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
     for (const field of fields) {
       if (field.value) product[field.label] = field.value
     }
     product['category'] = this.shadowRoot.querySelector('md-outlined-select').value
+   if (descriptBox.checked){
+    product['description'] = 'needsExtra' 
+  }
     if (this.editing) {
       set(child(productsRef, this.params.edit), product)
       this.params = undefined
@@ -152,7 +145,8 @@ export class AddProductView extends LiteElement {
         height: 100%;
       }
       md-outlined-text-field,
-      md-outlined-select {
+      md-outlined-select,
+      label {
         margin-top: 16px;
         width: 100%;
       }
@@ -160,6 +154,9 @@ export class AddProductView extends LiteElement {
         position: absolute;
         right: 24px;
         bottom: 24px;
+      }
+      md-checkbox {
+        margin-right: 12px;
       }
 
       .back {
@@ -175,10 +172,9 @@ export class AddProductView extends LiteElement {
     return html`
       <flex-container>
         <md-fab @click=${this.back} class="back"><custom-icon slot="icon" icon="arrow_back"></custom-icon></md-fab>
-        <md-outlined-text-field label="quickId"></md-outlined-text-field>
         <md-outlined-text-field label="name"></md-outlined-text-field>
         <md-outlined-text-field label="price" type="number" placeholder="0"></md-outlined-text-field>
-        <md-outlined-text-field label="vat" type="number" placeholder="21"></md-outlined-text-field>
+        <md-outlined-text-field label="vat" type="number" placeholder="0"></md-outlined-text-field>
         <md-outlined-select label="category">
           ${this.categories
             ? map(
@@ -188,6 +184,8 @@ export class AddProductView extends LiteElement {
               )
             : ''}
         </md-outlined-select>
+        <label><md-checkbox id="description"></md-checkbox>Extra gegevens nodig?</label>
+
       </flex-container>
       <md-fab @click=${this.save}><custom-icon slot="icon">save</custom-icon></md-fab>
     `

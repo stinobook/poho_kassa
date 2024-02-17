@@ -19,7 +19,7 @@ import './input.js'
 import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 import { query } from '@vandeurenglenn/lite'
 import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
-import { Transactions, Transaction } from '../../../types.js'
+import { Transactions, Transaction, ReceiptItem } from '../../../types.js'
 
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
@@ -133,22 +133,24 @@ export class SalesPad extends LiteElement {
 
   writeTransaction({ event }) {
 
-    const transactions = ref(getDatabase(), 'transactions')
+    const transactionsDB = ref(getDatabase(), 'transactions')
     let cashChange = event.detail
     let total = this.receipt.total
     if (cashChange === 'exact') { cashChange = total }
+    if (cashChange < total) {
+      alert('Te laag bedrag!')
+    } else {
     cashChange -= Number(total)
     this.receipt.total = cashChange
     this.receipt.textTotalorChange = 'Wisselgeld'
     let transaction: Transaction = {
       paymentMethod: 'cash',
-      transactionItems: {
-        transactionItem: this.receipt.items
-      }
+      paymentAmount: total,
+      transactionItems: this.receipt.items
     }
-    console.log(transaction)
-    push(transactions, transaction)
+    push(transactionsDB, transaction)
     this.receipt.items = {}
+    }
   }
 
 
@@ -161,7 +163,12 @@ export class SalesPad extends LiteElement {
       <custom-dialog class="dialogCash" has-actions="" has-header="">
         <span slot="title">Cash Ontvangst</span>
         <flex-row slot="actions" direction="row">
+        <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
+        <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
+        <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>
         <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
+        </flex-row>
+        <flex-row slot="actions" direction="row">
         <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
         <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
         <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
