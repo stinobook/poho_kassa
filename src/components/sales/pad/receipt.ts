@@ -11,6 +11,9 @@ export class SalesReceipt extends LiteElement {
   @property({ type: Number })
   total: number = 0
 
+  @property({ type: String })
+  textTotalorChange: string = 'Totaal'
+
   @query('flex-container')
   _container
 
@@ -105,6 +108,10 @@ export class SalesReceipt extends LiteElement {
   addProduct = async (productKey: string, amount: number = 1) => {
     amount = Number(amount)
     this.#lastSelected = productKey
+    if (this.textTotalorChange === 'Wisselgeld' ) {
+      this.total = 0
+      this.textTotalorChange = 'Totaal'
+    }
     if (this.items[productKey]) {
       this.total -= this.items[productKey].price * this.items[productKey].amount
       this.items[productKey].amount = amount
@@ -173,7 +180,7 @@ export class SalesReceipt extends LiteElement {
       </flex-container>
       <flex-it></flex-it>
       <flex-row center class="total">
-        <strong>Totaal:</strong>
+        <strong >${this.textTotalorChange}:</strong>
         <flex-it></flex-it>
         ${Number(this.total).toLocaleString(navigator.language, {
           style: 'currency',

@@ -21,6 +21,7 @@ import { query } from '@vandeurenglenn/lite'
 
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
+
   currentSelectedProduct: string
   currentProductAmount: string = ''
   static styles = [
@@ -38,6 +39,9 @@ export class SalesPad extends LiteElement {
 
     sales-receipt {
       margin-bottom: 24px;
+    }
+    .payment-modal {
+      z-index: 1000;
     }
   `
   ]
@@ -62,13 +66,23 @@ export class SalesPad extends LiteElement {
 
     switch (detail) {
       case 'cash':
+        if (this.receipt.textTotalorChange === 'Wisselgeld') { 
+          alert('Nothing to sell') 
+          break 
+        } else {
         let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
         dialogCash.open = true
         break
+        }
       case 'payconiq':
-        let popupCash = this.shadowRoot.querySelector('#popupcash') as HTMLDialogElement
-        popupCash.open = true
+        if (this.receipt.textTotalorChange === 'Wisselgeld') { 
+          alert('Nothing to sell') 
+          break 
+        } else {
+        let dialogPayconiq = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
+        dialogPayconiq.open = true
         break
+        }
       case '+1':
         if (this.receipt.items[this.currentSelectedProduct]) {
           let amount
@@ -111,12 +125,19 @@ export class SalesPad extends LiteElement {
   connectedCallback() {
     let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
     dialogCash.addEventListener('close', (event) => {
-      this.cashWrite({event})
+      this.writeTransaction({event})
     })
   }
 
-  cashWrite({ event }) {
-    console.log(event.detail)
+  writeTransaction({ event }) {
+    let cashChange = event.detail
+    let total = this.receipt.total
+    if (cashChange === 'exact') { cashChange = total }
+    cashChange -= Number(total)
+    this.receipt.total = cashChange
+    this.receipt.textTotalorChange = 'Wisselgeld'
+    firebase.set('transactions', this.receipt.items)
+    this.receipt.items = {}
   }
 
 
@@ -125,17 +146,23 @@ export class SalesPad extends LiteElement {
       <sales-receipt @selection=${(event) => this.onReceiptSelection(event)}></sales-receipt>
       <flex-it></flex-it>
       <sales-input @input-click=${(event) => this.inputTap(event)}></sales-input>
-      <flex-container style='z-index:1000'>
-              <custom-dialog class="dialogCash" has-actions="" has-header="">
-                <span slot="title">Cash Ontvangst</span>
-                <flex-row slot="actions" direction="row">
-                <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
-                <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
-                <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
-                <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
-                <custom-button label="Gepast" action="gepast" has-label="">Gepast</custom-button>
-                </flex-row>
-              </custom-dialog>
+      <flex-container class='payment-modal'>
+      <custom-dialog class="dialogCash" has-actions="" has-header="">
+        <span slot="title">Cash Ontvangst</span>
+        <flex-row slot="actions" direction="row">
+        <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
+        <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
+        <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
+        <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
+        <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
+        </flex-row>
+      </custom-dialog>
+      <custom-dialog class="dialogPayconiq" has-actions="" has-header="">
+        <span slot="title">Payconiq Ontvangst</span>
+        <flex-row slot="actions" direction="row">
+        <img src="https://portal.payconiq.com/qrcode?c=https://payconiq.com/pay/1/5c1b589a296e9a3330aebbe0&s=L&f=PNG"/>
+        </flex-row>
+      </custom-dialog>
       <flex-container>
     `
   }
