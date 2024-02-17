@@ -180,7 +180,7 @@ export class SalesReceipt extends LiteElement {
       </flex-container>
       <flex-it></flex-it>
       <flex-row center class="total">
-        <strong >${this.textTotalorChange}:</strong>
+        <strong>${this.textTotalorChange}:</strong>
         <flex-it></flex-it>
         ${Number(this.total).toLocaleString(navigator.language, {
           style: 'currency',

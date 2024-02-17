@@ -18,10 +18,12 @@ import './receipt.js'
 import './input.js'
 import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 import { query } from '@vandeurenglenn/lite'
+import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
+import { Transactions, Transaction } from '../../../types.js'
 
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
-
+  transaction: { [key: string]: Transaction[] } = {}
   currentSelectedProduct: string
   currentProductAmount: string = ''
   static styles = [
@@ -130,13 +132,22 @@ export class SalesPad extends LiteElement {
   }
 
   writeTransaction({ event }) {
+
+    const transactions = ref(getDatabase(), 'transactions')
     let cashChange = event.detail
     let total = this.receipt.total
     if (cashChange === 'exact') { cashChange = total }
     cashChange -= Number(total)
     this.receipt.total = cashChange
     this.receipt.textTotalorChange = 'Wisselgeld'
-    firebase.set('transactions', this.receipt.items)
+    let transaction: Transaction = {
+      paymentMethod: 'cash',
+      transactionItems: {
+        transactionItem: this.receipt.items
+      }
+    }
+    console.log(transaction)
+    push(transactions, transaction)
     this.receipt.items = {}
   }
 
