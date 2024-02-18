@@ -158,14 +158,13 @@ export class SalesReceipt extends LiteElement {
 
   #lastSelected
   connectedCallback() {
+    this.total = 0
     this.shadowRoot.addEventListener('click', (event) => {
       const paths = event.composedPath() as HTMLElement[]
       this.#lastSelected = paths[0].getAttribute('key')
       this.requestRender()
       this.dispatchEvent(new CustomEvent('selection', { detail: this.#lastSelected }))
     })
-    const dialogInput = this.shadowRoot.querySelector('custom-dialog.dialogInput') as HTMLDialogElement
-    dialogInput.addEventListener('close', () => {})
   }
 
   render() {
