@@ -3,7 +3,9 @@ import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
 import type { Product, ReceiptItem } from '../../../types.js'
 import '@vandeurenglenn/lit-elements/button.js'
+import '@vandeurenglenn/lit-elements/dialog.js'
 import '@material/web/textfield/filled-text-field.js'
+import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 
 @customElement('sales-receipt')
 export class SalesReceipt extends LiteElement {
@@ -127,9 +129,8 @@ export class SalesReceipt extends LiteElement {
     } else {
       const product = (await firebase.get(`products/${productKey}`)) as Product
       if (product.description) {
-        let dialogInput = this.shadowRoot.querySelector('custom-dialog.dialogInput') as HTMLDialogElement
-        dialogInput.open = true
-        product.description = await this.waitForInput()
+        const value = await this.dialogInput()
+        product.description = value
       }
       this.items[productKey] = { ...product, amount, key: productKey }
       this.requestRender()
@@ -142,10 +143,17 @@ export class SalesReceipt extends LiteElement {
     // this.scrollIntoView()
   }
 
-  async waitForInput() {
-    let input = this.shadowRoot.querySelector('.dialoginput-value') as HTMLTextAreaElement
-    console.log(input.value)
-    return input.value
+  async dialogInput(): Promise<string> {
+    return new Promise((resolve) => {
+      const dialog = this.shadowRoot.querySelector('custom-dialog') as HTMLDialogElement
+      const dialogInput = this.shadowRoot.querySelector('custom-dialog.dialoginput-value') as MdFilledTextField
+      const closeAction = () => {
+        resolve(dialogInput.value)
+        dialogInput.removeEventListener('close', closeAction)
+      }
+      dialog.addEventListener('close', closeAction)
+      dialog.open = true
+    })
   }
 
   #lastSelected
