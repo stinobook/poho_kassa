@@ -36,7 +36,7 @@ if (env.NODE_ENV === 'development') {
     `<script type="module">
     if ("serviceWorker" in navigator) {
       try {
-        const registration = await navigator.serviceWorker.register("/sw.js", {
+        const registration = await navigator.serviceWorker.register("./sw.js", {
           scope: "/",
         });
         if (registration.installing) {
@@ -51,7 +51,7 @@ if (env.NODE_ENV === 'development') {
       }
     }
   </script>
-  <link rel="manifest" href="/manifest.json">`
+  <link rel="manifest" href="./manifest.json">`
   )
 }
 
