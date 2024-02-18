@@ -2,6 +2,8 @@ import { html, css, LiteElement, property, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
 import type { Product, ReceiptItem } from '../../../types.js'
+import '@vandeurenglenn/lit-elements/button.js'
+import '@material/web/textfield/filled-text-field.js'
 
 @customElement('sales-receipt')
 export class SalesReceipt extends LiteElement {
@@ -91,6 +93,10 @@ export class SalesReceipt extends LiteElement {
         background-color: var(--md-sys-color-surface-container-high);
         --md-elevation-level: 3;
       }
+
+      .dialogInput {
+        z-index: 1000
+      }
     `
   ]
 
@@ -123,7 +129,9 @@ export class SalesReceipt extends LiteElement {
     } else {
       const product = (await firebase.get(`products/${productKey}`)) as Product
       if ( product.description ) {
-        product.description = prompt("Input")
+        let dialogInput = this.shadowRoot.querySelector('custom-dialog.dialogInput') as HTMLDialogElement
+        dialogInput.open = true
+        product.description = await this.waitForInput()
       }
       this.items[productKey] = { ...product, amount, key: productKey}
       this.requestRender()
@@ -136,12 +144,21 @@ export class SalesReceipt extends LiteElement {
     // this.scrollIntoView()
   }
 
+  async waitForInput() {
+    let input = this.shadowRoot.querySelector('.dialoginput-value') as HTMLTextAreaElement
+    console.log(input.value)
+    return input.value
+  }
+
   connectedCallback() {
     this.shadowRoot.addEventListener('click', (event) => {
       const paths = event.composedPath() as HTMLElement[]
       this.#lastSelected = paths[0].getAttribute('key')
       this.requestRender()
       this.dispatchEvent(new CustomEvent('selection', { detail: this.#lastSelected }))
+    })
+    const dialogInput = this.shadowRoot.querySelector('custom-dialog.dialogInput') as HTMLDialogElement
+    dialogInput.addEventListener('close', () => {
     })
   }
 
@@ -190,6 +207,13 @@ export class SalesReceipt extends LiteElement {
           currency: 'EUR'
         })}
       </flex-row>
+      <custom-dialog class="dialogInput" has-actions="" has-header="">
+      <span slot="title">Input required</span>
+      <md-filled-text-field class="dialoginput-value"></md-filled-text-field>
+      <flex-row slot="actions" direction="row">
+      <custom-button label="send" action="send" has-label="">Verstuur</custom-button>
+      </flex-row>
+    </custom-dialog>
     `
   }
 }
