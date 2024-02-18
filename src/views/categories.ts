@@ -21,10 +21,10 @@ export type Products = Product[]
 @customElement('categories-view')
 export class CategoriesView extends LiteElement {
   @property({ type: Array, consumer: true })
-  categories: string[]
+  accessor categories: string[]
 
   @property()
-  targetEdit
+  accessor targetEdit
 
   static styles = [
     css`

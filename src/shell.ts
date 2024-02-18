@@ -10,7 +10,6 @@ import Router from './routing.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
 // import default page
 import './views/loading.js'
-import { onChildAdded, onChildRemoved } from 'firebase/database'
 
 @customElement('po-ho-shell')
 export class PoHoShell extends LiteElement {
@@ -24,57 +23,23 @@ export class PoHoShell extends LiteElement {
   }
 
   @query('custom-selector')
-  selector: CustomSelector
+  accessor selector: CustomSelector
 
   @query('custom-pages')
-  pages: CustomPages
+  accessor pages: CustomPages
+
+  @property({ provider: true, batches: true, batchDelay: 50 })
+  accessor products = {}
 
   @property({ provider: true })
-  products
-
-  @property({ provider: true })
-  categories
+  accessor categories = []
 
   @query('custom-drawer-layout')
-  drawerLayout: CustomDrawerLayout
+  accessor drawerLayout: CustomDrawerLayout
 
   async select(selected) {
-    console.log({ selected })
     this.selector.select(selected)
     this.pages.select(selected)
-    if (selected === 'products' || selected === 'sales') {
-      const products = await firebase.get('products')
-      this.products = products
-
-      firebase.onChildAdded('products', async (snap) => {
-        const val = await snap.val()
-        if (!this.products.includes(val)) {
-          this.products.push(val)
-        }
-      })
-      firebase.onChildRemoved('products', async (snap) => {
-        const val = await snap.val()
-        if (this.products.includes(val)) {
-          this.products.splice(this.products.indexOf(val))
-        }
-      })
-    } else if (selected === 'add-product' || selected === 'categories') {
-      const categories = await firebase.get('categories')
-      this.categories = categories
-
-      firebase.onChildAdded('categories', async (snap) => {
-        const val = await snap.val()
-        if (!this.categories.includes(val)) {
-          this.categories.push(val)
-        }
-      })
-      firebase.onChildRemoved('categories', async (snap) => {
-        const val = await snap.val()
-        if (this.categories.includes(val)) {
-          this.categories.splice(this.categories.indexOf(val))
-        }
-      })
-    }
   }
 
   async connectedCallback() {
@@ -82,6 +47,42 @@ export class PoHoShell extends LiteElement {
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
+    firebase.onChildAdded('products', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+
+      if (!this.products[key]) this.products[key] = val
+      this.products = { ...this.products }
+
+      // this.productsByCategory = Object.entries(this.products).reduce((set, [key, item]) => {
+      //   if (!set[item['category']]) set[item['category']] = []
+      //   item['key'] = key
+      //   set[item['category']].push(item)
+      //   return set
+      // }, {})
+      // this.productsByCategory = this.productsByCategory
+    })
+    firebase.onChildRemoved('products', async (snap) => {
+      delete this.products[snap.key]
+    })
+
+    firebase.onChildAdded('categories', async (snap) => {
+      const val = await snap.val()
+      console.log(val)
+
+      if (!this.categories) {
+        this.categories = [val]
+      } else if (!this.categories.includes(val)) {
+        this.categories.push(val)
+      }
+      this.categories = [...this.categories]
+    })
+    firebase.onChildRemoved('categories', async (snap) => {
+      const val = await snap.val()
+      if (this.categories.includes(val)) {
+        this.categories.splice(this.categories.indexOf(val))
+      }
+    })
     this.router = new Router(this)
   }
 
@@ -113,12 +114,12 @@ export class PoHoShell extends LiteElement {
 
         <custom-pages attr-for-selected="route">
           <loading-view route="loading"> </loading-view>
-          <login-view route="login"> </login-view>
           <sales-view route="sales"> </sales-view>
+          <login-view route="login"> </login-view>
           <attendance-view route="attendance"> </attendance-view>
           <checkout-view route="checkout"> </checkout-view>
-          <products-view route="products"> </products-view>
           <categories-view route="categories"> </categories-view>
+          <products-view route="products"> </products-view>
           <add-product-view route="add-product"> </add-product-view>
         </custom-pages>
       </custom-drawer-layout>

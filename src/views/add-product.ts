@@ -1,4 +1,4 @@
-import { html, LiteElement, css, property, query, state } from '@vandeurenglenn/lite'
+import { html, LiteElement, css, property, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
 import '@vandeurenglenn/flex-elements/container.js'
@@ -22,17 +22,20 @@ export type Products = Product[]
 
 @customElement('add-product-view')
 export class AddProductView extends LiteElement {
-  @state()
-  category
+  @property({ type: Number })
+  accessor quickId: Number
+
+  @property()
+  accessor category
 
   @property({ type: Object })
-  params
+  accessor params
 
   @property({ type: Array, consumer: true })
-  categories: string[]
+  accessor categories: string[]
 
   @query('md-outlined-select')
-  select
+  accessor select
 
   editing
 
@@ -43,7 +46,7 @@ export class AddProductView extends LiteElement {
   }
 
   @queryAll('[label]')
-  labels
+  accessor labels
 
   reset() {
     this.params = undefined
@@ -116,15 +119,15 @@ export class AddProductView extends LiteElement {
   save = async () => {
     const productsRef = await ref(getDatabase(), 'products')
     const product = {}
-    const descriptBox = this.shadowRoot.querySelector("#description") as HTMLInputElement
+    const descriptBox = this.shadowRoot.querySelector('#description') as HTMLInputElement
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
     for (const field of fields) {
       if (field.value) product[field.label] = field.value
     }
     product['category'] = this.shadowRoot.querySelector('md-outlined-select').value
-   if (descriptBox.checked){
-    product['description'] = 'needsExtra' 
-  }
+    if (descriptBox.checked) {
+      product['description'] = 'needsExtra'
+    }
     if (this.editing) {
       set(child(productsRef, this.params.edit), product)
       this.params = undefined
@@ -185,7 +188,6 @@ export class AddProductView extends LiteElement {
             : ''}
         </md-outlined-select>
         <label><md-checkbox id="description"></md-checkbox>Extra gegevens nodig?</label>
-
       </flex-container>
       <md-fab @click=${this.save}><custom-icon slot="icon">save</custom-icon></md-fab>
     `

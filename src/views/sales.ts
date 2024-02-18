@@ -71,10 +71,10 @@ export class SalesView extends LiteElement {
   ]
 
   @query('sales-pad')
-  pad
+  accessor pad
 
   @query('sales-grid')
-  grid
+  accessor grid
 
   togglePad = () => {
     if (this.classList.contains('shown')) this.classList.remove('shown')

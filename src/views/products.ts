@@ -15,31 +15,10 @@ import { Product } from '../types.js'
 
 @customElement('products-view')
 export class ProductsView extends LiteElement {
-  @property({ type: Object, consumer: true })
-  products: { [index: string]: Product }
+  @property({ consumer: true })
+  accessor products: { [index: string]: Product }
 
   #ref = ref(getDatabase(), 'products')
-
-  async connectedCallback(): Promise<void> {
-    // const products = await (await get(this.#ref)).val()
-    // this.products = products ? products : []
-    onChildAdded(this.#ref, async (snap) => {
-      const key = snap.key
-      if (!this.products) return
-      if (!this.products[key]) {
-        this.products[key] = await snap.val()
-        this.requestRender()
-      }
-    })
-    onChildRemoved(this.#ref, async (snap) => {
-      const key = await snap.key
-      if (!this.products) return
-      if (this.products[key]) {
-        delete this.products[key]
-        this.requestRender()
-      }
-    })
-  }
 
   static styles = [
     css`

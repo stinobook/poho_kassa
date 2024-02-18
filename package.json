@@ -18,6 +18,7 @@
     "glob": "^10.3.10",
     "rimraf": "^5.0.5",
     "rollup": "^4.9.5",
+    "rollup-plugin-esbuild": "^6.1.1",
     "rollup-plugin-material-symbols": "^2.1.5",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",

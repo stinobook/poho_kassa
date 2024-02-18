@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "experimentalDecorators": true,
+    // "experimentalDecorators": true,
     "useDefineForClassFields": false,
     "module": "NodeNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "moduleResolution": "NodeNext",
     /* Linting */

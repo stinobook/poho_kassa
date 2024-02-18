@@ -7,21 +7,25 @@ import { Product } from '../../../types.js'
 
 @customElement('sales-grid')
 export class SalesGrid extends LiteElement {
-  @property({ consumer: true })
-  products: { [index: string]: Product[] }
+  productsByCategory: { [index: string]: Product[] } = {}
 
-  willChange(propertyKey: any, value: any) {
+  @property({ consumer: true })
+  accessor products: { [index: string]: Product[] }
+
+  async willChange(propertyKey: any, value: any) {
     if (propertyKey === 'products') {
-      return Object.entries({ ...value }).reduce((set, [key, item]) => {
-        if (!set[item['category']]) set[item['category']] = []
-        item['key'] = key
-        set[item['category']].push(item)
-        return set
-      }, {})
+      const productsByCategory = {}
+
+      for (const [key, product] of Object.entries(value)) {
+        if (!productsByCategory[product.category]) {
+          productsByCategory[product.category] = []
+        }
+        productsByCategory[product.category].push({ key, ...product })
+      }
+      return productsByCategory
     }
     return value
   }
-
   connectedCallback() {
     this.addEventListener('click', (event) => {
       const paths = event.composedPath() as HTMLElement[]
@@ -91,23 +95,27 @@ export class SalesGrid extends LiteElement {
     `
   ]
 
+  renderGrid(items = this.products) {
+    return Object.entries(items).map(([category, products]) =>
+      products
+        ? html`
+            <flex-container>
+              <flex-row width="100%">
+                <custom-typography><h4>${category}</h4></custom-typography> </flex-row
+              ><flex-wrap-between>
+                ${[...products].map((product) => {
+                  return html`<md-filled-button key=${product.key} label=${product.name}
+                    >${product.name}</md-filled-button
+                  >`
+                })}
+              </flex-wrap-between>
+            </flex-container>
+          `
+        : ''
+    )
+  }
+
   render() {
-    return html` ${this.products
-      ? Object.entries(this.products).map(([category, products]) =>
-          products.map
-            ? html`
-                <flex-container>
-                  <flex-row width="100%">
-                    <custom-typography><h4>${category}</h4></custom-typography> </flex-row
-                  ><flex-wrap-between>
-                    ${products.map(
-                      (product) => html`<md-filled-button key=${product.key}> ${product.name}</md-filled-button>`
-                    )}
-                  </flex-wrap-between>
-                </flex-container>
-              `
-            : ''
-        )
-      : ''}`
+    return html` ${this.productsByCategory ? this.renderGrid() : ''}`
   }
 }

@@ -8,18 +8,16 @@ import '@material/web/textfield/filled-text-field.js'
 @customElement('sales-receipt')
 export class SalesReceipt extends LiteElement {
   @property({ type: Object })
-  items: { [key: string]: ReceiptItem } = {}
+  accessor items: { [key: string]: ReceiptItem } = {}
 
   @property({ type: Number })
-  total: number = 0
+  accessor total: number = 0
 
   @property({ type: String })
-  textTotalorChange: string = 'Totaal'
+  accessor textTotalorChange: string = 'Totaal'
 
   @query('flex-container')
-  _container
-
-  #lastSelected
+  accessor _container
 
   static styles = [
     css`
@@ -95,7 +93,7 @@ export class SalesReceipt extends LiteElement {
       }
 
       .dialogInput {
-        z-index: 1000
+        z-index: 1000;
       }
     `
   ]
@@ -114,7 +112,7 @@ export class SalesReceipt extends LiteElement {
   addProduct = async (productKey: string, amount: number = 1) => {
     amount = Number(amount)
     this.#lastSelected = productKey
-    if (this.textTotalorChange === 'Wisselgeld' ) {
+    if (this.textTotalorChange === 'Wisselgeld') {
       this.total = 0
       this.textTotalorChange = 'Totaal'
     }
@@ -128,12 +126,12 @@ export class SalesReceipt extends LiteElement {
       this._container.scroll(0, index * 76)
     } else {
       const product = (await firebase.get(`products/${productKey}`)) as Product
-      if ( product.description ) {
+      if (product.description) {
         let dialogInput = this.shadowRoot.querySelector('custom-dialog.dialogInput') as HTMLDialogElement
         dialogInput.open = true
         product.description = await this.waitForInput()
       }
-      this.items[productKey] = { ...product, amount, key: productKey}
+      this.items[productKey] = { ...product, amount, key: productKey }
       this.requestRender()
       this.total += product.price * amount
       requestAnimationFrame(() => {
@@ -150,6 +148,7 @@ export class SalesReceipt extends LiteElement {
     return input.value
   }
 
+  #lastSelected
   connectedCallback() {
     this.shadowRoot.addEventListener('click', (event) => {
       const paths = event.composedPath() as HTMLElement[]
@@ -158,8 +157,7 @@ export class SalesReceipt extends LiteElement {
       this.dispatchEvent(new CustomEvent('selection', { detail: this.#lastSelected }))
     })
     const dialogInput = this.shadowRoot.querySelector('custom-dialog.dialogInput') as HTMLDialogElement
-    dialogInput.addEventListener('close', () => {
-    })
+    dialogInput.addEventListener('close', () => {})
   }
 
   render() {
@@ -181,7 +179,8 @@ export class SalesReceipt extends LiteElement {
                         >${Number(item.price).toLocaleString(navigator.language, {
                           style: 'currency',
                           currency: 'EUR'
-                        })}</small>
+                        })}</small
+                      >
                     </flex-row>
                     <flex-row>
                       ${item.amount ? html`<span>x ${item.amount}</span>` : ''}
@@ -208,12 +207,12 @@ export class SalesReceipt extends LiteElement {
         })}
       </flex-row>
       <custom-dialog class="dialogInput" has-actions="" has-header="">
-      <span slot="title">Input required</span>
-      <md-filled-text-field class="dialoginput-value"></md-filled-text-field>
-      <flex-row slot="actions" direction="row">
-      <custom-button label="send" action="send" has-label="">Verstuur</custom-button>
-      </flex-row>
-    </custom-dialog>
+        <span slot="title">Input required</span>
+        <md-filled-text-field class="dialoginput-value"></md-filled-text-field>
+        <flex-row slot="actions" direction="row">
+          <custom-button label="send" action="send" has-label="">Verstuur</custom-button>
+        </flex-row>
+      </custom-dialog>
     `
   }
 }

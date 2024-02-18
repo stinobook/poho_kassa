@@ -28,29 +28,29 @@ export class SalesPad extends LiteElement {
   currentSelectedProduct: string
   currentProductAmount: string = ''
   static styles = [
-   css`
-    :host {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      flex-direction: column;
-      max-width: 240px;
-      padding-right: 12px;
-      box-sizing: border-box;
-      position: relative;
-    }
+    css`
+      :host {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+        max-width: 240px;
+        padding-right: 12px;
+        box-sizing: border-box;
+        position: relative;
+      }
 
-    sales-receipt {
-      margin-bottom: 24px;
-    }
-    .payment-modal {
-      z-index: 1000;
-    }
-  `
+      sales-receipt {
+        margin-bottom: 24px;
+      }
+      .payment-modal {
+        z-index: 1000;
+      }
+    `
   ]
 
   @query('sales-receipt')
-  receipt
+  accessor receipt
 
   addProduct(product) {
     let amount = this.receipt.items[product] ? this.receipt.items[product].amount + 1 : 1
@@ -69,22 +69,22 @@ export class SalesPad extends LiteElement {
 
     switch (detail) {
       case 'cash':
-        if (this.receipt.textTotalorChange === 'Wisselgeld') { 
-          alert('Nothing to sell') 
-          break 
+        if (this.receipt.textTotalorChange === 'Wisselgeld') {
+          alert('Nothing to sell')
+          break
         } else {
-        let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
-        dialogCash.open = true
-        break
+          let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
+          dialogCash.open = true
+          break
         }
       case 'payconiq':
-        if (this.receipt.textTotalorChange === 'Wisselgeld') { 
-          alert('Nothing to sell') 
-          break 
+        if (this.receipt.textTotalorChange === 'Wisselgeld') {
+          alert('Nothing to sell')
+          break
         } else {
-        let dialogPayconiq = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
-        dialogPayconiq.open = true
-        break
+          let dialogPayconiq = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
+          dialogPayconiq.open = true
+          break
         }
       case '+1':
         if (this.receipt.items[this.currentSelectedProduct]) {
@@ -128,61 +128,64 @@ export class SalesPad extends LiteElement {
   connectedCallback() {
     let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
     dialogCash.addEventListener('close', (event) => {
-      this.writeTransaction({event})
+      this.writeTransaction({ event })
     })
   }
 
   writeTransaction({ event }) {
-
     const transactionsDB = ref(getDatabase(), 'transactions')
     let cashChange = event.detail
     let total = this.receipt.total
-    if (cashChange === 'exact') { cashChange = total }
+    if (cashChange === 'exact') {
+      cashChange = total
+    }
     if (cashChange < total) {
       alert('Te laag bedrag!')
     } else {
-    cashChange -= Number(total)
-    this.receipt.total = cashChange
-    this.receipt.textTotalorChange = 'Wisselgeld'
-    let transaction: Transaction = {
-      paymentMethod: 'cash',
-      paymentAmount: total,
-      transactionItems: this.receipt.items
-    }
-    push(transactionsDB, transaction)
-    this.receipt.items = {}
+      cashChange -= Number(total)
+      this.receipt.total = cashChange
+      this.receipt.textTotalorChange = 'Wisselgeld'
+      let transaction: Transaction = {
+        paymentMethod: 'cash',
+        paymentAmount: total,
+        transactionItems: this.receipt.items
+      }
+      push(transactionsDB, transaction)
+      this.receipt.items = {}
     }
   }
-
 
   render() {
     return html`
       <sales-receipt @selection=${(event) => this.onReceiptSelection(event)}></sales-receipt>
       <flex-it></flex-it>
       <sales-input @input-click=${(event) => this.inputTap(event)}></sales-input>
-      <flex-container class='payment-modal'>
-      <custom-dialog class="dialogCash" has-actions="" has-header="">
-        <span slot="title">Cash Ontvangst</span>
-        <flex-row slot="actions" direction="row">
-        <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
-        <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
-        <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>
-        <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
-        </flex-row>
-        <flex-row slot="actions" direction="row">
-        <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
-        <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
-        <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
-        <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
-        </flex-row>
-      </custom-dialog>
-      <custom-dialog class="dialogPayconiq" has-actions="" has-header="">
-        <span slot="title">Payconiq Ontvangst</span>
-        <flex-row slot="actions" direction="row">
-        <img src="https://portal.payconiq.com/qrcode?c=https://payconiq.com/pay/1/5c1b589a296e9a3330aebbe0&s=L&f=PNG"/>
-        </flex-row>
-      </custom-dialog>
-      <flex-container>
+      <flex-container class="payment-modal">
+        <custom-dialog class="dialogCash" has-actions="" has-header="">
+          <span slot="title">Cash Ontvangst</span>
+          <flex-row slot="actions" direction="row">
+            <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
+            <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
+            <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>
+            <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
+          </flex-row>
+          <flex-row slot="actions" direction="row">
+            <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
+            <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
+            <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
+            <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
+          </flex-row>
+        </custom-dialog>
+        <custom-dialog class="dialogPayconiq" has-actions="" has-header="">
+          <span slot="title">Payconiq Ontvangst</span>
+          <flex-row slot="actions" direction="row">
+            <img
+              src="https://portal.payconiq.com/qrcode?c=https://payconiq.com/pay/1/5c1b589a296e9a3330aebbe0&s=L&f=PNG"
+            />
+          </flex-row>
+        </custom-dialog>
+        <flex-container> </flex-container
+      ></flex-container>
     `
   }
 }

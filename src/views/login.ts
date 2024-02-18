@@ -6,14 +6,15 @@ import '@material/web/button/outlined-button.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@vandeurenglenn/lit-elements/typography.js'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
 
 @customElement('login-view')
 export class LoginView extends LiteElement {
   @query('md-outlined-text-field[label="email"]')
-  email
+  email: MdOutlinedTextField
 
   @query('md-outlined-text-field[label="password"]')
-  password
+  password: MdOutlinedTextField
 
   cancel() {
     this.email.value = null
