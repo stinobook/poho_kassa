@@ -10,7 +10,8 @@ import { Currency } from 'firebase/analytics'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
-  total = 0
+  @property()
+  accessor totaal: Currency = 0
 
   static styles = [
     css`

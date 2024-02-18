@@ -1,21 +1,21 @@
-import resolve from '@rollup/plugin-node-resolve';
-import typescript from '@rollup/plugin-typescript';
-import materialSymbols from 'rollup-plugin-material-symbols';
-import { glob } from 'glob';
-import { mkdir, opendir, readFile, writeFile, cp } from 'fs/promises';
-import * as rm from 'rimraf';
-import { execSync } from 'child_process';
-import { env } from 'process';
+import resolve from '@rollup/plugin-node-resolve'
+import typescript from '@rollup/plugin-typescript'
+import materialSymbols from 'rollup-plugin-material-symbols'
+import { glob } from 'glob'
+import { mkdir, opendir, readFile, writeFile, cp } from 'fs/promises'
+import * as rm from 'rimraf'
+import { execSync } from 'child_process'
+import { env } from 'process'
 
 try {
-  await opendir('./www/themes');
+  await opendir('./www/themes')
 } catch (error) {
-  await cp('node_modules/@vandeurenglenn/lit-elements/exports/themes', './www/themes', { recursive: true });
+  await cp('node_modules/@vandeurenglenn/lit-elements/exports/themes', './www/themes', { recursive: true })
 }
 
-const views = await glob(['./src/views/**/*']);
+const views = await glob(['./src/views/**/*'])
 
-let index = await readFile('./src/index.html', 'utf-8');
+let index = await readFile('./src/index.html', 'utf-8')
 if (env.NODE_ENV === 'development') {
   index = index.replace(
     '<body>',
@@ -29,7 +29,7 @@ if (env.NODE_ENV === 'development') {
     
   </script>
   `
-  );
+  )
 } else {
   index = index.replace(
     '<!-- service-worker-placeholder -->',
@@ -52,38 +52,38 @@ if (env.NODE_ENV === 'development') {
     }
   </script>
   <link rel="manifest" href="/manifest.json">`
-  );
+  )
 }
 
-writeFile('./www/index.html', index);
+writeFile('./www/index.html', index)
 const files = await glob(['www/**/*'], {
-  ignore: ['www/manifest.json', 'www/assets', 'www/assets/**/*', 'www/index.html', 'www/themes', 'www/themes/**/*'],
-});
+  ignore: ['www/manifest.json', 'www/assets', 'www/assets/**/*', 'www/index.html', 'www/themes', 'www/themes/**/*']
+})
 for (const file of files) {
-  rm.sync(file);
+  rm.sync(file)
 }
 
 const generateServiceWorker = () => ({
   name: 'generate-service-worker',
   writeBundle: () => {
-    if (env.NODE_ENV === 'production') execSync('npx workbox-cli generateSW workbox-config.cjs');
-  },
-});
+    if (env.NODE_ENV === 'production') execSync('npx workbox-cli generateSW workbox-config.cjs')
+  }
+})
 
 export default [
   {
     input: ['./src/shell.ts', ...views, 'src/firebase.ts'],
     output: {
       format: 'es',
-      dir: 'www',
+      dir: 'www'
     },
     plugins: [
       materialSymbols({
-        placeholderPrefix: 'symbol',
+        placeholderPrefix: 'symbol'
       }),
       resolve(),
       typescript(),
-      generateServiceWorker(),
-    ],
-  },
-];
+      generateServiceWorker()
+    ]
+  }
+]
