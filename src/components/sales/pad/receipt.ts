@@ -95,7 +95,10 @@ export class SalesReceipt extends LiteElement {
       }
 
       .dialogInput {
-        z-index: 1001;
+        z-index: 1000;
+      }
+      .dialogInput * {
+        pointer-events: auto;
       }
     `
   ]
@@ -148,6 +151,7 @@ export class SalesReceipt extends LiteElement {
       const dialog = this.shadowRoot.querySelector('custom-dialog') as HTMLDialogElement
       const closeAction = () => {
         resolve(this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value').value)
+        this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value').value = ''
         dialogInput.removeEventListener('close', closeAction)
       }
       dialog.addEventListener('close', closeAction)
