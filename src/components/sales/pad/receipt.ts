@@ -94,8 +94,8 @@ export class SalesReceipt extends LiteElement {
         --md-elevation-level: 3;
       }
 
-      .dialogInputContainer {
-        z-index: 1000;
+      .dialogInput {
+        z-index: 1001;
       }
     `
   ]
@@ -143,12 +143,11 @@ export class SalesReceipt extends LiteElement {
     // this.scrollIntoView()
   }
 
-  async dialogInput(): Promise<string> {
+  dialogInput(): Promise<string> {
     return new Promise((resolve) => {
       const dialog = this.shadowRoot.querySelector('custom-dialog') as HTMLDialogElement
-      const dialogInput = this.shadowRoot.querySelector('custom-dialog.dialoginput-value') as MdFilledTextField
       const closeAction = () => {
-        resolve(dialogInput.value)
+        resolve(this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value').value)
         dialogInput.removeEventListener('close', closeAction)
       }
       dialog.addEventListener('close', closeAction)
@@ -213,7 +212,6 @@ export class SalesReceipt extends LiteElement {
           currency: 'EUR'
         })}
       </flex-row>
-      <flex-container class="dialogInputContainer">
       <custom-dialog class="dialogInput" has-actions="" has-header="">
         <span slot="title">Input required</span>
         <md-filled-text-field class="dialoginput-value"></md-filled-text-field>
@@ -221,7 +219,6 @@ export class SalesReceipt extends LiteElement {
           <custom-button label="send" action="send" has-label="">Verstuur</custom-button>
         </flex-row>
       </custom-dialog>
-      </flex-container>
     `
   }
 }

@@ -134,6 +134,9 @@ export class SalesPad extends LiteElement {
   }
 
   writeTransaction({ event }) {
+    if ( event.detail === 'cancel') {
+      return
+    }
     const transactionsDB = ref(getDatabase(), 'transactions')
     let cashChange = event.detail
     let total = this.receipt.total
@@ -173,6 +176,7 @@ export class SalesPad extends LiteElement {
             <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
             <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
             <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
+            <custom-button label="Annuleer" action="cancel" has-label="">Annuleer</custom-button>
           </flex-row>
         </custom-dialog>
         <custom-dialog class="dialogPayconiq" has-actions="" has-header="">
@@ -183,8 +187,7 @@ export class SalesPad extends LiteElement {
             />
           </flex-row>
         </custom-dialog>
-        <flex-container> </flex-container
-      ></flex-container>
+        <flex-container> </flex-container></flex-container>
     `
   }
 }
