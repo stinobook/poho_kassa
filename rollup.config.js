@@ -6,6 +6,7 @@ import { mkdir, opendir, readFile, writeFile, cp } from 'fs/promises'
 import * as rm from 'rimraf'
 import { execSync } from 'child_process'
 import { env } from 'process'
+import { rimraf } from 'rimraf'
 
 try {
   await opendir('./www/themes')
@@ -67,7 +68,13 @@ const generateServiceWorker = () => ({
     if (env.NODE_ENV === 'production') execSync('npx workbox-cli generateSW workbox-config.cjs')
   }
 })
-
+const cleanBuild = () => ({
+  name: 'clean',
+  buildStart: async (dir) => {
+    rimraf('./www/**/*.js', { glob: true })
+    rimraf('./www/**/*.d.ts', { glob: true })
+  }
+})
 export default [
   {
     input: ['./src/shell.ts', ...views, 'src/firebase.ts'],
@@ -79,6 +86,7 @@ export default [
       materialSymbols({
         placeholderPrefix: 'symbol'
       }),
+      cleanBuild(),
       resolve(),
       typescript(),
       generateServiceWorker()
