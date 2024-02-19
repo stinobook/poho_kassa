@@ -46,6 +46,9 @@ export class SalesPad extends LiteElement {
       .payment-modal {
         z-index: 1000;
       }
+      .dialogCash flex-row{
+        flex-wrap: wrap;
+      }
     `
   ]
 
@@ -65,11 +68,9 @@ export class SalesPad extends LiteElement {
   }
 
   inputTap({ detail }: CustomEvent) {
-    console.log(detail)
-
     switch (detail) {
       case 'cash':
-        if (this.receipt.textTotalorChange === 'Wisselgeld') {
+        if (Object.keys(this.receipt.items).length === 0) {
           alert('Nothing to sell')
           break
         } else {
@@ -78,7 +79,7 @@ export class SalesPad extends LiteElement {
           break
         }
       case 'payconiq':
-        if (this.receipt.textTotalorChange === 'Wisselgeld') {
+        if (Object.keys(this.receipt.items).length === 0) {
           alert('Nothing to sell')
           break
         } else {
@@ -168,8 +169,6 @@ export class SalesPad extends LiteElement {
             <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
             <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>
             <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
-          </flex-row>
-          <flex-row slot="actions" direction="row">
             <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
             <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
             <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>

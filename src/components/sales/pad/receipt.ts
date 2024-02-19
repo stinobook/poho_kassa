@@ -94,7 +94,7 @@ export class SalesReceipt extends LiteElement {
         --md-elevation-level: 3;
       }
 
-      .dialogInput {
+      .dialogInputContainer {
         z-index: 1000;
       }
     `
@@ -213,6 +213,7 @@ export class SalesReceipt extends LiteElement {
           currency: 'EUR'
         })}
       </flex-row>
+      <flex-container class="dialogInputContainer">
       <custom-dialog class="dialogInput" has-actions="" has-header="">
         <span slot="title">Input required</span>
         <md-filled-text-field class="dialoginput-value"></md-filled-text-field>
@@ -220,6 +221,7 @@ export class SalesReceipt extends LiteElement {
           <custom-button label="send" action="send" has-label="">Verstuur</custom-button>
         </flex-row>
       </custom-dialog>
+      </flex-container>
     `
   }
 }
