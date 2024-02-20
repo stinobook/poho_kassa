@@ -68,7 +68,7 @@ export class SalesPad extends LiteElement {
   }
 
   inputTap({ detail }: CustomEvent) {
-    if (this.receipt.items[this.currentSelectedProduct].description || detail === 'cash' || detail === 'payconiq'){
+    if (this.receipt.items[this.currentSelectedProduct]?.description || detail === 'cash' || detail === 'payconiq'){
     switch (detail) {
       case 'cash':
         if (Object.keys(this.receipt.items).length === 0) {
@@ -147,13 +147,12 @@ export class SalesPad extends LiteElement {
   connectedCallback() {
     let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
     dialogCash.addEventListener('close', (event) => {
-      console.log(event)
       this.writeTransaction({ event })
     })
   }
 
   writeTransaction({ event }) {
-    if ( event.detail === 'cancel') {
+    if ( event.detail === 'cancel' || 'close') {
       return
     }
     const transactionsDB = ref(getDatabase(), 'transactions')
