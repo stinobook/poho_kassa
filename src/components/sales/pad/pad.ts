@@ -147,6 +147,7 @@ export class SalesPad extends LiteElement {
   connectedCallback() {
     let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
     dialogCash.addEventListener('close', (event) => {
+      console.log(event)
       this.writeTransaction({ event })
     })
   }

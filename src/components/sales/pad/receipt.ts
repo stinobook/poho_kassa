@@ -152,9 +152,14 @@ export class SalesReceipt extends LiteElement {
       const dialog = this.shadowRoot.querySelector('custom-dialog') as HTMLDialogElement
       const closeAction = () => {
         let inputValue = (this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value') as HTMLInputElement).value
+        if (inputValue !== '') {
         resolve(inputValue);
         (this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value') as HTMLInputElement).value = ''
         dialog.removeEventListener('close', closeAction)
+        } else {
+        alert('Nothing entered')
+        dialog.removeEventListener('close', closeAction)
+        }
       }
       dialog.addEventListener('close', closeAction)
       dialog.open = true
