@@ -68,6 +68,7 @@ export class SalesPad extends LiteElement {
   }
 
   inputTap({ detail }: CustomEvent) {
+    if (this.receipt.items[this.currentSelectedProduct].description || detail === 'cash' || detail === 'payconiq'){
     switch (detail) {
       case 'cash':
         if (Object.keys(this.receipt.items).length === 0) {
@@ -87,6 +88,23 @@ export class SalesPad extends LiteElement {
           dialogPayconiq.open = true
           break
         }
+      default:
+        if (this.currentSelectedProduct) {
+          if (detail !== '0') {
+            alert('You can\'t do that')
+          } else {
+            this.receipt.removeProduct(this.currentSelectedProduct)
+            this.currentProductAmount = ''
+            const keys = Object.keys(this.receipt.items)
+            this.currentSelectedProduct = keys[keys.length - 1]
+          }
+        }
+
+        break
+      }
+    }
+     else {
+    switch (detail) {
       case '+1':
         if (this.receipt.items[this.currentSelectedProduct]) {
           let amount
@@ -123,7 +141,7 @@ export class SalesPad extends LiteElement {
         }
 
         break
-    }
+    } }
   }
 
   connectedCallback() {

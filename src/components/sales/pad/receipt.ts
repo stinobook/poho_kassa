@@ -125,10 +125,11 @@ export class SalesReceipt extends LiteElement {
       this.total -= this.items[productKey].price * this.items[productKey].amount
       this.items[productKey].amount = amount
       this.total += this.items[productKey].price * amount
-
       const index = Object.keys(this.items).indexOf(productKey)
       this.requestRender()
       this._container.scroll(0, index * 76)
+    } else if (this.items[productKey] && this.items[productKey].description !== 'needsExtra') {
+    alert('Max 1 of this item!')
     } else {
       const product = (await firebase.get(`products/${productKey}`)) as Product
       if (product.description) {
@@ -150,9 +151,9 @@ export class SalesReceipt extends LiteElement {
     return new Promise((resolve) => {
       const dialog = this.shadowRoot.querySelector('custom-dialog') as HTMLDialogElement
       const closeAction = () => {
-        let inputValue = this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value').value
-        resolve(inputValue)
-        this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value').value = ''
+        let inputValue = (this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value') as HTMLInputElement).value
+        resolve(inputValue);
+        (this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value') as HTMLInputElement).value = ''
         dialog.removeEventListener('close', closeAction)
       }
       dialog.addEventListener('close', closeAction)
