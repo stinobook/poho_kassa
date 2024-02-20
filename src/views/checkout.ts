@@ -7,11 +7,12 @@ import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import { Currency } from 'firebase/analytics'
+import type { Cashtotal } from '../types.js'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
-  @property()
-  accessor totaal: Currency = 0
+  @property({ type: Object })
+  accessor cashTotals: Cashtotal[] = [];
 
   static styles = [
     css`
@@ -56,10 +57,10 @@ export class CheckoutView extends LiteElement {
         width: 100%;
       }
       .cashtelling md-list-item {
-        width: 30%;
+        width: 50%;
       }
       .cashtelling md-filled-text-field {
-        width: 69%;
+        width: 50%;
       }
       .total {
         box-sizing: border-box;
@@ -77,13 +78,16 @@ export class CheckoutView extends LiteElement {
   connectedCallback() {
     this.shadowRoot.addEventListener('input', ({ target }: CustomEvent) => {
       // @ts-ignore
-      this.dispatchEvent(new CustomEvent('input-cash', { detail: target.getAttribute('input-cash') }))
-      console.log(target)
+      let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
+      this.inputCash(inputValue, target)
     })
   }
 
-  inputCash({ detail }: CustomEvent) {
-    console.log(detail)
+  inputCash(inputValue, inputAmount) {
+    inputAmount = inputAmount.value
+    inputValue = inputValue.detail
+    this.cashTotals.push(inputValue: inputAmount)
+    console.log(this.cashTotals)
   }
 
   render() {
@@ -92,24 +96,24 @@ export class CheckoutView extends LiteElement {
         <flex-column class="cashtelling">
           <md-list>
             <md-list-item>&euro;100</md-list-item
-            ><md-filled-text-field value="0" input-cash="100"></md-filled-text-field>
+            ><md-filled-text-field input-cash="100"></md-filled-text-field>
             <md-list-item>&euro;50</md-list-item
-            ><md-filled-text-field value="0" input-cash="50"></md-filled-text-field>
+            ><md-filled-text-field input-cash="50"></md-filled-text-field>
             <md-list-item>&euro;20</md-list-item
-            ><md-filled-text-field value="0" input-cash="20"></md-filled-text-field>
+            ><md-filled-text-field input-cash="20"></md-filled-text-field>
             <md-list-item>&euro;10</md-list-item
-            ><md-filled-text-field value="0" input-cash="10"></md-filled-text-field> <md-list-item>&euro;5</md-list-item
-            ><md-filled-text-field value="0" input-cash="5"></md-filled-text-field> <md-list-item>&euro;2</md-list-item
-            ><md-filled-text-field value="0" input-cash="2"></md-filled-text-field> <md-list-item>&euro;1</md-list-item
-            ><md-filled-text-field value="0" input-cash="1"></md-filled-text-field>
+            ><md-filled-text-field input-cash="10"></md-filled-text-field> <md-list-item>&euro;5</md-list-item
+            ><md-filled-text-field input-cash="5"></md-filled-text-field> <md-list-item>&euro;2</md-list-item
+            ><md-filled-text-field input-cash="2"></md-filled-text-field> <md-list-item>&euro;1</md-list-item
+            ><md-filled-text-field input-cash="1"></md-filled-text-field>
             <md-list-item>&euro;0.50</md-list-item
-            ><md-filled-text-field value="0" input-cash="0.50"></md-filled-text-field>
+            ><md-filled-text-field input-cash="0.50"></md-filled-text-field>
             <md-list-item>&euro;0.20</md-list-item
-            ><md-filled-text-field value="0" input-cash="0.20"></md-filled-text-field>
+            ><md-filled-text-field input-cash="0.20"></md-filled-text-field>
             <md-list-item>&euro;0.10</md-list-item
-            ><md-filled-text-field value="0" input-cash="0.10"></md-filled-text-field>
+            ><md-filled-text-field input-cash="0.10"></md-filled-text-field>
             <md-list-item>&euro;0.05</md-list-item
-            ><md-filled-text-field value="0" input-cash="0.05"></md-filled-text-field>
+            ><md-filled-text-field input-cash="0.05"></md-filled-text-field>
           </md-list>
           <flex-row center class="total">
             <strong>Totaal:</strong>

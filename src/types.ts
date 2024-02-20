@@ -21,3 +21,17 @@ export interface Transaction {
   paymentAmount: number;
   transactionItems: ReceiptItem[] 
 }
+
+export interface Cashtotal {
+  100: number
+  50: number
+  20: number
+  10: number
+  5: number
+  2: number
+  1: number
+  0.50: number
+  0.20: number
+  0.10: number
+  0.05: number
+}
