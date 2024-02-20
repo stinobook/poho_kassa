@@ -117,7 +117,7 @@ export class SalesReceipt extends LiteElement {
   addProduct = async (productKey: string, amount: number = 1) => {
     amount = Number(amount)
     this.#lastSelected = productKey
-    if (this.textTotalorChange === 'Wisselgeld') {
+    if (this.textTotalorChange !== 'Totaal') {
       this.total = 0
       this.textTotalorChange = 'Totaal'
     }

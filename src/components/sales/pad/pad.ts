@@ -149,31 +149,48 @@ export class SalesPad extends LiteElement {
     dialogCash.addEventListener('close', (event) => {
       this.writeTransaction({ event })
     })
+    let dialogPayconiq = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
+    dialogPayconiq.addEventListener('close', (event) => {
+      this.writeTransaction({ event })
+    })
   }
 
   writeTransaction({ event }) {
-    if ( event.detail === 'cancel' || 'close') {
+    if ( event.detail === 'cancel' || event.detail === 'close') {
       return
     }
-    const transactionsDB = ref(getDatabase(), 'transactions')
-    let cashChange = event.detail
-    let total = this.receipt.total
-    if (cashChange === 'exact') {
-      cashChange = total
-    }
-    if (cashChange < total) {
-      alert('Te laag bedrag!')
-    } else {
-      cashChange -= Number(total)
-      this.receipt.total = cashChange
-      this.receipt.textTotalorChange = 'Wisselgeld'
+    if ( event.detail === 'accepted') {
+      const transactionsDB = ref(getDatabase(), 'transactions')
+      let total = this.receipt.total
+      this.receipt.textTotalorChange = 'Geslaagd'
       let transaction: Transaction = {
-        paymentMethod: 'cash',
+        paymentMethod: 'payconiq',
         paymentAmount: total,
         transactionItems: this.receipt.items
       }
       push(transactionsDB, transaction)
       this.receipt.items = {}
+    } else {
+      const transactionsDB = ref(getDatabase(), 'transactions')
+      let cashChange = event.detail
+      let total = this.receipt.total
+      if (cashChange === 'exact') {
+        cashChange = total
+      }
+      if (cashChange < total) {
+        alert('Te laag bedrag!')
+      } else {
+        cashChange -= Number(total)
+        this.receipt.total = cashChange
+        this.receipt.textTotalorChange = 'Wisselgeld'
+        let transaction: Transaction = {
+          paymentMethod: 'cash',
+          paymentAmount: total,
+          transactionItems: this.receipt.items
+        }
+        push(transactionsDB, transaction)
+        this.receipt.items = {}
+      }
     }
   }
 
@@ -200,7 +217,7 @@ export class SalesPad extends LiteElement {
         <custom-dialog class="dialogPayconiq" has-actions="" has-header="">
           <span slot="title">Payconiq Ontvangst</span>
           <flex-row slot="actions" direction="row">
-            <img
+            <img action="accepted"
               src="https://portal.payconiq.com/qrcode?c=https://payconiq.com/pay/1/5c1b589a296e9a3330aebbe0&s=L&f=PNG"
             />
           </flex-row>
