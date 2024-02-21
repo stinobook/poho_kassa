@@ -8,6 +8,7 @@ import '@vandeurenglenn/lit-elements/pages.js'
 import icons from './icons.js'
 import Router from './routing.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
+import { getAuth, signOut } from 'firebase/auth'
 // import default page
 import './views/loading.js'
 
@@ -16,10 +17,12 @@ export class PoHoShell extends LiteElement {
   router: Router
 
   selectorSelected({ detail }: CustomEvent) {
-    console.log({ detail })
-
+    if (detail === 'logout') {
+      this.logout()
+    } else {
     this.drawerLayout.drawerOpen = false
     location.hash = Router.bang(detail)
+    }
   }
 
   @query('custom-selector')
@@ -86,6 +89,11 @@ export class PoHoShell extends LiteElement {
     this.router = new Router(this)
   }
 
+  async logout() {
+    const auth = getAuth()
+    await signOut(auth)
+  }
+
   render() {
     return html`
       <style>
@@ -110,6 +118,8 @@ export class PoHoShell extends LiteElement {
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="products"> products </custom-drawer-item>
           <custom-drawer-item route="categories"> categories </custom-drawer-item>
+          <custom-divider middle-inset></custom-divider>
+          <custom-drawer-item route="logout"> Logout </custom-drawer-item>
         </custom-selector>
 
         <custom-pages attr-for-selected="route">
