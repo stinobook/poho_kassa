@@ -11,10 +11,10 @@ import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field
 @customElement('login-view')
 export class LoginView extends LiteElement {
   @query('md-outlined-text-field[label="email"]')
-  email: MdOutlinedTextField
+  accessor email: MdOutlinedTextField
 
   @query('md-outlined-text-field[label="password"]')
-  password: MdOutlinedTextField
+  accessor password: MdOutlinedTextField
 
   cancel() {
     this.email.value = null
