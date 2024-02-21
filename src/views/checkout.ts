@@ -6,13 +6,27 @@ import '@material/web/textfield/filled-text-field.js'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
-import { Currency } from 'firebase/analytics'
-import type { Cashtotal } from '../types.js'
+import { get, ref, getDatabase, remove, child, onChildAdded, onChildRemoved, onValue } from 'firebase/database'
+import type { Cashtotal, Transaction } from '../types.js'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
   @property({ type: Object })
   accessor cashTotals: Cashtotal[] = [];
+  @property({ type: Object })
+  accessor allTransactions: { [key: string]: Transaction } = {}
+  @property({ type: Number })
+  accessor cashTotal: number = 0
+  @property({ type: Number })
+  accessor cashExpected: number = 0
+  @property({ type: Number })
+  accessor cashDifference: number = 0
+  @property({ type: Number })
+  accessor cashTransfer: number = 0
+  @property({ type: Number })
+  accessor cashStart: number = 100
+
+  
 
   static styles = [
     css`
@@ -75,20 +89,45 @@ export class CheckoutView extends LiteElement {
       }
     `
   ]
-  connectedCallback() {
+
+
+  inputCash(inputValue, inputAmount) {
+    inputAmount = inputAmount.value
+    inputValue = inputValue.detail
+    this.cashTotals[inputValue] = inputAmount
+    this.cashTotal = 0
+    let i = Object.keys(this.cashTotals)
+    i.forEach((key) => {
+      let nKey = Number(key)
+      this.cashTotal += nKey * this.cashTotals[key]
+    }
+    )
+    this.cashDifference = this.cashTotal - this.cashExpected
+    this.cashTransfer = this.cashTotal - this.cashStart
+  }
+
+  async connectedCallback(): Promise<void> {
     this.shadowRoot.addEventListener('input', ({ target }: CustomEvent) => {
       // @ts-ignore
       let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
       this.inputCash(inputValue, target)
     })
+    const _ref = ref(getDatabase(), 'transactions')
+    onValue(_ref, async (snap) => {
+      this.cashExpected = 100
+      this.allTransactions = await snap.val()
+      let keylessTransactions = Object.values(this.allTransactions)
+      keylessTransactions.forEach((key) => {
+        if (key.paymentMethod === 'cash'){
+          this.cashExpected += key.paymentAmount
+        }
+      })
+      this.requestRender()
+    })
   }
 
-  inputCash(inputValue, inputAmount) {
-    inputAmount = inputAmount.value
-    inputValue = inputValue.detail
-    this.cashTotals.push(inputValue: inputAmount)
-    console.log(this.cashTotals)
-  }
+
+
 
   render() {
     return html`
@@ -118,27 +157,27 @@ export class CheckoutView extends LiteElement {
           <flex-row center class="total">
             <strong>Totaal:</strong>
             <flex-it></flex-it>
-            0&euro;
+            &euro;${this.cashTotal}
           </flex-row>
           <flex-row center class="total">
             <strong>Verwacht:</strong>
             <flex-it></flex-it>
-            0&euro;
+            &euro;${this.cashExpected}
           </flex-row>
           <flex-row center class="total">
             <strong>Verschil:</strong>
             <flex-it></flex-it>
-            0&euro;
+            &euro;${this.cashDifference}
           </flex-row>
           <flex-row center class="total">
             <strong>Overdracht:</strong>
             <flex-it></flex-it>
-            0&euro;
+            &euro;${this.cashTransfer}
           </flex-row>
           <flex-row center class="total">
             <strong>Startgeld:</strong>
             <flex-it></flex-it>
-            0&euro;
+            &euro;${this.cashStart}
           </flex-row>
         </flex-column>
         <flex-column class="variasales">

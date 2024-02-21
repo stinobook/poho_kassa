@@ -5,7 +5,6 @@ import type { Product, ReceiptItem } from '../../../types.js'
 import '@vandeurenglenn/lit-elements/button.js'
 import '@vandeurenglenn/lit-elements/dialog.js'
 import '@material/web/textfield/filled-text-field.js'
-import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 
 @customElement('sales-receipt')
 export class SalesReceipt extends LiteElement {
