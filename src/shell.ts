@@ -20,8 +20,8 @@ export class PoHoShell extends LiteElement {
     if (detail === 'logout') {
       this.logout()
     } else {
-    this.drawerLayout.drawerOpen = false
-    location.hash = Router.bang(detail)
+      this.drawerLayout.drawerOpen = false
+      location.hash = Router.bang(detail)
     }
   }
 
@@ -32,46 +32,54 @@ export class PoHoShell extends LiteElement {
   accessor pages: CustomPages
 
   @property({ provider: true, batches: true, batchDelay: 50 })
-  accessor products = {}
+  accessor products = []
 
   @property({ provider: true })
   accessor categories = []
 
+  @property({ provider: true })
+  accessor transactions = []
+
   @query('custom-drawer-layout')
   accessor drawerLayout: CustomDrawerLayout
 
-  async select(selected) {
-    this.selector.select(selected)
-    this.pages.select(selected)
-  }
-
-  async connectedCallback() {
-    this.drawerLayout.drawerOpen = false
-    if (!globalThis.firebase) {
-      await import('./firebase.js')
-    }
+  setupProductsListener() {
+    this.#listeners.push('products')
     firebase.onChildAdded('products', async (snap) => {
       const val = await snap.val()
       const key = snap.key
-
-      if (!this.products[key]) this.products[key] = val
-      this.products = { ...this.products }
-
-      // this.productsByCategory = Object.entries(this.products).reduce((set, [key, item]) => {
-      //   if (!set[item['category']]) set[item['category']] = []
-      //   item['key'] = key
-      //   set[item['category']].push(item)
-      //   return set
-      // }, {})
-      // this.productsByCategory = this.productsByCategory
+      val.key = key
+      if (!this.categories) {
+        this.products = [val]
+      } else if (!this.products.includes(val)) {
+        this.products.push(val)
+      }
+      this.products = [...this.products]
+    })
+    firebase.onChildChanged('products', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      let i = -1
+      this.products.filter((product) => {
+        i += 1
+        return product.key === key
+      })
+      this.products.splice(i, val)
+      this.products = [...this.products]
     })
     firebase.onChildRemoved('products', async (snap) => {
-      delete this.products[snap.key]
+      const val = await snap.val()
+      if (this.products.includes(val)) {
+        this.products.splice(this.products.indexOf(val))
+      }
     })
+  }
 
+  setupCategoriesListener() {
+    this.#listeners.push('categories')
     firebase.onChildAdded('categories', async (snap) => {
       const val = await snap.val()
-      console.log(val)
 
       if (!this.categories) {
         this.categories = [val]
@@ -80,12 +88,81 @@ export class PoHoShell extends LiteElement {
       }
       this.categories = [...this.categories]
     })
+    firebase.onChildChanged('categories', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      let i = -1
+      this.categories.filter((product) => {
+        i += 1
+        return product.key === key
+      })
+      this.categories.splice(i, val)
+      this.categories = [...this.categories]
+    })
     firebase.onChildRemoved('categories', async (snap) => {
       const val = await snap.val()
       if (this.categories.includes(val)) {
         this.categories.splice(this.categories.indexOf(val))
       }
     })
+  }
+
+  setupTransactionsListener() {
+    this.#listeners.push('transactions')
+    firebase.onChildAdded('transactions', async (snap) => {
+      const val = await snap.val()
+
+      if (!this.transactions) {
+        this.transactions = [val]
+      } else if (!this.transactions.includes(val)) {
+        this.transactions.push(val)
+      }
+      this.transactions = [...this.transactions]
+    })
+    firebase.onChildChanged('transactions', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      let i = -1
+      this.transactions.filter((product) => {
+        i += 1
+        return product.key === key
+      })
+      this.transactions.splice(i, val)
+      this.transactions = [...this.transactions]
+    })
+    firebase.onChildRemoved('transactions', async (snap) => {
+      const val = await snap.val()
+      if (this.transactions.includes(val)) {
+        this.transactions.splice(this.transactions.indexOf(val))
+      }
+    })
+  }
+
+  #listeners = []
+
+  async select(selected) {
+    this.selector.select(selected)
+    this.pages.select(selected)
+    if (selected === 'products' || selected === 'sales') {
+      if (selected === 'products' && !this.#listeners.includes('products')) this.setupCategoriesListener()
+      if (!this.#listeners.includes('products')) {
+        this.setupProductsListener()
+        return
+      }
+    }
+
+    if (selected === 'categories' && !this.#listeners.includes('categories')) return this.setupCategoriesListener()
+    if (selected === 'checkout' && !this.#listeners.includes('transactions')) return this.setupTransactionsListener()
+  }
+
+  async connectedCallback() {
+    this.drawerLayout.drawerOpen = false
+    if (!globalThis.firebase) {
+      await import('./firebase.js')
+    }
+
     this.router = new Router(this)
   }
 

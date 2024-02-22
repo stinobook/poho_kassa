@@ -15,12 +15,11 @@ export class SalesGrid extends LiteElement {
   async willChange(propertyKey: any, value: any) {
     if (propertyKey === 'products') {
       const productsByCategory = {}
-
-      for (const [key, product] of Object.entries(value)) {
+      for (const product of value) {
         if (!productsByCategory[product.category]) {
           productsByCategory[product.category] = []
         }
-        productsByCategory[product.category].push({ key, ...product })
+        productsByCategory[product.category].push(product)
       }
       return productsByCategory
     }
