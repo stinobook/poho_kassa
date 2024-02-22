@@ -10,7 +10,8 @@ import {
   getDatabase,
   ref,
   onChildAdded as _onChildAdded,
-  onChildRemoved as _onChildRemoved
+  onChildRemoved as _onChildRemoved,
+  onChildChanged as _onChildChanged
 } from 'firebase/database'
 import Router from './routing.js'
 
@@ -70,6 +71,10 @@ const onChildAdded = (target, cb) => {
 const onChildRemoved = (target, cb) => {
   _onChildRemoved(ref(database, target), cb)
 }
+
+const onChildChanged = (target, cb) => {
+  _onChildChanged(ref(database, target), cb)
+}
 const _firebase = {
   get,
   push,
@@ -79,7 +84,8 @@ const _firebase = {
   login,
   logout,
   onChildAdded,
-  onChildRemoved
+  onChildRemoved,
+  onChildChanged
 }
 
 globalThis.firebase = _firebase
