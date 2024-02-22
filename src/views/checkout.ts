@@ -7,27 +7,18 @@ import '@material/web/textfield/filled-text-field.js'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
-import { get, ref, getDatabase, remove, child, onChildAdded, onChildRemoved, onValue } from 'firebase/database'
 import type { Cashtotal, Transaction } from '../types.js'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
-  @property({ type: Object })
-  accessor cashTotals: Cashtotal[] = [];
-  @property({ type: Object })
-  accessor allTransactions: { [key: string]: Transaction } = {}
-  @property({ type: Number })
-  accessor cashTotal: number = 0
-  @property({ type: Number })
-  accessor cashExpected: number = 0
-  @property({ type: Number })
-  accessor cashDifference: number = 0
-  @property({ type: Number })
-  accessor cashTransfer: number = 0
-  @property({ type: Number })
-  accessor cashStart: number = 100
-
-  
+  @property({ type: Array, consumer: true, renders: false }) accessor transactions: Transaction[]
+  @property({ type: Array }) accessor cashTotals: Cashtotal[] = []
+  @property({ type: Number }) accessor cashTotal: number = 0
+  @property({ type: Number }) accessor cashExpected: number = 0
+  @property({ type: Number }) accessor cashDifference: number = 0
+  @property({ type: Number }) accessor cashTransfer: number = 0
+  @property({ type: Number }) accessor cashStart: number = 100
+  @property() accessor transactionsByCategory: { [category: string]: Transaction[] } = {}
 
   static styles = [
     css`
@@ -92,7 +83,6 @@ export class CheckoutView extends LiteElement {
     `
   ]
 
-
   inputCash(inputValue, inputAmount) {
     inputAmount = inputAmount.value
     inputValue = inputValue.detail
@@ -102,8 +92,7 @@ export class CheckoutView extends LiteElement {
     i.forEach((key) => {
       let nKey = Number(key)
       this.cashTotal += nKey * this.cashTotals[key]
-    }
-    )
+    })
     this.cashDifference = this.cashTotal - this.cashExpected
     this.cashTransfer = this.cashTotal - this.cashStart
   }
@@ -114,46 +103,48 @@ export class CheckoutView extends LiteElement {
       let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
       this.inputCash(inputValue, target)
     })
-    const _ref = ref(getDatabase(), 'transactions')
-    onValue(_ref, async (snap) => {
-      this.cashExpected = 100
-      this.allTransactions = await snap.val()
-      let keylessTransactions = Object.values(this.allTransactions)
-      keylessTransactions.forEach((key) => {
-        if (key.paymentMethod === 'cash'){
-          this.cashExpected += key.paymentAmount
-        }
-      })
-      console.log(keylessTransactions)
-      this.requestRender()
-    })
   }
 
+  async onChange(propertyKey: any, value: any) {
+    if (propertyKey === 'transactions') {
+      const transactionsByCategory = {}
+      for (const transaction of value) {
+        console.log(transaction)
+        for (const [key, transactionItem] of Object.entries(transaction.transactionItems))
+          if (!transactionsByCategory[transactionItem.category]) {
+            transactionsByCategory[transactionItem.category] = {
+              paymentAmount: transactionItem.amount * transactionItem.price,
+              transactionItems: [{ paymentMethod: transaction.paymentMethod, ...transactionItem }]
+            }
+          } else {
+            transactionsByCategory[transactionItem.category].paymentAmount +=
+              transactionItem.amount * transactionItem.price
+            transactionsByCategory[transactionItem.category].transactionItems.push({
+              paymentMethod: transaction.paymentMethod,
+              ...transactionItem
+            })
+          }
+      }
 
+      this.transactionsByCategory = { ...transactionsByCategory }
+    }
+  }
   render() {
     return html`
       <flex-container>
         <flex-column class="cashtelling">
           <md-list>
-            <md-list-item>&euro;100</md-list-item
-            ><md-filled-text-field input-cash="100"></md-filled-text-field>
-            <md-list-item>&euro;50</md-list-item
-            ><md-filled-text-field input-cash="50"></md-filled-text-field>
-            <md-list-item>&euro;20</md-list-item
-            ><md-filled-text-field input-cash="20"></md-filled-text-field>
-            <md-list-item>&euro;10</md-list-item
-            ><md-filled-text-field input-cash="10"></md-filled-text-field> <md-list-item>&euro;5</md-list-item
-            ><md-filled-text-field input-cash="5"></md-filled-text-field> <md-list-item>&euro;2</md-list-item
-            ><md-filled-text-field input-cash="2"></md-filled-text-field> <md-list-item>&euro;1</md-list-item
-            ><md-filled-text-field input-cash="1"></md-filled-text-field>
-            <md-list-item>&euro;0.50</md-list-item
-            ><md-filled-text-field input-cash="0.50"></md-filled-text-field>
-            <md-list-item>&euro;0.20</md-list-item
-            ><md-filled-text-field input-cash="0.20"></md-filled-text-field>
-            <md-list-item>&euro;0.10</md-list-item
-            ><md-filled-text-field input-cash="0.10"></md-filled-text-field>
-            <md-list-item>&euro;0.05</md-list-item
-            ><md-filled-text-field input-cash="0.05"></md-filled-text-field>
+            <md-list-item>&euro;100</md-list-item><md-filled-text-field input-cash="100"></md-filled-text-field>
+            <md-list-item>&euro;50</md-list-item><md-filled-text-field input-cash="50"></md-filled-text-field>
+            <md-list-item>&euro;20</md-list-item><md-filled-text-field input-cash="20"></md-filled-text-field>
+            <md-list-item>&euro;10</md-list-item><md-filled-text-field input-cash="10"></md-filled-text-field>
+            <md-list-item>&euro;5</md-list-item><md-filled-text-field input-cash="5"></md-filled-text-field>
+            <md-list-item>&euro;2</md-list-item><md-filled-text-field input-cash="2"></md-filled-text-field>
+            <md-list-item>&euro;1</md-list-item><md-filled-text-field input-cash="1"></md-filled-text-field>
+            <md-list-item>&euro;0.50</md-list-item><md-filled-text-field input-cash="0.50"></md-filled-text-field>
+            <md-list-item>&euro;0.20</md-list-item><md-filled-text-field input-cash="0.20"></md-filled-text-field>
+            <md-list-item>&euro;0.10</md-list-item><md-filled-text-field input-cash="0.10"></md-filled-text-field>
+            <md-list-item>&euro;0.05</md-list-item><md-filled-text-field input-cash="0.05"></md-filled-text-field>
           </md-list>
           <flex-row center class="total">
             <strong>Totaal:</strong>
@@ -186,19 +177,32 @@ export class CheckoutView extends LiteElement {
             <md-list>
               <md-list-item>Winkel</md-list-item>
               <md-divider></md-divider>
-              ${this.allTransactions
-                ? map(
-                  Object.values(this.allTransactions),
-                  (transaction: Transaction) => 
-                  html`
-                    <md-list-item>
-                    <span slot="start">${transaction.transactionItems }</span>
-                    <span slot="end">${transaction.paymentAmount }</span>
-                    <span slot="trailing-supporting-text">${transaction.paymentMethod}</span>
-                    </md-list-item>
-                  `
-                )
-              : ''}
+              ${this.transactionsByCategory
+                ? map(this.transactionsByCategory['Winkel'], (transaction: Transaction) =>
+                    map(
+                      transaction.transactionItems,
+                      (transactionItem) =>
+                        html`
+                          <md-list-item>
+                            <span slot="start">${transaction.transactionItems.length}</span>
+                            <span slot="end">${transaction.paymentAmount}</span>
+                            <span slot="trailing-supporting-text">${transaction.paymentMethod}</span>
+                          </md-list-item>
+                        `
+                    )
+                  ) &&
+                  map(
+                    this.transactionsByCategory['Lidgeld'],
+                    (transaction: Transaction) =>
+                      html`
+                        <md-list-item>
+                          <span slot="start">${transaction.transactionItems.length}</span>
+                          <span slot="end">${transaction.paymentAmount}</span>
+                          <span slot="trailing-supporting-text">${transaction.paymentMethod}</span>
+                        </md-list-item>
+                      `
+                  )
+                : ''}
             </md-list>
             <flex-row center class="total">
               <strong>Totaal:</strong>
