@@ -189,7 +189,7 @@ export class CheckoutView extends LiteElement {
                       (item) =>
                         html`
                           <md-list-item>
-                            <span slot="start">${item.description}</span>
+                            <span slot="start">${key === 'Lidgeld' ? item.description : item.name}</span>
                             <span slot="end"
                               >${(item.amount * item.price).toLocaleString(navigator.language, {
                                 style: 'currency',
