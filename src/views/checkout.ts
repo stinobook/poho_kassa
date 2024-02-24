@@ -108,8 +108,11 @@ export class CheckoutView extends LiteElement {
   async onChange(propertyKey: any, value: any) {
     if (propertyKey === 'transactions') {
       const transactionsByCategory = {}
+      this.cashExpected = 0
       for (const transaction of value) {
-        console.log(transaction)
+        if (transaction.paymentMethod === 'cash') {
+            this.cashExpected += transaction.paymentAmount
+        }
         for (const [key, transactionItem] of Object.entries(transaction.transactionItems))
           if (!transactionsByCategory[transactionItem.category]) {
             transactionsByCategory[transactionItem.category] = {
@@ -178,31 +181,20 @@ export class CheckoutView extends LiteElement {
               <md-list-item>Winkel</md-list-item>
               <md-divider></md-divider>
               ${this.transactionsByCategory
-                ? map(this.transactionsByCategory['Winkel'], (transaction: Transaction) =>
-                    map(
-                      transaction.transactionItems,
-                      (transactionItem) =>
+                ? map(Object.entries(this.transactionsByCategory), (transaction) => {
+                    if (transaction[0] === 'Lidgeld') {
+                      Object.entries(transaction[1].transactionItems).map(entry => {
                         html`
-                          <md-list-item>
-                            <span slot="start">${transaction.transactionItems.length}</span>
-                            <span slot="end">${transaction.paymentAmount}</span>
-                            <span slot="trailing-supporting-text">${transaction.paymentMethod}</span>
-                          </md-list-item>
-                        `
-                    )
-                  ) &&
-                  map(
-                    this.transactionsByCategory['Lidgeld'],
-                    (transaction: Transaction) =>
-                      html`
                         <md-list-item>
-                          <span slot="start">${transaction.transactionItems.length}</span>
-                          <span slot="end">${transaction.paymentAmount}</span>
-                          <span slot="trailing-supporting-text">${transaction.paymentMethod}</span>
+                          <span slot="start">${entry[1].description}</span>
+                          <span slot="end">${entry[1].paymentAmount}</span>
+                          <span slot="trailing-supporting-text">${entry[1].paymentMethod}</span>
                         </md-list-item>
-                      `
-                  )
-                : ''}
+                        `
+                      })
+                    }
+              })
+              : ''}
             </md-list>
             <flex-row center class="total">
               <strong>Totaal:</strong>
