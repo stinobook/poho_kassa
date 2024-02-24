@@ -111,7 +111,7 @@ export class CheckoutView extends LiteElement {
       this.cashExpected = 0
       for (const transaction of value) {
         if (transaction.paymentMethod === 'cash') {
-            this.cashExpected += transaction.paymentAmount
+          this.cashExpected += transaction.paymentAmount
         }
         for (const [key, transactionItem] of Object.entries(transaction.transactionItems))
           if (!transactionsByCategory[transactionItem.category]) {
@@ -178,23 +178,21 @@ export class CheckoutView extends LiteElement {
         <flex-column class="variasales">
           <flex-column>
             <md-list>
-              <md-list-item>Winkel</md-list-item>
+              <md-list-item>Lidgeld</md-list-item>
               <md-divider></md-divider>
-              ${this.transactionsByCategory
-                ? map(Object.entries(this.transactionsByCategory), (transaction) => {
-                    if (transaction[0] === 'Lidgeld') {
-                      Object.entries(transaction[1].transactionItems).map(entry => {
-                        html`
+              ${this.transactionsByCategory?.['Lidgeld']
+                ? map(
+                    this.transactionsByCategory['Lidgeld'].transactionItems,
+                    (item) =>
+                      html`
                         <md-list-item>
-                          <span slot="start">${entry[1].description}</span>
-                          <span slot="end">${entry[1].paymentAmount}</span>
-                          <span slot="trailing-supporting-text">${entry[1].paymentMethod}</span>
+                          <span slot="start">${item.description}</span>
+                          <span slot="end">${item.paymentAmount}</span>
+                          <span slot="trailing-supporting-text">${item.paymentMethod}</span>
                         </md-list-item>
-                        `
-                      })
-                    }
-              })
-              : ''}
+                      `
+                  )
+                : ''}
             </md-list>
             <flex-row center class="total">
               <strong>Totaal:</strong>
