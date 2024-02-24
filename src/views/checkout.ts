@@ -23,7 +23,6 @@ export class CheckoutView extends LiteElement {
   static styles = [
     css`
       :host {
-        pointer-events: none;
         display: flex;
         flex-direction: row;
         width: 100%;
@@ -43,7 +42,7 @@ export class CheckoutView extends LiteElement {
         box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.5) inset;
       }
       flex-container {
-        min-width: 100%;
+        max-width: none;
         height: -webkit-fill-available;
         width: -webkit-fill-available;
         position: relative;
@@ -56,6 +55,7 @@ export class CheckoutView extends LiteElement {
       }
       .variasales {
         width: -webkit-fill-available;
+        flex-direction: column;
       }
       .cashtelling md-list {
         flex-direction: row;
@@ -70,6 +70,7 @@ export class CheckoutView extends LiteElement {
       }
       .total {
         padding: 12px 12px;
+        box-sizing: border-box;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         height: 24px;
         width: 100%;
@@ -113,20 +114,21 @@ export class CheckoutView extends LiteElement {
         if (transaction.paymentMethod === 'cash') {
           this.cashExpected += transaction.paymentAmount
         }
-        for (const [key, transactionItem] of Object.entries(transaction.transactionItems))
+        for (const [key, transactionItem] of Object.entries(transaction.transactionItems)) {
           if (!transactionsByCategory[transactionItem.category]) {
             transactionsByCategory[transactionItem.category] = {
-              paymentAmount: transactionItem.amount * transactionItem.price,
+              paymentAmount: { cash: 0, payconiq: 0 },
               transactionItems: [{ paymentMethod: transaction.paymentMethod, ...transactionItem }]
             }
           } else {
-            transactionsByCategory[transactionItem.category].paymentAmount +=
-              transactionItem.amount * transactionItem.price
             transactionsByCategory[transactionItem.category].transactionItems.push({
               paymentMethod: transaction.paymentMethod,
               ...transactionItem
             })
           }
+          transactionsByCategory[transactionItem.category].paymentAmount[transaction.paymentMethod] +=
+            transactionItem.amount * transactionItem.price
+        }
       }
 
       this.transactionsByCategory = { ...transactionsByCategory }
@@ -175,45 +177,52 @@ export class CheckoutView extends LiteElement {
             &euro;${this.cashStart}
           </flex-row>
         </flex-column>
-        <flex-column class="variasales">
-          <flex-column>
-            <md-list>
-              <md-list-item>Lidgeld</md-list-item>
-              <md-divider></md-divider>
-              ${this.transactionsByCategory?.['Lidgeld']
-                ? map(
-                    this.transactionsByCategory['Lidgeld'].transactionItems,
-                    (item) =>
-                      html`
-                        <md-list-item>
-                          <span slot="start">${item.description}</span>
-                          <span slot="end">${item.paymentAmount}</span>
-                          <span slot="trailing-supporting-text">${item.paymentMethod}</span>
-                        </md-list-item>
-                      `
-                  )
-                : ''}
-            </md-list>
-            <flex-row center class="total">
-              <strong>Totaal:</strong>
-              <flex-it></flex-it>
-              <span style="margin-right: 14px">Cash: 0&euro;</span>
-              <span>Payconiq: 0&euro;</span>
-            </flex-row>
-          </flex-column>
-          <flex-column>
-            <md-list>
-              <md-list-item>Lidgeld</md-list-item>
-              <md-divider></md-divider>
-            </md-list>
-            <flex-row center class="total">
-              <strong>Totaal:</strong>
-              <flex-it></flex-it>
-              <span style="margin-right: 14px">Cash: 0&euro;</span>
-              <span>Payconiq: 0&euro;</span>
-            </flex-row>
-          </flex-column>
-        </flex-column>
+        <flex-container class="variasales" direction="column">
+          ${this.transactionsByCategory
+            ? Object.entries(this.transactionsByCategory).map(
+                ([key, value]) => html`
+                  <md-list>
+                    <md-list-item>${key}</md-list-item>
+                    <md-divider></md-divider>
+                    ${map(
+                      value.transactionItems,
+                      (item) =>
+                        html`
+                          <md-list-item>
+                            <span slot="start">${item.description}</span>
+                            <span slot="end"
+                              >${(item.amount * item.price).toLocaleString(navigator.language, {
+                                style: 'currency',
+                                currency: 'EUR'
+                              })}</span
+                            >
+                            <span slot="trailing-supporting-text">${item.paymentMethod}</span>
+                          </md-list-item>
+                        `
+                    )}
+                  </md-list>
+                  <flex-row center class="total">
+                    <strong>Totaal:</strong>
+                    <flex-it></flex-it>
+                    <span style="margin-right: 14px"
+                      >Cash:
+                      ${this.transactionsByCategory?.[key]?.paymentAmount.cash.toLocaleString(navigator.language, {
+                        style: 'currency',
+                        currency: 'EUR'
+                      })}</span
+                    >
+                    <span
+                      >Payconiq:
+                      ${this.transactionsByCategory?.[key]?.paymentAmount.payconiq.toLocaleString(navigator.language, {
+                        style: 'currency',
+                        currency: 'EUR'
+                      })}</span
+                    >
+                  </flex-row>
+                `
+              )
+            : ''}
+        </flex-container>
       </flex-container>
     `
   }
