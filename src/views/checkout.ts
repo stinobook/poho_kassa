@@ -182,14 +182,15 @@ export class CheckoutView extends LiteElement {
             ? Object.entries(this.transactionsByCategory).map(
                 ([key, value]) => html`
                   <md-list>
-                    <md-list-item>${key}</md-list-item>
+                    <details>
+                    <summary>${key}</summary>
                     <md-divider></md-divider>
                     ${map(
                       value.transactionItems,
                       (item) =>
                         html`
                           <md-list-item>
-                            <span slot="start">${item.description}</span>
+                            <span slot="start">${(item.description) ? item.description : item.name + ' x ' + item.amount}</span>
                             <span slot="end"
                               >${(item.amount * item.price).toLocaleString(navigator.language, {
                                 style: 'currency',
@@ -200,6 +201,7 @@ export class CheckoutView extends LiteElement {
                           </md-list-item>
                         `
                     )}
+                  </details>
                   </md-list>
                   <flex-row center class="total">
                     <strong>Totaal:</strong>
