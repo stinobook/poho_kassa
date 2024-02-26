@@ -174,7 +174,7 @@ export class CheckoutView extends LiteElement {
   async onChange(propertyKey: any, value: any) {
     if (propertyKey === 'transactions') {
       const transactionsByCategory = {}
-      this.cashExpected = 0
+      this.cashExpected = this.cashStart
       for (const transaction of value) {
         if (transaction.paymentMethod === 'cash') {
           this.cashExpected += transaction.paymentAmount
