@@ -7,7 +7,9 @@ import '@material/web/textfield/filled-text-field.js'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
-import type { Cashtotal, Transaction } from '../types.js'
+import '@material/web/button/filled-button.js'
+import type { Cashtotal, Transaction, Sales } from '../types.js'
+import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
@@ -55,7 +57,6 @@ export class CheckoutView extends LiteElement {
         min-width: 200px;
       }
       .variasales {
-        flex-direction: column;
         min-width: 400px;
         max-width: calc(100% - 310px);
       }
@@ -87,14 +88,11 @@ export class CheckoutView extends LiteElement {
         padding: 0.5rem 0;
         position: relative;
         cursor: pointer;
-        font-size: 1.25rem;
-        font-weight: 300;
         list-style: none;
       }
       
       details summary:after {
         content: "+";
-        color: var(--primary-background-color);
         position: absolute;
         font-size: 1.75rem;
         line-height: 0;
@@ -139,7 +137,9 @@ export class CheckoutView extends LiteElement {
       .variasales md-list {
         width: 100%;
       }
-
+      .cashtelling md-filled-button {
+        margin: 24px auto;
+      }
 
     `
   ]
@@ -163,6 +163,11 @@ export class CheckoutView extends LiteElement {
       // @ts-ignore
       let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
       this.inputCash(inputValue, target)
+    })
+    this.shadowRoot.addEventListener('click', ({ target }: CustomEvent) => {
+      // @ts-ignore
+      let checkout = new CustomEvent('checkoutTap', { detail: target.getAttribute('checkout-tap')})
+      this.checkoutTap(checkout)
     })
   }
 
@@ -194,11 +199,28 @@ export class CheckoutView extends LiteElement {
       this.transactionsByCategory = { ...transactionsByCategory }
     }
   }
+
+  async checkoutTap({ detail }: CustomEvent){
+    if ( detail === 'checkout') {
+      if (confirm("Are you sure?") === true ) {
+      const salesDB = ref(getDatabase(), 'sales')
+      const transactionsDB = ref(getDatabase(), 'transactions')
+      let sales: Sales = {
+        date: new Date().toISOString().slice(0, 16),
+        cashDifferenceCheckout: this.cashDifference,
+        cashStartCheckout: this.cashStart,
+        cashTransferCheckout: this.cashTransfer,
+        transactions: this.transactionsByCategory
+      }
+      await push(salesDB, sales)
+      await set(transactionsDB, null)
+    }}}
+
   render() {
     return html`
       <flex-container direction="row">
+      <custom-elevation level="1"></custom-elevation>
         <flex-column class="cashtelling">
-        <custom-elevation level="1"></custom-elevation>
         <span><label>&euro;100<input class="cashInputfield" type="text" input-cash="100"/></label></span>
         <span><label>&euro;50<input class="cashInputfield" type="text" input-cash="50"/></label></span>
         <span><label>&euro;20<input class="cashInputfield" type="text" input-cash="20"/></label></span>
@@ -210,7 +232,6 @@ export class CheckoutView extends LiteElement {
         <span><label>&euro;0.20<input class="cashInputfield" type="text" input-cash="0.20"/></label></span>
         <span><label>&euro;0.10<input class="cashInputfield" type="text" input-cash="0.10"/></label></span>
         <span><label>&euro;0.05<input class="cashInputfield" type="text" input-cash="0.05"/></label></span>
-        <custom-elevation level="2"></custom-elevation>
         <flex-row center class="total">
           <strong>Totaal:</strong>
           <flex-it></flex-it>
@@ -236,6 +257,7 @@ export class CheckoutView extends LiteElement {
           <flex-it></flex-it>
           &euro;${this.cashStart}
         </flex-row>
+        <md-filled-button @checkout-click=${(event) => this.checkoutTap(event)} checkout-tap="checkout">Bevestig Afsluit</md-filled-button>
         </flex-column>
         <flex-container class="variasales" direction="column">
           ${this.transactionsByCategory

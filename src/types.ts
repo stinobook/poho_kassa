@@ -13,7 +13,7 @@ export interface ReceiptItem extends Product {
   amount: number
 }
 
-export type Transactions = Transactions[]
+export type Transactions = Transaction[]
 
 export interface Transaction {
   key?: string;
@@ -34,4 +34,11 @@ export interface Cashtotal {
   '0.20'?: number
   '0.10'?: number
   '0.05'?: number
+}
+export interface Sales extends Transaction {
+  date: date
+  cashDifferenceCheckout: number
+  cashStartCheckout: number
+  cashTransferCheckout: number
+  transactions: Transactions[]
 }

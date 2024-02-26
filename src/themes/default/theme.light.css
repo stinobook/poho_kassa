@@ -29,4 +29,7 @@
  --md-sys-color-surface-tint: var(--md-sys-color-surface-tint-light);
  --md-sys-color-outline-variant: var(--md-sys-color-outline-variant-light);
  --md-sys-color-scrim: var(--md-sys-color-scrim-light);
-}
+    --md-sys-color-surface-container: var(--md-sys-color-surface-container-light);
+    --md-sys-color-surface-container-high: var(--md-sys-color-surface-container-high-light);
+    --md-sys-color-surface-container-highest: var(--md-sys-color-surface-container-highest-light);
+  }
