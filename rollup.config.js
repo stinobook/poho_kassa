@@ -9,9 +9,9 @@ import { env } from 'process'
 import { rimraf } from 'rimraf'
 
 try {
-  await opendir('./www/themes/default/')
+  await opendir('./www/themes')
 } catch (error) {
-  await cp('node_modules/@vandeurenglenn/lit-elements/exports/themes', './www/themes', { recursive: true })
+  await cp('./src/themes', './www/themes', { recursive: true })
 }
 
 const views = await glob(['./src/views/**/*'])

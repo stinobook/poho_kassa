@@ -48,13 +48,8 @@ export class SalesGrid extends LiteElement {
       md-filled-button {
         pointer-events: auto;
         height: 86.33px;
-        --md-filled-button-container-color: var(--md-sys-color-on-secondary);
-        --md-filled-button-label-text-color: var(--md-sys-color-on-secondary-container);
-        --md-filled-button-focus-label-text-color: var(--md-sys-color-on-secondary-container);
-        --md-filled-button-hover-label-text-color: var(--md-sys-color-on-secondary-container);
         margin: 4px;
         justify-content: between;
-
         min-width: 86.33px;
       }
       flex-wrap-between {
