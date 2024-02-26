@@ -214,6 +214,8 @@ export class CheckoutView extends LiteElement {
       }
       await push(salesDB, sales)
       await set(transactionsDB, null)
+      this.transactionsByCategory = {}
+      this.cashExpected = this.cashStart
     }}}
 
   render() {
