@@ -9,7 +9,7 @@ import { env } from 'process'
 import { rimraf } from 'rimraf'
 
 try {
-  await opendir('./www/themes')
+  await opendir('./www/themes/default/')
 } catch (error) {
   await cp('node_modules/@vandeurenglenn/lit-elements/exports/themes', './www/themes', { recursive: true })
 }
