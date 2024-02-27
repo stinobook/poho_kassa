@@ -19,6 +19,12 @@ export class CheckoutView extends LiteElement {
   @property({ type: Number }) accessor cashExpected: number = 0
   @property({ type: Number }) accessor cashDifference: number = 0
   @property({ type: Number }) accessor cashTransfer: number = 0
+  @property({ type: Number }) accessor cashKantine: number = 0
+  @property({ type: Number }) accessor cashWinkel: number = 0
+  @property({ type: Number }) accessor cashLidgeld: number = 0
+  @property({ type: Number }) accessor payconiqKantine: number = 0
+  @property({ type: Number }) accessor payconiqWinkel: number = 0
+  @property({ type: Number }) accessor payconiqLidgeld: number = 0
   @property({ type: Number }) accessor cashStart: number = 100
   @property() accessor transactionsByCategory: { [category: string]: Transaction[] } = {}
 
@@ -205,11 +211,38 @@ export class CheckoutView extends LiteElement {
       if (confirm("Are you sure?") === true ) {
       const salesDB = ref(getDatabase(), 'sales')
       const transactionsDB = ref(getDatabase(), 'transactions')
+      let cashKantine = 0
+      let cashWinkel = 0
+      let cashLidgeld = 0
+      let payconiqKantine = 0
+      let payconiqWinkel = 0
+      let payconiqLidgeld = 0
+      Object.entries(this.transactionsByCategory).map(
+        ([key, value]) => {
+          if (key === 'Winkel') {
+            this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
+            this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+          } else if (key === 'Lidgeld') {
+            this.cashLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.cash
+            this.payconiqLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+          } else {
+            this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
+            this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+          }
+        }
+      )
+
       let sales: Sales = {
         date: new Date().toISOString().slice(0, 16),
         cashDifferenceCheckout: this.cashDifference,
         cashStartCheckout: this.cashStart,
         cashTransferCheckout: this.cashTransfer,
+        cashKantine: this.cashKantine,
+        cashWinkel: this.cashWinkel,
+        cashLidgeld: this.cashLidgeld,
+        payconiqKantine: this.payconiqKantine,
+        payconiqWinkel: this.payconiqWinkel,
+        payconiqLidgeld: this.payconiqLidgeld,
         transactions: this.transactionsByCategory
       }
       await push(salesDB, sales)

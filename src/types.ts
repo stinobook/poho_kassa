@@ -36,9 +36,16 @@ export interface Cashtotal {
   '0.05'?: number
 }
 export interface Sales extends Transaction {
+  key?: string
   date: date
   cashDifferenceCheckout: number
   cashStartCheckout: number
   cashTransferCheckout: number
+  cashKantine: number
+  cashWinkel: number
+  cashLidgeld: number
+  payconiqKantine: number
+  payconiqWinkel: number
+  payconiqLidgeld: number
   transactions: Transactions[]
 }

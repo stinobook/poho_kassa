@@ -191,6 +191,7 @@ export class PoHoShell extends LiteElement {
         <custom-selector attr-for-selected="route" slot="drawer-content" @selected=${this.selectorSelected.bind(this)}>
           <custom-drawer-item route="sales"> Verkoop </custom-drawer-item>
           <custom-drawer-item route="checkout"> Afsluit </custom-drawer-item>
+          <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
           <custom-drawer-item route="attendance"> Aanwezigheidslijst </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="products"> products </custom-drawer-item>
@@ -205,6 +206,7 @@ export class PoHoShell extends LiteElement {
           <login-view route="login"> </login-view>
           <attendance-view route="attendance"> </attendance-view>
           <checkout-view route="checkout"> </checkout-view>
+          <bookkeeping-view route="bookkeeping"> </bookkeeping-view>
           <categories-view route="categories"> </categories-view>
           <products-view route="products"> </products-view>
           <add-product-view route="add-product"> </add-product-view>
