@@ -153,7 +153,9 @@ export class PoHoShell extends LiteElement {
       }
     }
 
-    if (selected === 'categories' && !this.#listeners.includes('categories')) return this.setupCategoriesListener()
+    if (selected === 'categories' || selected === 'events') {
+    if (!this.#listeners.includes('categories')) return this.setupCategoriesListener()
+    }
     if (selected === 'checkout' && !this.#listeners.includes('transactions')) return this.setupTransactionsListener()
   }
 
@@ -200,11 +202,12 @@ export class PoHoShell extends LiteElement {
           <custom-drawer-item route="checkout"> Afsluit </custom-drawer-item>
           <custom-drawer-item route="attendance"> Aanwezigheidslijst </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
-          <custom-drawer-item route="products"> products </custom-drawer-item>
-          <custom-drawer-item route="categories"> categories </custom-drawer-item>
+          <custom-drawer-item route="products"> Producten </custom-drawer-item>
+          <custom-drawer-item route="categories"> Categorieën  </custom-drawer-item>
+          <custom-drawer-item route="events"> Evenementinstellingen  </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
-          <custom-drawer-item route="logout" class="logout"> Logout </custom-drawer-item>
+          <custom-drawer-item route="logout" class="logout"> Uitloggen </custom-drawer-item>
         </custom-selector>
 
         <custom-pages attr-for-selected="route">
@@ -215,6 +218,7 @@ export class PoHoShell extends LiteElement {
           <checkout-view route="checkout"> </checkout-view>
           <bookkeeping-view route="bookkeeping"> </bookkeeping-view>
           <categories-view route="categories"> </categories-view>
+          <events-view route="events"> </events-view>
           <products-view route="products"> </products-view>
           <add-product-view route="add-product"> </add-product-view>
         </custom-pages>
