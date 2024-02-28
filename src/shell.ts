@@ -179,6 +179,13 @@ export class PoHoShell extends LiteElement {
           height: 100%;
           display: block;
         }
+        .logout {
+          position: absolute;
+          bottom: 24px;
+          background: var(--md-sys-color-on-error-container);
+          color: var(--md-sys-color-on-error);
+          width: auto;
+        }
       </style>
       <!-- just cleaner -->
       ${icons}
@@ -191,13 +198,13 @@ export class PoHoShell extends LiteElement {
         <custom-selector attr-for-selected="route" slot="drawer-content" @selected=${this.selectorSelected.bind(this)}>
           <custom-drawer-item route="sales"> Verkoop </custom-drawer-item>
           <custom-drawer-item route="checkout"> Afsluit </custom-drawer-item>
-          <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
           <custom-drawer-item route="attendance"> Aanwezigheidslijst </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="products"> products </custom-drawer-item>
           <custom-drawer-item route="categories"> categories </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
-          <custom-drawer-item route="logout"> Logout </custom-drawer-item>
+          <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
+          <custom-drawer-item route="logout" class="logout"> Logout </custom-drawer-item>
         </custom-selector>
 
         <custom-pages attr-for-selected="route">
