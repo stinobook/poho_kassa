@@ -84,7 +84,7 @@ export class CategoriesView extends LiteElement {
     const handleClose = async () => {
       if (dialog.returnValue === 'remove') {
         if (this.categories.includes(target)) {
-          this.categories.splice(this.categories.indexOf(target))
+          this.categories.splice(this.categories.indexOf(target), 1)
           this.requestRender()
 
           await firebase.set('categories', this.categories)
