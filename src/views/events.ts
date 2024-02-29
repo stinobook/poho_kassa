@@ -11,6 +11,8 @@ import '@material/web/list/list-item.js'
 export class EventsView extends LiteElement {
   @property({ type: Array, consumer: true })
   accessor categories: string[]
+  @property({ type: Object, provider: true })
+  accessor categoriesEvents
 
   static styles = [
     css`
@@ -31,19 +33,9 @@ export class EventsView extends LiteElement {
   }
 
   eventMode({ detail }: CustomEvent) {
-    let checkedEvents = Array.from(this.shadowRoot.querySelectorAll('.eventInput'))
-    let testObj = {}
-    let newVal = 0
-    Object.entries(this.categories).forEach(([key, value]) =>
-      i = key
-      val = value
-      console.log(i val)
-      console.log(checkedEvents[i])
-      //if (this.newVal) { newVal = 0 }
-      //this.testObj = {...testObj, [value]: newVal}
-    )
-    console.log(this.testObj)
-    console.log(this.categories)
+    let eventPrices = Array.from(this.shadowRoot.querySelectorAll('.eventInput'))
+    this.categoriesEvents = Object.entries(this.categories).map(([_key, _value]) => ({[_value]: Number(eventPrices[_key].value)}));
+    console.log(this.categoriesEvents)
   }
 
   render() {
