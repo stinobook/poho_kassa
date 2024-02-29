@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
-import { getAuth } from 'firebase/auth'
+import { getAuth, signOut } from 'firebase/auth'
 import {
   get as _get,
   push as _push,
@@ -85,7 +85,8 @@ const _firebase = {
   logout,
   onChildAdded,
   onChildRemoved,
-  onChildChanged
+  onChildChanged,
+  signOut: () => signOut(auth)
 }
 
 globalThis.firebase = _firebase

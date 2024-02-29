@@ -8,7 +8,6 @@ import '@vandeurenglenn/lit-elements/pages.js'
 import icons from './icons.js'
 import Router from './routing.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
-import { getAuth, signOut } from 'firebase/auth'
 // import default page
 import './views/loading.js'
 
@@ -154,7 +153,7 @@ export class PoHoShell extends LiteElement {
     }
 
     if (selected === 'categories' || selected === 'events') {
-    if (!this.#listeners.includes('categories')) return this.setupCategoriesListener()
+      if (!this.#listeners.includes('categories')) return this.setupCategoriesListener()
     }
     if (selected === 'checkout' && !this.#listeners.includes('transactions')) return this.setupTransactionsListener()
   }
@@ -169,8 +168,7 @@ export class PoHoShell extends LiteElement {
   }
 
   async logout() {
-    const auth = getAuth()
-    await signOut(auth)
+    await firebase.signOut()
   }
 
   render() {
@@ -203,8 +201,8 @@ export class PoHoShell extends LiteElement {
           <custom-drawer-item route="attendance"> Aanwezigheidslijst </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="products"> Producten </custom-drawer-item>
-          <custom-drawer-item route="categories"> Categorieën  </custom-drawer-item>
-          <custom-drawer-item route="events"> Evenementinstellingen  </custom-drawer-item>
+          <custom-drawer-item route="categories"> Categorieën </custom-drawer-item>
+          <custom-drawer-item route="events"> Evenementinstellingen </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
           <custom-drawer-item route="logout" class="logout"> Uitloggen </custom-drawer-item>
