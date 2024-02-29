@@ -31,20 +31,28 @@ export class EventsView extends LiteElement {
   }
 
   eventMode({ detail }: CustomEvent) {
-    let checkedEvents = Array.from(this.shadowRoot.querySelectorAll('md-checkbox'))
-    console.log(this.categories[1])
-    console.log(checkedEvents[1].checked)
+    let checkedEvents = Array.from(this.shadowRoot.querySelectorAll('.eventInput'))
+    let testObj = {}
+    let newVal = 0
+    Object.entries(this.categories).forEach(([key, value]) =>
+      i = key
+      val = value
+      console.log(i val)
+      console.log(checkedEvents[i])
+      //if (this.newVal) { newVal = 0 }
+      //this.testObj = {...testObj, [value]: newVal}
+    )
+    console.log(this.testObj)
+    console.log(this.categories)
   }
 
   render() {
     return html`
       <flex-container>
-      <span><label>Extra kost (in &euro;)<input class="eventInput" type="text"/></label></span>
       ${this.categories.map(
         (item) => html`
           <md-list-item>
-            <span slot="headline">${item}</span>
-            <span slot="end"><md-checkbox eventCheckbox="enable${item}"></md-checkbox></span>
+            <span lot="headline"><label>${item}<input class="eventInput" type="text" eventValue="enable${item}"/></label></span>
           </md-list-item>
         `
       )}
