@@ -17,7 +17,7 @@
     "custom-element-decorator": "^0.6.0",
     "glob": "^10.3.10",
     "rimraf": "^5.0.5",
-    "rollup": "^4.9.5",
+    "rollup": "^4.12.0",
     "rollup-plugin-material-symbols": "^2.1.5",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
@@ -26,7 +26,7 @@
   "dependencies": {
     "@material/web": "^1.1.1",
     "@vandeurenglenn/flex-elements": "^1.2.3",
-    "@vandeurenglenn/lit-elements": "^0.3.16",
+    "@vandeurenglenn/lit-elements": "^0.3.19",
     "@vandeurenglenn/lite": "^0.2.7",
     "firebase": "^10.8.0",
     "lit": "^3.1.1"
