@@ -173,7 +173,7 @@ export class PoHoShell extends LiteElement {
     this.selector.select(selected)
     this.pages.select(selected)
     if (selected === 'products' || selected === 'sales') {
-      if (selected === 'products' && !this.#listeners.includes('products')) this.setupCategoriesListener()
+      if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
       if (!this.#listeners.includes('products')) {
         this.setupProductsListener()
         return

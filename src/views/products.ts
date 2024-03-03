@@ -116,10 +116,10 @@ export class ProductsView extends LiteElement {
           ${this.products
             ? Object.entries(this.products).map(
                 ([key, item]) => html`
-                  <md-list-item action="edit" key=${key}>
+                  <md-list-item action="edit" key=${item.key}>
                     <span slot="headline">${item.name}</span>
                     <span slot="supporting-text">${item.vat}</span>
-                    <md-icon-button slot="end" action="delete" key=${key}>
+                    <md-icon-button slot="end" action="delete" key=${item.key}>
                       <custom-icon icon="delete"></custom-icon>
                     </md-icon-button>
                   </md-list-item>
