@@ -143,13 +143,14 @@ export class PoHoShell extends LiteElement {
   #listeners = []
 
   #onSearch = (ev) => {
+    console.log(ev)
     if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
       if (this._inMem) this.products = this._inMem
       this._inMem = this.products
       this.products = this.products.filter((product) => {
-        if (product.key.includes(ev.detail)) return true
-        if (product.name.toLowerCase().includes(ev.detail)) return true
-        if (product.category.toLowerCase().includes(ev.detail)) return true
+        if (product.key.includes(ev.detail.toLowerCase())) return true
+        if (product.name.toLowerCase().includes(ev.detail.toLowerCase())) return true
+        if (product.category.toLowerCase().includes(ev.detail.toLowerCase())) return true
       })
     } else if (this.pages.selected === 'categories') {
       if (this._inMem) this.categories = this._inMem
