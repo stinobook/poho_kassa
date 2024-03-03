@@ -50,7 +50,6 @@ export class CheckoutView extends LiteElement {
       }
       flex-container {
         max-width: none;
-        height: -webkit-fill-available;
         width: -webkit-fill-available;
         position: relative;
         overflow: hidden;
@@ -61,6 +60,7 @@ export class CheckoutView extends LiteElement {
       .cashtelling {
         max-width: 300px;
         min-width: 200px;
+        position: relative;
       }
       .variasales {
         min-width: 400px;
@@ -254,8 +254,8 @@ export class CheckoutView extends LiteElement {
   render() {
     return html`
       <flex-container direction="row">
-      <custom-elevation level="1"></custom-elevation>
         <flex-column class="cashtelling">
+        <custom-elevation level="1"></custom-elevation>
         <span><label>&euro;100<input class="cashInputfield" type="text" input-cash="100"/></label></span>
         <span><label>&euro;50<input class="cashInputfield" type="text" input-cash="50"/></label></span>
         <span><label>&euro;20<input class="cashInputfield" type="text" input-cash="20"/></label></span>
