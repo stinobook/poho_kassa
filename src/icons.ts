@@ -23,6 +23,7 @@ export default html`
       <span name="menu_open">@symbol-menu_open</span>
       <span name="edit">@symbol-edit</span>
       <span name="save">@symbol-save</span>
+      <span name="search">@symbol-search</span>
       <span name="delete">@symbol-delete</span>
       <span name="voting_chip">@symbol-voting_chip</span>
       <span name="check">@symbol-check</span>+

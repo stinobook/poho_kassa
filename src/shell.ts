@@ -5,6 +5,7 @@ import '@vandeurenglenn/lit-elements/icon-set.js'
 import '@vandeurenglenn/lit-elements/theme.js'
 import '@vandeurenglenn/lit-elements/selector.js'
 import '@vandeurenglenn/lit-elements/pages.js'
+import './components/search.js'
 import icons from './icons.js'
 import Router from './routing.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
@@ -141,6 +142,18 @@ export class PoHoShell extends LiteElement {
 
   #listeners = []
 
+  #onSearch = (ev) => {
+    if (this.pages.selected === 'sales') {
+      if (this._inMem) this.products = this._inMem
+      this._inMem = this.products
+      this.products = this.products.filter((product) => {
+        if (product.key.includes(ev.detail)) return true
+        if (product.name.toLowerCase().includes(ev.detail)) return true
+        if (product.category.toLowerCase().includes(ev.detail)) return true
+      })
+    }
+  }
+
   async select(selected) {
     this.selector.select(selected)
     this.pages.select(selected)
@@ -162,13 +175,26 @@ export class PoHoShell extends LiteElement {
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
-    this.drawerLayout.drawerOpen = false
 
+    this.drawerLayout.drawerOpen = false
+    document.addEventListener('search', this.#onSearch)
     this.router = new Router(this)
   }
 
   async logout() {
     await firebase.signOut()
+  }
+
+  renderSearch() {
+    switch (this.pages?.selected) {
+      case 'products':
+      case 'categories':
+      case 'sales':
+        return html` <search-input></search-input> `
+
+      default:
+        return ''
+    }
   }
 
   render() {
@@ -194,6 +220,8 @@ export class PoHoShell extends LiteElement {
       <!-- see https://vandeurenglenn.github.io/custom-elements/ -->
       <custom-drawer-layout appBarType="small">
         <span slot="top-app-bar-title">Poho</span>
+
+        <span slot="top-app-bar-end">${this.renderSearch()}</span>
         <span slot="drawer-headline"> menu </span>
         <custom-selector attr-for-selected="route" slot="drawer-content" @selected=${this.selectorSelected.bind(this)}>
           <custom-drawer-item route="sales"> Verkoop </custom-drawer-item>
