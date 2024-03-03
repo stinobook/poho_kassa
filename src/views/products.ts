@@ -1,54 +1,71 @@
-import { html, LiteElement, css, property } from '@vandeurenglenn/lite'
-import { customElement } from 'lit/decorators.js'
+import { html, LiteElement, css, property, customElement } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/lit-elements/tabs.js'
 import '@vandeurenglenn/lit-elements/tab.js'
 import '@vandeurenglenn/lit-elements/divider.js'
-import '@vandeurenglenn/lit-elements/icon-button.js'
 import '@material/web/fab/fab.js'
 import '@material/web/dialog/dialog.js'
-import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
-import { get, ref, getDatabase, remove, child, onChildAdded, onChildRemoved } from 'firebase/database'
+import '@material/web/iconbutton/icon-button.js'
 import Router from '../routing.js'
-import { Product } from '../types.js'
-
+import type { Product } from '../types.js'
+import { scrollbar } from './../mixins/styles.js'
 @customElement('products-view')
 export class ProductsView extends LiteElement {
   @property({ consumer: true })
   accessor products: { [index: string]: Product }
 
-  #ref = ref(getDatabase(), 'products')
-
   static styles = [
     css`
       :host {
         display: flex;
-        justify-content: center;
         width: 100%;
         height: 100%;
       }
-      md-list {
-        overflow-y: auto;
-        width: 100%;
-      }
+      ${scrollbar}
       md-list-item {
-        --md-list-item-bottom-space: 0;
+        background: var(--md-sys-color-surface-container-high);
+        border: 1px solid rgba(0, 0, 0, 0.34);
+        border-radius: 48px;
+        margin-top: 8px;
+        width: 100%;
+        --md-list-item-leading-space: 24px;
       }
+
       md-fab {
         position: absolute;
         right: 24px;
         bottom: 24px;
       }
+
+      main {
+        display: flex;
+        overflow-y: auto;
+        width: 100%;
+        justify-content: center;
+      }
     `
   ]
-  add() {
+
+  connectedCallback() {
+    this.shadowRoot.addEventListener('click', this.#clickHandler)
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot.removeEventListener('click', this.#clickHandler)
+  }
+
+  #clickHandler = (event) => {
+    const key = event.target.getAttribute('key')
+    const action = event.target.getAttribute('action')
+    this[`_${action}`](key)
+  }
+
+  _add() {
     location.hash = Router.bang('add-product')
   }
 
-  delete = (event: CustomEvent) => {
-    const paths = event.composedPath() as HTMLElement[]
-    const target = paths[2].getAttribute('target')
+  _delete = (target) => {
     const dialog = document.querySelector('po-ho-shell').shadowRoot.querySelector('md-dialog')
     dialog.innerHTML = `
     <div slot="headline">
@@ -65,7 +82,7 @@ export class ProductsView extends LiteElement {
     `
     const handleClose = async () => {
       if (dialog.returnValue === 'delete') {
-        await remove(child(this.#ref, target))
+        await firebase.remove(`products/${target}`)
       }
       dialog.removeEventListener('close', handleClose)
     }
@@ -73,18 +90,14 @@ export class ProductsView extends LiteElement {
     dialog.open = true
   }
 
-  edit = (event: CustomEvent) => {
-    const paths = event.composedPath() as HTMLElement[]
-
-    const target = paths[2].getAttribute('target')
+  _edit = (target) => {
     location.hash = Router.bang(`add-product?edit=${target}`)
-
-    // this.targetEdit = paths[2].getAttribute('target')
   }
+
   render() {
     return html`
-      <flex-container>
-        <md-list>
+      <main>
+        <flex-container>
           ${this.products
             ? Object.entries(this.products).map(
                 ([key, item]) => html`
@@ -92,19 +105,21 @@ export class ProductsView extends LiteElement {
                     <span slot="headline">${item.name}</span>
                     <span slot="supporting-text">${item.vat}</span>
                     <flex-row slot="end">
-                      <custom-icon-button icon="delete" target=${key} @click=${this.delete}></custom-icon-button>
+                      <md-icon-button action="delete" key=${key}>
+                        <custom-icon icon="delete"></custom-icon>
+                      </md-icon-button>
 
-                      <custom-icon-button icon="edit" target=${key} @click=${this.edit}></custom-icon-button>
+                      <md-icon-button action="edit" key=${key}>
+                        <custom-icon icon="edit"></custom-icon>
+                      </md-icon-button>
                     </flex-row>
                   </md-list-item>
-
-                  <custom-divider middle-inset></custom-divider>
                 `
               )
             : ''}
-        </md-list>
-      </flex-container>
-      <md-fab @click=${this.add}><custom-icon slot="icon">add</custom-icon></md-fab>
+        </flex-container>
+      </main>
+      <md-fab action="add"><custom-icon slot="icon">add</custom-icon></md-fab>
     `
   }
 }
