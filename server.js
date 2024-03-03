@@ -123,14 +123,21 @@ wsServer.on('request', function (request) {
   })
 })
 
-const watcher = watch(['./www/**/*.js'])
-let timeout
+const initWatcher = () => {
+  try {
+    const watcher = watch(['./www/**/*.js'])
+    let timeout
 
-watcher.on('change', () => {
-  if (timeout) clearTimeout(timeout)
-  timeout = setTimeout(() => {
-    // if (connection && connection.connected) {
-    connection && connection.send('reload')
-    // }
-  }, 100)
-})
+    watcher.on('change', () => {
+      if (timeout) clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        // if (connection && connection.connected) {
+        connection && connection.send('reload')
+        // }
+      }, 200)
+    })
+  } catch (error) {
+    initWatcher()
+  }
+}
+initWatcher()
