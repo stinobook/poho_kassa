@@ -4,6 +4,8 @@ import '@material/web/fab/fab.js'
 import '@material/web/dialog/dialog.js'
 import '@material/web/list/list-item.js'
 import '@material/web/iconbutton/icon-button.js'
+import '@material/web/button/outlined-button.js'
+import '@material/web/textfield/outlined-text-field.js'
 import Router from '../routing.js'
 import type { Product } from '../types.js'
 import { scrollbar } from './../mixins/styles.js'
@@ -22,7 +24,9 @@ export class ProductsView extends LiteElement {
         width: 100%;
         height: 100%;
       }
+
       ${scrollbar}
+
       md-list-item {
         background: var(--md-sys-color-surface-container-high);
         border: 1px solid rgba(0, 0, 0, 0.34);
@@ -31,7 +35,6 @@ export class ProductsView extends LiteElement {
         width: 100%;
         --md-list-item-leading-space: 24px;
         cursor: pointer;
-        pointer-events: auto;
       }
 
       md-fab {
@@ -40,11 +43,20 @@ export class ProductsView extends LiteElement {
         bottom: 24px;
       }
 
+      main,
+      md-icon-button,
+      md-fab,
+      md-list-item,
+      md-outlined-button {
+        pointer-events: auto;
+      }
+
       main {
         display: flex;
+        flex-direction: column;
         overflow-y: auto;
         width: 100%;
-        justify-content: center;
+        align-items: center;
       }
     `
   ]
@@ -60,8 +72,7 @@ export class ProductsView extends LiteElement {
   #clickHandler = (event) => {
     const key = event.target.getAttribute('key')
     const action = event.target.getAttribute('action')
-    console.log(event.target)
-
+    if (!action) return
     this[`_${action}`](key)
   }
 
