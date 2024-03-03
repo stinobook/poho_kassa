@@ -12,7 +12,7 @@ import { scrollbar } from './../mixins/styles.js'
 @customElement('products-view')
 export class ProductsView extends LiteElement {
   @property({ consumer: true })
-  accessor products: { [index: string]: Product }
+  accessor products: Product[]
 
   static styles = [
     css`
@@ -114,8 +114,8 @@ export class ProductsView extends LiteElement {
       <main>
         <flex-container>
           ${this.products
-            ? Object.entries(this.products).map(
-                ([key, item]) => html`
+            ? this.products.map(
+                (item) => html`
                   <md-list-item action="edit" key=${item.key}>
                     <span slot="headline">${item.name}</span>
                     <span slot="supporting-text">${item.vat}</span>
