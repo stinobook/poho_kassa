@@ -143,7 +143,6 @@ export class PoHoShell extends LiteElement {
   #listeners = []
 
   #onSearch = (ev) => {
-    console.log(ev)
     if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
       if (this._inMem) this.products = this._inMem
       this._inMem = this.products
@@ -185,6 +184,7 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('categories')) return this.setupCategoriesListener()
     }
     if (selected === 'checkout' && !this.#listeners.includes('transactions')) return this.setupTransactionsListener()
+    this.drawerLayout.drawerOpen = false
   }
 
   async connectedCallback() {
