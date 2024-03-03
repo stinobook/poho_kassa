@@ -159,10 +159,10 @@ export class PoHoShell extends LiteElement {
   }
 
   async connectedCallback() {
-    this.drawerLayout.drawerOpen = false
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
+    this.drawerLayout.drawerOpen = false
 
     this.router = new Router(this)
   }
