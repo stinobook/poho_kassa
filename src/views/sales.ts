@@ -8,6 +8,7 @@ import '../components/sales/grid/grid.js'
 
 @customElement('sales-view')
 export class SalesView extends LiteElement {
+  fabIcon = "shopping_cart_checkout"
   static styles = [
     css`
       :host {
@@ -40,6 +41,7 @@ export class SalesView extends LiteElement {
         md-fab {
           opacity: 1;
           pointer-events: auto;
+          z-index: 1001;
         }
         sales-input,
         sales-receipt {
@@ -77,8 +79,17 @@ export class SalesView extends LiteElement {
   accessor grid
 
   togglePad = () => {
-    if (this.classList.contains('shown')) this.classList.remove('shown')
-    else this.pad.classList.add('shown')
+    let customIcon = this.shadowRoot.querySelector('.fabicon')
+    let fab = this.shadowRoot.querySelector('md-fab')
+    if (this.pad.classList.contains('shown')) {
+      this.pad.classList.remove('shown')
+      customIcon.icon = "shopping_cart_checkout"
+      fab.style.setProperty('left', '')
+    } else { 
+      this.pad.classList.add('shown')
+      customIcon.icon = "arrow_back"
+      fab.style.setProperty('left', '24px')
+  }
   }
 
   addProductToReceipt = (event) => {
@@ -91,8 +102,8 @@ export class SalesView extends LiteElement {
       <sales-grid @product-click=${(event) => this.addProductToReceipt(event)}></sales-grid>
 
       <md-fab @click=${() => this.togglePad()}>
-        <custom-icon icon="shopping_cart_checkout" slot="icon"></custom-icon>
-      </md-fab>
+        <custom-icon icon="shopping_cart_checkout" class="fabicon" slot="icon"></custom-icon>
+      </md-fab>      
     `
   }
 }
