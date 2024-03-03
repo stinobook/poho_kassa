@@ -1,10 +1,9 @@
 import { createServer } from 'http'
 import url from 'url'
-import { createReadStream } from 'fs'
 import path from 'path'
 import zlib from 'zlib'
 import { pipeline } from 'stream'
-import { access, constants } from 'fs/promises'
+import { open } from 'fs/promises'
 import { platform } from 'os'
 import { exec } from 'child_process'
 import WebSocketServer from './node_modules/websocket/lib/WebSocketServer.js'
@@ -40,9 +39,9 @@ const server = createServer(async (request, response) => {
   }
 
   try {
-    await access(pathname, constants.F_OK)
+    const fileHandle = await open(pathname)
     // read file from file system
-    const raw = createReadStream(pathname)
+    const raw = fileHandle.createReadStream()
     // Store both a compressed and an uncompressed version of the resource.
     response.setHeader('Vary', 'Accept-Encoding')
     response.setHeader('Content-type', map[ext] || 'text/plain')
