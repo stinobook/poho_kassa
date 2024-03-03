@@ -1,8 +1,5 @@
 import { html, LiteElement, css, property, customElement } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/container.js'
-import '@vandeurenglenn/lit-elements/tabs.js'
-import '@vandeurenglenn/lit-elements/tab.js'
-import '@vandeurenglenn/lit-elements/divider.js'
 import '@material/web/fab/fab.js'
 import '@material/web/dialog/dialog.js'
 import '@material/web/list/list-item.js'
@@ -17,6 +14,9 @@ export class ProductsView extends LiteElement {
 
   static styles = [
     css`
+      * {
+        pointer-events: none;
+      }
       :host {
         display: flex;
         width: 100%;
@@ -30,6 +30,8 @@ export class ProductsView extends LiteElement {
         margin-top: 8px;
         width: 100%;
         --md-list-item-leading-space: 24px;
+        cursor: pointer;
+        pointer-events: auto;
       }
 
       md-fab {
@@ -58,6 +60,8 @@ export class ProductsView extends LiteElement {
   #clickHandler = (event) => {
     const key = event.target.getAttribute('key')
     const action = event.target.getAttribute('action')
+    console.log(event.target)
+
     this[`_${action}`](key)
   }
 
@@ -101,18 +105,12 @@ export class ProductsView extends LiteElement {
           ${this.products
             ? Object.entries(this.products).map(
                 ([key, item]) => html`
-                  <md-list-item>
+                  <md-list-item action="edit" key=${key}>
                     <span slot="headline">${item.name}</span>
                     <span slot="supporting-text">${item.vat}</span>
-                    <flex-row slot="end">
-                      <md-icon-button action="delete" key=${key}>
-                        <custom-icon icon="delete"></custom-icon>
-                      </md-icon-button>
-
-                      <md-icon-button action="edit" key=${key}>
-                        <custom-icon icon="edit"></custom-icon>
-                      </md-icon-button>
-                    </flex-row>
+                    <md-icon-button slot="end" action="delete" key=${key}>
+                      <custom-icon icon="delete"></custom-icon>
+                    </md-icon-button>
                   </md-list-item>
                 `
               )
