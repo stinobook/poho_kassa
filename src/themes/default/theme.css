@@ -1,26 +1,10 @@
 @import url(tokens.css);
 @import url(colors.module.css);
 @import url(typography.module.css);
+@import url(missing/motion.css);
+@import url(missing/shape.css);
+@import url(missing/tokens.css);
+@import url(missing/theme.dark.css) (prefers-color-scheme: dark);
+@import url(missing/theme.light.css) (prefers-color-scheme: light);
 @import url(theme.light.css) (prefers-color-scheme: light);
 @import url(theme.dark.css) (prefers-color-scheme: dark);
-:root {
-    --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
-    --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
-    --md-sys-shape-corner-none: 0;
-    --md-sys-shape-corner-extra-small: 4px;
-    --md-sys-shape-corner-extra-small-top: 4px 4px 0 0;
-    --md-sys-shape-corner-small: 8px;
-    --md-sys-shape-corner-medium: 12px;
-    --md-sys-shape-corner-large: 16px;
-    --md-sys-shape-corner-large-end: 0 16px 16px 0;
-    --md-sys-shape-corner-large-top: 16px 16px 0 0;
-    --md-sys-shape-corner-extra-large: 28px;
-    --md-sys-shape-corner-extra-large-top: 28px 28px 0 0;
-    --md-sys-shape-corner-full: 100%;
-    --md-sys-color-surface-container-light: var(--md-ref-palette-neutral99);
-    --md-sys-color-surface-container-high-light: var(--md-ref-palette-neutral95);
-    --md-sys-color-surface-container-highest-light: var(--md-ref-palette-neutral90);
-    --md-sys-color-surface-container-dark: var(--md-ref-palette-neutral10);
-    --md-sys-color-surface-container-high-dark: var(--md-ref-palette-neutral20);
-    --md-sys-color-surface-container-highest-dark: var(--md-ref-palette-neutral30);
-  }
