@@ -42,6 +42,7 @@ export class SalesView extends LiteElement {
           opacity: 1;
           pointer-events: auto;
           z-index: 1001;
+          width: min-content;
         }
         sales-input,
         sales-receipt {
