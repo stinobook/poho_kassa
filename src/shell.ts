@@ -143,7 +143,7 @@ export class PoHoShell extends LiteElement {
   #listeners = []
 
   #onSearch = (ev) => {
-    if (this.pages.selected === 'sales') {
+    if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
       if (this._inMem) this.products = this._inMem
       this._inMem = this.products
       this.products = this.products.filter((product) => {
@@ -151,10 +151,25 @@ export class PoHoShell extends LiteElement {
         if (product.name.toLowerCase().includes(ev.detail)) return true
         if (product.category.toLowerCase().includes(ev.detail)) return true
       })
+    } else if (this.pages.selected === 'categories') {
+      if (this._inMem) this.categories = this._inMem
+      this._inMem = this.categories
+      this.categories = this.categories.filter((category) => category.toLowerCase().includes(ev.detail))
     }
   }
 
   async select(selected) {
+    if (this._inMem) {
+      if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
+        this.products = this._inMem
+      }
+
+      if (this.pages.selected === 'categories') {
+        this.categories = this._inMem
+      }
+      this._inMem = undefined
+      this.shadowRoot.querySelector('search-input').value = ''
+    }
     this.selector.select(selected)
     this.pages.select(selected)
     if (selected === 'products' || selected === 'sales') {
