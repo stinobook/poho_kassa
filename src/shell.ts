@@ -11,19 +11,16 @@ import Router from './routing.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
 // import default page
 import './views/loading.js'
+import { Evenement } from './types.js'
 
 @customElement('po-ho-shell')
 export class PoHoShell extends LiteElement {
   router: Router
 
-  selectorSelected({ detail }: CustomEvent) {
-    if (detail === 'logout') {
-      this.logout()
-    } else {
-      this.drawerLayout.drawerOpen = false
-      location.hash = Router.bang(detail)
-    }
-  }
+  #inMem
+
+  @query('search-input')
+  accessor _searchInput
 
   @query('custom-selector')
   accessor selector: CustomSelector
@@ -38,11 +35,25 @@ export class PoHoShell extends LiteElement {
   accessor categories = []
 
   @property({ provider: true })
+  accessor eventMode = false
+
+  @property({ provider: true })
+  accessor events = []
+
+  @property({ provider: true })
   accessor transactions = []
 
   @query('custom-drawer-layout')
   accessor drawerLayout: CustomDrawerLayout
 
+  selectorSelected({ detail }: CustomEvent) {
+    if (detail === 'logout') {
+      this.logout()
+    } else {
+      this.drawerLayout.drawerOpen = false
+      location.hash = Router.bang(detail)
+    }
+  }
   setupProductsListener() {
     this.#listeners.push('products')
     firebase.onChildAdded('products', async (snap) => {
@@ -61,18 +72,25 @@ export class PoHoShell extends LiteElement {
       const key = snap.key
       val.key = key
       let i = -1
-      this.products.filter((product) => {
+
+      for (const event of this.products) {
         i += 1
-        return product.key === key
-      })
+        if (event.key === val.key) break
+      }
       this.products.splice(i, val)
       this.products = [...this.products]
     })
     firebase.onChildRemoved('products', async (snap) => {
       const val = await snap.val()
-      if (this.products.includes(val)) {
-        this.products.splice(this.products.indexOf(val))
+      val.key = snap.key
+      let i = -1
+
+      for (const event of this.products) {
+        i += 1
+        if (event.key === val.key) break
       }
+      this.products.splice(i)
+      this.products = [...this.products]
     })
   }
 
@@ -93,18 +111,25 @@ export class PoHoShell extends LiteElement {
       const key = snap.key
       val.key = key
       let i = -1
-      this.categories.filter((product) => {
+
+      for (const event of this.categories) {
         i += 1
-        return product.key === key
-      })
+        if (event.key === val.key) break
+      }
       this.categories.splice(i, val)
       this.categories = [...this.categories]
     })
     firebase.onChildRemoved('categories', async (snap) => {
       const val = await snap.val()
-      if (this.categories.includes(val)) {
-        this.categories.splice(this.categories.indexOf(val))
+      val.key = snap.key
+      let i = -1
+
+      for (const event of this.transactions) {
+        i += 1
+        if (event.key === val.key) break
       }
+      this.categories.splice(i)
+      this.categories = [...this.categories]
     })
   }
 
@@ -125,18 +150,67 @@ export class PoHoShell extends LiteElement {
       const key = snap.key
       val.key = key
       let i = -1
-      this.transactions.filter((product) => {
+
+      for (const event of this.transactions) {
         i += 1
-        return product.key === key
-      })
+        if (event.key === val.key) break
+      }
       this.transactions.splice(i, val)
       this.transactions = [...this.transactions]
     })
     firebase.onChildRemoved('transactions', async (snap) => {
       const val = await snap.val()
-      if (this.transactions.includes(val)) {
-        this.transactions.splice(this.transactions.indexOf(val))
+      val.key = snap.key
+      let i = -1
+
+      for (const event of this.transactions) {
+        i += 1
+        if (event.key === val.key) break
       }
+      this.transactions.splice(i)
+      this.transactions = [...this.transactions]
+    })
+  }
+
+  setupEventsListener() {
+    this.#listeners.push('events')
+    firebase.onChildAdded('events', async (snap) => {
+      const val = await snap.val()
+      val.key = snap.key
+      if (!this.events) {
+        this.events = [val]
+      } else if (!this.events.includes(val)) {
+        this.events.push(val)
+      }
+      this.events = [...this.events]
+    })
+    firebase.onChildChanged('events', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      let i = -1
+
+      for (const event of this.events) {
+        i += 1
+        if (event.key === val.key) break
+      }
+      this.events.splice(i, val)
+      this.events = [...this.events]
+    })
+    firebase.onChildRemoved('events', async (snap) => {
+      const val = await snap.val()
+      val.key = snap.key
+      console.log(val)
+
+      let i = -1
+
+      for (const event of this.events) {
+        i += 1
+        if (event.key === val.key) break
+      }
+
+      this.events.splice(i)
+      this.events = [...this.events]
     })
   }
 
@@ -144,34 +218,35 @@ export class PoHoShell extends LiteElement {
 
   #onSearch = (ev) => {
     if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
-      if (this._inMem) this.products = this._inMem
-      this._inMem = this.products
+      if (this.#inMem) this.products = this.#inMem
+      this.#inMem = this.products
       this.products = this.products.filter((product) => {
         if (product.key.includes(ev.detail.toLowerCase())) return true
         if (product.name.toLowerCase().includes(ev.detail.toLowerCase())) return true
         if (product.category.toLowerCase().includes(ev.detail.toLowerCase())) return true
       })
     } else if (this.pages.selected === 'categories') {
-      if (this._inMem) this.categories = this._inMem
-      this._inMem = this.categories
+      if (this.#inMem) this.categories = this.#inMem
+      this.#inMem = this.categories
       this.categories = this.categories.filter((category) => category.toLowerCase().includes(ev.detail))
     }
   }
 
   async select(selected) {
-    if (this._inMem) {
+    if (this.#inMem) {
       if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
-        this.products = this._inMem
+        this.products = this.#inMem
       }
 
       if (this.pages.selected === 'categories') {
-        this.categories = this._inMem
+        this.categories = this.#inMem
       }
-      this._inMem = undefined
-      this.shadowRoot.querySelector('search-input').value = ''
+      this.#inMem = undefined
+      this._searchInput.value = ''
     }
     this.selector.select(selected)
     this.pages.select(selected)
+
     if (selected === 'products' || selected === 'sales') {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
       if (!this.#listeners.includes('products')) {
@@ -180,11 +255,25 @@ export class PoHoShell extends LiteElement {
       }
     }
 
-    if (selected === 'categories' || selected === 'events') {
-      if (!this.#listeners.includes('categories')) return this.setupCategoriesListener()
+    if (selected === 'categories' || selected === 'add-product' || selected === 'add-event') {
+      if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
+    } else if (selected === 'checkout' && !this.#listeners.includes('transactions')) this.setupTransactionsListener()
+    else if (selected === 'events') {
+      if (!this.#listeners.includes('events')) this.setupEventsListener()
     }
-    if (selected === 'checkout' && !this.#listeners.includes('transactions')) return this.setupTransactionsListener()
     this.drawerLayout.drawerOpen = false
+  }
+
+  didStart = ({ startDate, startTime }) => {
+    const start = new Date(`${startDate} ${startTime}`).getTime()
+    if (start < new Date().getTime()) return true
+    return false
+  }
+
+  didEnd = ({ endDate, endTime }) => {
+    const end = new Date(`${endDate} ${endTime}`).getTime()
+    if (end < new Date().getTime()) return true
+    return false
   }
 
   async connectedCallback() {
@@ -195,6 +284,22 @@ export class PoHoShell extends LiteElement {
     this.drawerLayout.drawerOpen = false
     document.addEventListener('search', this.#onSearch)
     this.router = new Router(this)
+    this.setupEventsListener()
+    this.eventsinterval()
+  }
+
+  eventsinterval() {
+    setInterval(async () => {
+      let change = false
+      for (const event of this.events) {
+        if (!this.didEnd(event) && this.didStart(event)) {
+          this.eventMode = true
+          change = true
+          break
+        }
+      }
+      if (!change) this.eventMode = false
+    }, 5000)
   }
 
   async logout() {
@@ -261,6 +366,7 @@ export class PoHoShell extends LiteElement {
           <bookkeeping-view route="bookkeeping"> </bookkeeping-view>
           <categories-view route="categories"> </categories-view>
           <events-view route="events"> </events-view>
+          <add-event-view route="add-event"> </add-event-view>
           <products-view route="products"> </products-view>
           <add-product-view route="add-product"> </add-product-view>
         </custom-pages>

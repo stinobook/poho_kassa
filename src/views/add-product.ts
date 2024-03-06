@@ -11,7 +11,6 @@ import '@material/web/select/outlined-select.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@material/web/select/select-option.js'
 import '@material/web/checkbox/checkbox.js'
-import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
 import Router from '../routing.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
@@ -63,7 +62,7 @@ export class AddProductView extends LiteElement {
   }
 
   async updateView(value) {
-    const product = await (await get(child(ref(getDatabase(), 'products'), value.edit))).val()
+    const product = await firebase.get(`products/${value.edit}`)
     for (const [key, value] of Object.entries(product)) {
       const field = this.shadowRoot.querySelector(`[label=${key}]`) as MdFilledTextField | MdOutlinedSelect
       if (!field) alert(`property declared but no field found for: ${key}`)
@@ -92,31 +91,15 @@ export class AddProductView extends LiteElement {
   }
 
   async connectedCallback(): Promise<void> {
-    const _ref = ref(getDatabase(), 'categories')
-    const productsRef = ref(getDatabase(), 'products')
     const category = this.shadowRoot.querySelector(`[label="category"]`) as MdOutlinedSelect
     if (!category.value) {
+      await category.updateComplete
       // @ts-ignore
       category.selectItem(category.options[0])
     }
-    onChildAdded(_ref, async (snap) => {
-      const val = await snap.val()
-      if (!this.categories.includes(val)) {
-        this.categories.push(val)
-        this.requestRender()
-      }
-    })
-    onChildRemoved(_ref, async (snap) => {
-      const val = await snap.val()
-      if (this.categories.includes(val)) {
-        this.categories.splice(this.categories.indexOf(val))
-        this.requestRender()
-      }
-    })
   }
 
   save = async () => {
-    const productsRef = await ref(getDatabase(), 'products')
     const product = {}
     const descriptBox = this.shadowRoot.querySelector('#description') as HTMLInputElement
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
@@ -128,12 +111,12 @@ export class AddProductView extends LiteElement {
       product['description'] = 'needsExtra'
     }
     if (this.editing) {
-      set(child(productsRef, this.params.edit), product)
+      await firebase.set(`products/${this.params.edit}`, product)
       this.params = undefined
       this.editing = false
       this.back()
     } else {
-      push(productsRef, product)
+      firebase.push(`products`, product)
       this.reset()
     }
   }
@@ -173,7 +156,6 @@ export class AddProductView extends LiteElement {
   render() {
     return html`
       <flex-container>
-        <md-fab @click=${this.back} class="back"><custom-icon slot="icon" icon="arrow_back"></custom-icon></md-fab>
         <md-outlined-text-field label="name"></md-outlined-text-field>
         <md-outlined-text-field label="price" type="number" placeholder="0"></md-outlined-text-field>
         <md-outlined-text-field label="vat" type="number" placeholder="0"></md-outlined-text-field>
@@ -188,6 +170,8 @@ export class AddProductView extends LiteElement {
         </md-outlined-select>
         <label><md-checkbox id="description"></md-checkbox>Extra gegevens nodig?</label>
       </flex-container>
+
+      <md-fab @click=${this.back} class="back"><custom-icon slot="icon" icon="arrow_back"></custom-icon></md-fab>
       <md-fab @click=${this.save}><custom-icon slot="icon">save</custom-icon></md-fab>
     `
   }

@@ -16,10 +16,10 @@ export interface ReceiptItem extends Product {
 export type Transactions = Transaction[]
 
 export interface Transaction {
-  key?: string;
-  paymentMethod: 'cash' | 'payconiq';
-  paymentAmount: number;
-  transactionItems: ReceiptItem[] 
+  key?: string
+  paymentMethod: 'cash' | 'payconiq'
+  paymentAmount: number
+  transactionItems: ReceiptItem[]
 }
 
 export interface Cashtotal {
@@ -37,7 +37,7 @@ export interface Cashtotal {
 }
 export interface Sales extends Transaction {
   key?: string
-  date: date
+  date: EpochTimeStamp
   cashDifferenceCheckout: number
   cashStartCheckout: number
   cashTransferCheckout: number
@@ -48,4 +48,15 @@ export interface Sales extends Transaction {
   payconiqWinkel: number
   payconiqLidgeld: number
   transactions: Transactions[]
+}
+
+export type Evenement = {
+  name: string
+  description?: string
+  startDate: string
+  endDate: string
+  startTime: string
+  endTime: string
+  priceChanges: { [category: string]: number }
+  key: string
 }
