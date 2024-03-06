@@ -38,6 +38,9 @@ export class PoHoShell extends LiteElement {
   accessor eventMode = false
 
   @property({ provider: true })
+  accessor currentEvent: Evenement
+
+  @property({ provider: true })
   accessor events = []
 
   @property({ provider: true })
@@ -294,11 +297,15 @@ export class PoHoShell extends LiteElement {
       for (const event of this.events) {
         if (!this.didEnd(event) && this.didStart(event)) {
           this.eventMode = true
+          this.currentEvent = event
           change = true
           break
         }
       }
-      if (!change) this.eventMode = false
+      if (!change) {
+        this.eventMode = false
+        this.currentEvent = undefined
+      }
     }, 5000)
   }
 

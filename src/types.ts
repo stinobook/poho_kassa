@@ -57,6 +57,6 @@ export type Evenement = {
   endDate: string
   startTime: string
   endTime: string
-  priceChanges: { [category: string]: number }
+  adjudgements: { [category: string]: number }
   key: string
 }
