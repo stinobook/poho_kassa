@@ -7,7 +7,7 @@ import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
 
 const formatDate = () => {
-  const date = new Date().toLocaleDateString().split('-').reverse()
+  const date = new Date().toLocaleDateString('fr-CA').split('-')
   if (date[1].length === 1) date[1] = `0${date[1]}`
   if (date[2].length === 1) date[2] = `0${date[2]}`
   return date.join('-')
@@ -79,9 +79,7 @@ export class AddEventView extends LiteElement {
     ) as MdOutlinedTextField[]
     for (const field of adjustmentFields) {
       if (field.validity.valueMissing) {
-        invalid = true
-        field.errorText = `${field.label} needs to be set`
-        field.error = true
+        field.value = field.placeholder
       }
       if (field.value) event.adjustments[field.label] = field.value
     }
@@ -182,6 +180,7 @@ export class AddEventView extends LiteElement {
                 label=${category}
                 value=${this.current?.adjustments[category]}
                 type="number"
+                placeholder="0"
                 required
               ></md-outlined-text-field>
             `
