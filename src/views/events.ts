@@ -143,9 +143,12 @@ export class EventsView extends LiteElement {
                         : this.isDisabled(item)
                         ? html`<span class="label">started</span>`
                         : ''}
-                      <md-icon-button action="delete" key=${item.key}>
-                        <custom-icon icon="delete"></custom-icon>
-                      </md-icon-button>
+                        ${!this.isDisabled(item)
+                          ? html`
+                                  <md-icon-button action="delete" key=${item.key}>
+                                  <custom-icon icon="delete"></custom-icon>
+                                  </md-icon-button>
+                          `: ''}
                     </flex-row>
                   </md-list-item>
                 `
