@@ -71,14 +71,24 @@ export class AddEventView extends LiteElement {
         field.error = true
       }
       if (field.value) event[field.label] = field.value
-    }      
-    let startCheck = new Date(event['startDate'] + ' ' + event['startTime'])
-    let endCheck = new Date(event['endDate'] + ' ' + event['endTime'])
-    if (event['startDate'] === event['endDate'] && startCheck > endCheck) {
+    }
+    let startDateCheck = new Date(event['startDate'])
+    let endDateCheck = new Date(event['endDate'])
+    const endTimeField = this.shadowRoot.querySelector('[label="endDate"]') as MdOutlinedTextField
+    if (startDateCheck > endDateCheck) {
       invalid = true
-      const endTimeField = this.shadowRoot.querySelector('[label="endTime"]') as MdOutlinedTextField
-      endTimeField.errorText = 'End time cannot be before start time'
+      endTimeField.errorText = 'End date cannot be before start date'
       endTimeField.error = true
+    } else {
+      endTimeField.error = false
+      let startTimeCheck = new Date(event['startDate'] + ' ' + event['startTime'])
+      let endTimeCheck = new Date(event['endDate'] + ' ' + event['endTime'])
+      if (startTimeCheck > endTimeCheck) {
+        invalid = true
+        const endTimeField = this.shadowRoot.querySelector('[label="endTime"]') as MdOutlinedTextField
+        endTimeField.errorText = 'End time cannot be before start time'
+        endTimeField.error = true
+      }
     }
 
     const adjustmentFields = Array.from(
