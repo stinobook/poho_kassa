@@ -138,7 +138,7 @@ export class SalesReceipt extends LiteElement {
         const value = await this.dialogInput()
         product.description = value
       }
-      if (this.currentEvent) product.price += this.currentEvent.adjustments[product.category]
+      if (this.currentEvent) product.price = Number(product.price) + Number(this.currentEvent.adjustments[product.category])
       this.items[productKey] = { ...product, amount, key: productKey }
       this.requestRender()
       this.total += product.price * amount
