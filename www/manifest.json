@@ -5,7 +5,7 @@
   "background_color": "#fff",
   "display": "standalone",
   "orientation": "any",
-  "scope": "/",
+  "scope": "/poho_kassa",
   "start_url": "/",
   "icons": [
     {
