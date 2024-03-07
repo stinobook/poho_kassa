@@ -57,6 +57,6 @@ export type Evenement = {
   endDate: string
   startTime: string
   endTime: string
-  adjudgements: { [category: string]: number }
+  adjustments: { [category: string]: number }
   key: string
 }
