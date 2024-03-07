@@ -63,7 +63,6 @@ export class AddEventView extends LiteElement {
     const fields = Array.from(
       this.shadowRoot.querySelectorAll('md-outlined-text-field:not(.adjustment)')
     ) as MdOutlinedTextField[]
-
     let invalid = false
     for (const field of fields) {
       if (field.validity.valueMissing) {
@@ -72,6 +71,14 @@ export class AddEventView extends LiteElement {
         field.error = true
       }
       if (field.value) event[field.label] = field.value
+    }      
+    let startCheck = new Date(event['startDate'] + ' ' + event['startTime'])
+    let endCheck = new Date(event['endDate'] + ' ' + event['endTime'])
+    if (event['startDate'] === event['endDate'] && startCheck > endCheck) {
+      invalid = true
+      const endTimeField = this.shadowRoot.querySelector('[label="endTime"]') as MdOutlinedTextField
+      endTimeField.errorText = 'End time cannot be before start time'
+      endTimeField.error = true
     }
 
     const adjustmentFields = Array.from(
