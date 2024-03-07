@@ -243,7 +243,7 @@ export class CheckoutView extends LiteElement {
         payconiqKantine: this.payconiqKantine,
         payconiqWinkel: this.payconiqWinkel,
         payconiqLidgeld: this.payconiqLidgeld,
-        transactions: this.transactionsByCategory
+        transactions: this.transactions
       }
       await push(salesDB, sales)
       await set(transactionsDB, null)
