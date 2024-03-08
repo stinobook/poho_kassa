@@ -115,13 +115,13 @@ export class EventsView extends LiteElement {
     location.hash = Router.bang(`add-event?edit=${target}`)
   }
 
-  isDisabled = ({ startDate, startTime }) => {
+  isDisabled({ startDate, startTime }) {
     const start = new Date(`${startDate} ${startTime}`).getTime()
     if (start < new Date().getTime()) return true
     return false
   }
 
-  didEnd = ({ endDate, endTime }) => {
+  didEnd({ endDate, endTime }) {
     const end = new Date(`${endDate} ${endTime}`).getTime()
     if (end < new Date().getTime()) return true
     return false
@@ -143,12 +143,13 @@ export class EventsView extends LiteElement {
                         : this.isDisabled(item)
                         ? html`<span class="label">started</span>`
                         : ''}
-                        ${!this.isDisabled(item)
-                          ? html`
-                                  <md-icon-button action="delete" key=${item.key}>
-                                  <custom-icon icon="delete"></custom-icon>
-                                  </md-icon-button>
-                          `: ''}
+                      ${!this.isDisabled(item)
+                        ? html`
+                            <md-icon-button action="delete" key=${item.key}>
+                              <custom-icon icon="delete"></custom-icon>
+                            </md-icon-button>
+                          `
+                        : ''}
                     </flex-row>
                   </md-list-item>
                 `
