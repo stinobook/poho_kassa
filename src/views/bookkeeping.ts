@@ -43,23 +43,45 @@ export class BookkeepingView extends LiteElement {
         flex-wrap: wrap;
         flex-direction: row;
       }
-      .bookTable table {
+      #card-main {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
         width: 100%;
-        background-color: #FFFFFF;
-        border-collapse: collapse;
-        border-width: 2px;
-        border-color: #7EA8F8;
-        border-style: solid;
-        color: #000000;
+        position: relative;
+        background-color: var(--md-sys-color-surface-variant);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        color: var(--md-sys-color-on-surface-variant);
+        gap: 12px;
+        padding: 12px;
+        margin: 12px;
       }
-      .bookTable td, .bookTable th {
-        border-width: 2px;
-        border-color: #7EA8F8;
-        border-style: solid;
-        padding: 5px;
+      #card-main .date {
+        width: 100%;
+        margin: 12px;
+        font-size: 1.2em;
+        font-weight: bold;
       }
-      .bookTable thead {
-        background-color: #7EA8F8;
+      #card-sub {
+        font-size: 1em;
+        font-weight: normal;
+        background-color: var(--md-sys-color-primary-container);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        color: var(--md-sys-color-on-primary-container);
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        flex-grow: 1;
+        padding: 12px;
+      }
+      #card-sub-sub {
+        font-size: 0.8em;
+        font-weight: normal;
+        display: inline-flex;
+        flex-direction: column;
+      }
+      md-list {
+        background: unset;
       }
     `
   ]
@@ -68,11 +90,11 @@ export class BookkeepingView extends LiteElement {
     this.shadowRoot.addEventListener('click', ({ target }: CustomEvent) => {
       // @ts-ignore
       let event = new CustomEvent('checkoutTap', { detail: target.getAttribute('bookkeeping-tap')})
-      this.renderBooks(event)
+      this.loadBooks(event)
     })
   }
 
-  async renderBooks({ detail }: CustomEvent) {
+  async loadBooks({ detail }: CustomEvent) {
     if (detail === 'loadbooks') {
       let fromDate = (this.shadowRoot.querySelector('#fromDate') as HTMLInputElement).value
       let toDate = (this.shadowRoot.querySelector('#toDate') as HTMLInputElement).value 
@@ -90,60 +112,82 @@ export class BookkeepingView extends LiteElement {
     }
   }
 
+  renderBooks(books = this.books) {
+    return Object.entries(this.books).map(([key, value]) => 
+      books
+      ? html`
+            <div id="card-main">
+              <span class="date">${value.date}</span>
+              <div id="card-sub">
+                <span>Cashhandeling</span>
+                <div id="card-sub-sub">
+                <span>Overdracht: &euro;${value.cashTransferCheckout}</span>
+                <span>Verschil: &euro;${value.cashDifferenceCheckout}</span>
+                </div>
+              </div>
+              <div id="card-sub">
+                <span>Kantine</span>
+                <div id="card-sub-sub">
+                <span>Cash: &euro;${value.cashKantine}</span>
+                <span>Payconiq: &euro;${value.payconiqKantine}</span>
+                </div>
+              </div>
+              <div id="card-sub">
+                <span>Winkel</span>
+                <div id="card-sub-sub">
+                <span>Cash: &euro;${value.cashWinkel}</span>
+                <span>Payconiq: &euro;${value.payconiqWinkel}</span>
+                </div>
+              </div>
+              <div id="card-sub">
+                <span>Lidgeld</span>
+                <div id="card-sub-sub">
+                <span>Cash: &euro;${value.cashLidgeld}</span>
+                <span>Payconiq: &euro;${value.payconiqLidgeld}</span>
+                </div>
+              </div>
+              <div id="card-sub" style="width: 100%">
+                <span>Payconiq betalingen</span>
+                <div id="card-sub-sub">
+                    ${value.transactions.map((transaction) => {
+                      if (transaction.paymentMethod === 'payconiq') {
+                          let items = Object.entries(transaction.transactionItems).map(([key, transactionItem]) =>
+                              html`
+                              <md-list-item>
+                              <span slot="headline">${transactionItem.description}</span>
+                              <span slot="start">${transactionItem.name}</span>
+                              </md-list-item>
+                              `
+                            )
+                            let summary = html`<details><summary>
+                            <span>${transaction.paymentMethod}</span>
+                            <span>${transaction.paymentAmount}</span>
+                            <md-list></summary>
+                            ${items}
+                            </details>
+                            `
+                            return [summary]
+                    }})}
+                </div>
+            </div>
+            <div id="card-sub" style="width: 100%">
+            <span>Lidgeld betalingen</span>
+            <div id="card-sub-sub">
+            Nog niet klaar!
+            </div>
+          </div>
+        `
+      : ''
+    )
+  }
+
   render() {
     return html`
       <flex-container direction="row">
       <span><label>Van: <input type="date" id="fromDate"></label></span>
       <span><label>Tot: <input type="date" id="toDate"></label></span>
       <md-filled-button @bookkeeping-click=${(event) => this.loadBooks(event)} bookkeeping-tap="loadbooks" >Load</md-filled-button>
-      <table class="bookTable">
-      <thead>
-        <tr>
-          <th>Datum</th>
-          <th>Transactie</th>
-          <th>???</th>
-          <th>Cash uit</th>
-          <th>Cash in</th>
-          <th>Rekening uit</th>
-          <th>Rekening in</th>
-        </tr>
-      </thead>
-      <tbody>
-      ${this.books
-        ? Object.entries(this.books).map(
-            ([key, value]) => html`
-            <tr>
-            <td>${value.date}</td>
-            <td>Winkel</td>
-            <td></td>
-            <td></td>
-            <td>${value.cashWinkel}</td>
-            <td></td>
-            <td>${value.payconiqWinkel}</td>
-            </tr>
-            <tr>
-            <td>${value.date}</td>
-            <td>Lidgeld</td>
-            <td></td>
-            <td></td>
-            <td>${value.cashLidgeld}</td>
-            <td></td>
-            <td>${value.payconiqLidgeld}</td>
-            </tr>
-            <tr>
-            <td>${value.date}</td>
-            <td>Kantine</td>
-            <td></td>
-            <td></td>
-            <td>${value.cashKantine}</td>
-            <td></td>
-            <td>${value.payconiqKantine}</td>
-            </tr>
-            `
-          )
-        : ''}
-        </tbody>
-        </table>
+      ${this.books ? this.renderBooks() : ''}
       </flex-container>
     `
   }
