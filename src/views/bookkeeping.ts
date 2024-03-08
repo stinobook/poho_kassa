@@ -73,6 +73,7 @@ export class BookkeepingView extends LiteElement {
         flex-direction: column;
         flex-grow: 1;
         padding: 12px;
+        gap: 12px;
       }
       #card-sub-sub {
         font-size: 0.8em;
@@ -80,8 +81,62 @@ export class BookkeepingView extends LiteElement {
         display: inline-flex;
         flex-direction: column;
       }
+      #card-sub-details {
+        font-weight: normal;
+        display: inline-flex;
+        flex-direction: column;
+        gap: 12px;
+      }
       md-list {
         background: unset;
+      }
+      details {
+        background-color: var(--md-sys-color-secondary-container);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        color: var(--md-sys-color-on-secondary-container);
+        padding: 12px;
+      }
+
+      details[open] summary ~ * {
+        animation: open 0.3s ease-in-out;
+      }
+      
+      @keyframes open {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      details summary::-webkit-details-marker {
+        display: none;
+      }
+      
+      details summary {
+        position: relative;
+        cursor: pointer;
+        list-style: none;
+      }
+      
+      details summary:after {
+        content: "+";
+        height: 10px;
+        position: absolute;
+        font-size: 1.75rem;
+        line-height: 0;
+        top: 0;
+        right: 0;
+        font-weight: 200;
+        transform-origin: center;
+        transition: 200ms linear;
+      }
+      details[open] summary:after {
+        transform: rotate(45deg);
+        font-size: 2rem;
+      }
+      details summary {
+        outline: 0;
       }
     `
   ]
@@ -121,34 +176,34 @@ export class BookkeepingView extends LiteElement {
               <div id="card-sub">
                 <span>Cashhandeling</span>
                 <div id="card-sub-sub">
-                <span>Overdracht: &euro;${value.cashTransferCheckout}</span>
-                <span>Verschil: &euro;${value.cashDifferenceCheckout}</span>
+                  <span>Overdracht: &euro;${value.cashTransferCheckout}</span>
+                  <span>Verschil: &euro;${value.cashDifferenceCheckout}</span>
                 </div>
               </div>
               <div id="card-sub">
                 <span>Kantine</span>
                 <div id="card-sub-sub">
-                <span>Cash: &euro;${value.cashKantine}</span>
-                <span>Payconiq: &euro;${value.payconiqKantine}</span>
+                  <span>Cash: &euro;${value.cashKantine}</span>
+                  <span>Payconiq: &euro;${value.payconiqKantine}</span>
                 </div>
               </div>
               <div id="card-sub">
                 <span>Winkel</span>
                 <div id="card-sub-sub">
-                <span>Cash: &euro;${value.cashWinkel}</span>
-                <span>Payconiq: &euro;${value.payconiqWinkel}</span>
+                  <span>Cash: &euro;${value.cashWinkel}</span>
+                  <span>Payconiq: &euro;${value.payconiqWinkel}</span>
                 </div>
               </div>
               <div id="card-sub">
                 <span>Lidgeld</span>
                 <div id="card-sub-sub">
-                <span>Cash: &euro;${value.cashLidgeld}</span>
-                <span>Payconiq: &euro;${value.payconiqLidgeld}</span>
+                  <span>Cash: &euro;${value.cashLidgeld}</span>
+                  <span>Payconiq: &euro;${value.payconiqLidgeld}</span>
                 </div>
               </div>
               <div id="card-sub" style="width: 100%">
                 <span>Payconiq betalingen</span>
-                <div id="card-sub-sub">
+                <div id="card-sub-details">
                     ${value.transactions.map((transaction) => {
                       if (transaction.paymentMethod === 'payconiq') {
                           let items = Object.entries(transaction.transactionItems).map(([key, transactionItem]) =>
@@ -160,7 +215,7 @@ export class BookkeepingView extends LiteElement {
                               `
                             )
                             let summary = html`<details><summary>
-                            <span>${transaction.paymentMethod}</span>
+                            <span>Transactie van: &euro;</span>
                             <span>${transaction.paymentAmount}</span>
                             <md-list></summary>
                             ${items}
@@ -169,13 +224,33 @@ export class BookkeepingView extends LiteElement {
                             return [summary]
                     }})}
                 </div>
-            </div>
-            <div id="card-sub" style="width: 100%">
-            <span>Lidgeld betalingen</span>
-            <div id="card-sub-sub">
-            Nog niet klaar!
-            </div>
-          </div>
+              </div>
+              <div id="card-sub" style="width: 100%">
+                <span>Lidgeld betalingen</span>
+                <div id="card-sub-details">
+                  ${value.transactions.map((transaction) => {
+                    let paymentAmount = transaction.paymentAmount
+                    let paymentMethod = transaction.paymentMethod
+                    let transactionItemLidgeld = Object.entries(transaction.transactionItems).filter(([key, transactionItem]) => transactionItem.category === 'Lidgeld').map(([key, transactionItem]) =>
+                              html`
+                              <md-list-item>
+                              <span slot="headline">${transactionItem.description}</span>
+                              <span slot="start">${transactionItem.name}</span>
+                              </md-list-item>
+                              `
+                            )
+                            let summary = html`<details><summary>
+                            <span>${paymentMethod[0].toUpperCase() + paymentMethod.slice(1)}betaling van: &euro;</span>
+                            <span>${paymentAmount}</span>
+                            <md-list></summary>
+                            ${transactionItemLidgeld}
+                            </details>
+                            `
+                    if (transactionItemLidgeld.length !== 0) {return [summary]}
+                  })}
+                </div>
+              </div>
+            </div> 
         `
       : ''
     )

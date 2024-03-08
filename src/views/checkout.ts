@@ -233,7 +233,7 @@ export class CheckoutView extends LiteElement {
       )
 
       let sales: Sales = {
-        date: new Date().toISOString().slice(0, 16),
+        date: new Date().toISOString().slice(0, 10),
         cashDifferenceCheckout: this.cashDifference,
         cashStartCheckout: this.cashStart,
         cashTransferCheckout: this.cashTransfer,
