@@ -89,6 +89,7 @@ export class BookkeepingView extends LiteElement {
       }
       md-list {
         background: unset;
+        padding: 0;
       }
       details {
         background-color: var(--md-sys-color-secondary-container);
@@ -217,9 +218,9 @@ export class BookkeepingView extends LiteElement {
                             let summary = html`<details><summary>
                             <span>Transactie van: &euro;</span>
                             <span>${transaction.paymentAmount}</span>
-                            <md-list></summary>
+                            </summary><md-list>
                             ${items}
-                            </details>
+                            </md-list></details>
                             `
                             return [summary]
                     }})}
@@ -242,9 +243,9 @@ export class BookkeepingView extends LiteElement {
                             let summary = html`<details><summary>
                             <span>${paymentMethod[0].toUpperCase() + paymentMethod.slice(1)}betaling van: &euro;</span>
                             <span>${paymentAmount}</span>
-                            <md-list></summary>
+                            </summary><md-list>
                             ${transactionItemLidgeld}
-                            </details>
+                            </md-list></details>
                             `
                     if (transactionItemLidgeld.length !== 0) {return [summary]}
                   })}
