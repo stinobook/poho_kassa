@@ -268,13 +268,13 @@ export class PoHoShell extends LiteElement {
     this.drawerLayout.drawerOpen = false
   }
 
-  didStart = ({ startDate, startTime }) => {
+  didStart({ startDate, startTime }) {
     const start = new Date(`${startDate} ${startTime}`).getTime()
     if (start < new Date().getTime()) return true
     return false
   }
 
-  didEnd = ({ endDate, endTime }) => {
+  didEnd({ endDate, endTime }) {
     const end = new Date(`${endDate} ${endTime}`).getTime()
     if (end < new Date().getTime()) return true
     return false
