@@ -112,27 +112,15 @@ export class PoHoShell extends LiteElement {
     })
     firebase.onChildChanged('categories', async (snap) => {
       const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      let i = -1
-
-      for (const event of this.categories) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.categories.splice(i, val)
+      this.categories.splice(this.categories.indexOf(val), val)
       this.categories = [...this.categories]
     })
     firebase.onChildRemoved('categories', async (snap) => {
       const val = await snap.val()
-      val.key = snap.key
-      let i = -1
 
-      for (const event of this.transactions) {
-        i += 1
-        if (event.key === val.key) break
+      if (this.categories.includes(val)) {
+        this.categories.splice(this.categories.indexOf(val))
       }
-      this.categories.splice(i)
       this.categories = [...this.categories]
     })
   }
@@ -204,7 +192,6 @@ export class PoHoShell extends LiteElement {
     firebase.onChildRemoved('events', async (snap) => {
       const val = await snap.val()
       val.key = snap.key
-      console.log(val)
 
       let i = -1
 
