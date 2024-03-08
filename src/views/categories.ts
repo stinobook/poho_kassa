@@ -1,7 +1,6 @@
 import { property, html, LiteElement, css } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
-import '@vandeurenglenn/lit-elements/divider.js'
 import '@vandeurenglenn/lit-elements/icon-button.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@material/web/list/list.js'
@@ -9,6 +8,7 @@ import '@material/web/list/list-item.js'
 import '@material/web/fab/fab.js'
 import '@material/web/dialog/dialog.js'
 import '@material/web/button/outlined-button.js'
+import { scrollbar } from '../mixins/styles.js'
 export type Product = {
   name: string
   vat: number
@@ -34,12 +34,16 @@ export class CategoriesView extends LiteElement {
         width: 100%;
         height: 100%;
       }
-      md-list {
-        overflow-y: auto;
-        width: 100%;
-      }
+      ${scrollbar}
+
       md-list-item {
-        --md-list-item-bottom-space: 0;
+        background: var(--md-sys-color-surface-container-high);
+        border: 1px solid rgba(0, 0, 0, 0.34);
+        border-radius: 48px;
+        margin-top: 8px;
+        width: 100%;
+        --md-list-item-leading-space: 24px;
+        cursor: pointer;
       }
       md-fab {
         position: absolute;
@@ -50,9 +54,20 @@ export class CategoriesView extends LiteElement {
       md-outlined-text-field {
         margin-top: 6px;
       }
+      main,
+      md-icon-button,
+      md-fab,
+      md-list-item,
+      md-outlined-button {
+        pointer-events: auto;
+      }
 
-      custom-divider {
-        margin-top: 4px;
+      main {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        width: 100%;
+        align-items: center;
       }
     `
   ]
@@ -133,8 +148,8 @@ export class CategoriesView extends LiteElement {
   }
   render() {
     return html`
-      <flex-container>
-        <md-list>
+      <main>
+        <flex-container>
           ${this.categories
             ? this.categories.map(
                 (item) => html`
@@ -150,13 +165,11 @@ export class CategoriesView extends LiteElement {
                       ></custom-icon-button>
                     </flex-row>
                   </md-list-item>
-
-                  <custom-divider middle-inset></custom-divider>
                 `
               )
             : ''}
-        </md-list>
-      </flex-container>
+        </flex-container>
+      </main>
       <md-fab action="add"><custom-icon slot="icon">add</custom-icon></md-fab>
     `
   }
