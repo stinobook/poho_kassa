@@ -52,7 +52,13 @@ export class CategoriesView extends LiteElement {
       }
 
       md-outlined-text-field {
-        margin-top: 6px;
+        margin-top: 4px;
+        --_container-shape-start-start: 24px;
+        --_container-shape-end-end: 24px;
+        --_container-shape-start-end: 24px;
+        --_container-shape-end-start: 24px;
+        --_top-space: 4px;
+        --_bottom-space: 4px;
       }
       main,
       md-icon-button,
