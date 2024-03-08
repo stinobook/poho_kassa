@@ -56,7 +56,7 @@ export class AddProductView extends LiteElement {
     }
   }
 
-  back = () => {
+  back() {
     history.back()
     this.reset()
   }
@@ -99,7 +99,7 @@ export class AddProductView extends LiteElement {
     }
   }
 
-  save = async () => {
+  async save() {
     const product = {}
     const descriptBox = this.shadowRoot.querySelector('#description') as HTMLInputElement
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
@@ -171,8 +171,10 @@ export class AddProductView extends LiteElement {
         <label><md-checkbox id="description"></md-checkbox>Extra gegevens nodig?</label>
       </flex-container>
 
-      <md-fab @click=${this.back} class="back"><custom-icon slot="icon" icon="arrow_back"></custom-icon></md-fab>
-      <md-fab @click=${this.save}><custom-icon slot="icon">save</custom-icon></md-fab>
+      <md-fab @click=${this.back.bind(this)} class="back"
+        ><custom-icon slot="icon" icon="arrow_back"></custom-icon
+      ></md-fab>
+      <md-fab @click=${this.save.bind(this)}><custom-icon slot="icon">save</custom-icon></md-fab>
     `
   }
 }
