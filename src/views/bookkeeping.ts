@@ -302,7 +302,7 @@ export class BookkeepingView extends LiteElement {
                               <md-list-item>
                               <span slot="headline">${transactionItem.description}</span>
                               <span slot="start">${transactionItem.name}</span>
-                              <span slot="end">${transactionItem.price}</span>
+                              <span slot="end">&euro;${transactionItem.price}</span>
                               </md-list-item>
                               `
                             )
