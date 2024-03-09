@@ -58,17 +58,12 @@ export class SalesInput extends LiteElement {
         border-radius: var(--md-sys-shape-corner-extra-large);
       }
 
-      .big-button {
-        width: calc((100% / 2) + 24px);
-      }
-
       md-outlined-button,
       custom-button {
         margin-top: 6px;
         height: 50px;
         width: 64px;
         margin-bottom: 6px;
-
         border-radius: var(--md-sys-shape-corner-extra-large);
       }
       md-outlined-button,

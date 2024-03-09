@@ -48,6 +48,20 @@ export class SalesPad extends LiteElement {
       }
       .dialogCash flex-row{
         flex-wrap: wrap;
+        --custom-elevation: 1;
+      }
+      custom-button {
+        background-color: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        margin: 6px;
+        height: 50px;
+      }
+      flex-wrap-evenly {
+        background-color: var(--md-sys-color-surface-container-high);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        padding: 6px 0;
+        margin-bottom: 12px;
+        position: relative;
       }
     `
   ]
@@ -202,7 +216,7 @@ export class SalesPad extends LiteElement {
       <flex-container class="payment-modal">
         <custom-dialog class="dialogCash" has-actions="" has-header="">
           <span slot="title">Cash Ontvangst</span>
-          <flex-row slot="actions" direction="row">
+          <flex-wrap-evenly>
             <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
             <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
             <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>
@@ -211,7 +225,9 @@ export class SalesPad extends LiteElement {
             <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
             <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
             <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
-            <custom-button label="Annuleer" action="cancel" has-label="">Annuleer</custom-button>
+            </flex-wrap-evenly>
+          <flex-row slot="actions" direction="row">
+          <custom-button label="Annuleer" action="cancel" has-label="">Annuleer</custom-button>
           </flex-row>
         </custom-dialog>
         <custom-dialog class="dialogPayconiq" has-actions="" has-header="">
