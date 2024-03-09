@@ -35,7 +35,6 @@ export class BookkeepingView extends LiteElement {
       }
       flex-container {
         max-width: none;
-        height: -webkit-fill-available;
         width: -webkit-fill-available;
         position: relative;
         overflow: hidden;
@@ -211,7 +210,8 @@ export class BookkeepingView extends LiteElement {
                               html`
                               <md-list-item>
                               <span slot="headline">${transactionItem.description}</span>
-                              <span slot="start">${transactionItem.name}</span>
+                              <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
+                              <span slot="end">Eenheid: &euro;${transactionItem.price} / Totaal: &euro;${Number(transactionItem.price) * Number(transactionItem.amount)}</span>
                               </md-list-item>
                               `
                             )
@@ -237,6 +237,7 @@ export class BookkeepingView extends LiteElement {
                               <md-list-item>
                               <span slot="headline">${transactionItem.description}</span>
                               <span slot="start">${transactionItem.name}</span>
+                              <span slot="end">${transactionItem.price}</span>
                               </md-list-item>
                               `
                             )
