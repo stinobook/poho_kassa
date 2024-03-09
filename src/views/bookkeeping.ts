@@ -221,9 +221,6 @@ export class BookkeepingView extends LiteElement {
         console.error(error);
       });
       let filteredData = Object.fromEntries(Object.entries(dbData).filter(([key, value]) => new Date(value.date.slice(0, 10)).toISOString() >= fromDate.toISOString() && new Date(value.date.slice(0, 10)).toISOString() <= toDate.toISOString()))
-      console.log(dbData)
-      console.log(filteredData)
-      
       this.books = filteredData
       this.requestRender()
     }
