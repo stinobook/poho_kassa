@@ -79,7 +79,6 @@ export class BookkeepingView extends LiteElement {
         flex: 1;
         padding: 12px;
         gap: 12px;
-        min-width: 175px;
       }
       #card-sub-wide {
         font-size: 1em;
