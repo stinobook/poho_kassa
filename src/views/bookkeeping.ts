@@ -10,6 +10,13 @@ import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
 
+const formatDate = () => {
+  const date = new Date().toLocaleDateString('fr-CA').split('-')
+  if (date[1].length === 1) date[1] = `0${date[1]}`
+  if (date[2].length === 1) date[2] = `0${date[2]}`
+  return date.join('-')
+}
+
 @customElement('bookkeeping-view')
 export class BookkeepingView extends LiteElement {
   @property() accessor books: { [key]: Sales[] } = {}
@@ -68,17 +75,33 @@ export class BookkeepingView extends LiteElement {
         border-radius: var(--md-sys-shape-corner-extra-large);
         color: var(--md-sys-color-on-primary-container);
         display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 12px;
+        gap: 12px;
+        min-width: 175px;
+      }
+      #card-sub-wide {
+        font-size: 1em;
+        font-weight: normal;
+        background-color: var(--md-sys-color-primary-container);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        color: var(--md-sys-color-on-primary-container);
+        display: flex;
         flex-wrap: nowrap;
         flex-direction: column;
-        flex-grow: 1;
+        width: 100%;
         padding: 12px;
         gap: 12px;
       }
       #card-sub-sub {
         font-size: 0.8em;
         font-weight: normal;
-        display: inline-flex;
-        flex-direction: column;
+        position: relative;
+      }
+      #card-sub-sub span {
+        float: left;
+        clear: both;
       }
       #card-sub-details {
         font-weight: normal;
@@ -138,34 +161,76 @@ export class BookkeepingView extends LiteElement {
       details summary {
         outline: 0;
       }
+      #card-input {
+        display: flex;
+        justify-content: center;
+        flex: 1;
+        width: 100%;
+        position: relative;
+        background-color: var(--md-sys-color-surface-variant);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        color: var(--md-sys-color-on-surface-variant);
+        gap: 12px;
+        padding: 12px;
+        margin: 12px;
+        flex-wrap: wrap;
+      }
+      #card-input span {
+      }
+      #card-input input {
+        padding: 10px 15px;
+        font-size: 1rem;
+        color: var(--md-sys-color-on-primary);
+        background: var(--md-sys-color-secondary);
+        border: 0;
+        border-radius: 3px;
+        outline: 0;
+        margin-left: 24px;
+        margin-right: 4px;
+      }
+      
+      #card-input label {
+        font-size: 1rem;
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+        display: inline-flex;
+        align-items: center;
+      }
     `
   ]
 
   async connectedCallback() {
-    this.shadowRoot.addEventListener('click', ({ target }: CustomEvent) => {
+    this.shadowRoot.addEventListener('input', ({ target }: CustomEvent) => {
       // @ts-ignore
-      let event = new CustomEvent('checkoutTap', { detail: target.getAttribute('bookkeeping-tap')})
+      let event = new CustomEvent('loadBooksInput', { detail: 'loadbooks'})
       this.loadBooks(event)
     })
   }
 
   async loadBooks({ detail }: CustomEvent) {
     if (detail === 'loadbooks') {
-      let fromDate = (this.shadowRoot.querySelector('#fromDate') as HTMLInputElement).value
-      let toDate = (this.shadowRoot.querySelector('#toDate') as HTMLInputElement).value 
+      let fromDate = new Date((this.shadowRoot.querySelector('#fromDate') as HTMLInputElement).value)
+      let toDate = new Date((this.shadowRoot.querySelector('#toDate') as HTMLInputElement).value)
       const salesDB = ref(getDatabase(), 'sales')
-      await get(salesDB).then((snapshot) => {
+      let dbData = await get(salesDB).then((snapshot) => {
         if (snapshot.exists()) {
-          this.books = snapshot.val()
+          return snapshot.val()
         } else {
           console.log("No data available");
         }
       }).catch((error) => {
         console.error(error);
       });
+      let filteredData = Object.fromEntries(Object.entries(dbData).filter(([key, value]) => new Date(value.date.slice(0, 10)).toISOString() >= fromDate.toISOString() && new Date(value.date.slice(0, 10)).toISOString() <= toDate.toISOString()))
+      console.log(dbData)
+      console.log(filteredData)
+      
+      this.books = filteredData
       this.requestRender()
     }
   }
+
+
 
   renderBooks(books = this.books) {
     return Object.entries(this.books).map(([key, value]) => 
@@ -201,7 +266,7 @@ export class BookkeepingView extends LiteElement {
                   <span>Payconiq: &euro;${value.payconiqLidgeld}</span>
                 </div>
               </div>
-              <div id="card-sub" style="width: 100%">
+              <div id="card-sub-wide">
                 <span>Payconiq betalingen</span>
                 <div id="card-sub-details">
                     ${value.transactions.map((transaction) => {
@@ -226,7 +291,7 @@ export class BookkeepingView extends LiteElement {
                     }})}
                 </div>
               </div>
-              <div id="card-sub" style="width: 100%">
+              <div id="card-sub-wide">
                 <span>Lidgeld betalingen</span>
                 <div id="card-sub-details">
                   ${value.transactions.map((transaction) => {
@@ -261,9 +326,10 @@ export class BookkeepingView extends LiteElement {
   render() {
     return html`
       <flex-container direction="row">
-      <span><label>Van: <input type="date" id="fromDate"></label></span>
-      <span><label>Tot: <input type="date" id="toDate"></label></span>
-      <md-filled-button @bookkeeping-click=${(event) => this.loadBooks(event)} bookkeeping-tap="loadbooks" >Load</md-filled-button>
+      <div id="card-input">
+      <span><label>Van: <input type="date" id="fromDate" value=${formatDate()}></label></span>
+      <span><label>Tot: <input type="date" id="toDate" value=${formatDate()}></label></span>
+      </div>
       ${this.books ? this.renderBooks() : ''}
       </flex-container>
     `
