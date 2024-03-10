@@ -216,6 +216,7 @@ export class SalesPad extends LiteElement {
       <flex-container class="payment-modal">
         <custom-dialog class="dialogCash" has-actions="" has-header="">
           <span slot="title">Cash Ontvangst</span>
+          <flex-row slot="actions" direction="row">
           <flex-wrap-evenly>
             <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
             <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
@@ -226,7 +227,6 @@ export class SalesPad extends LiteElement {
             <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
             <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
             </flex-wrap-evenly>
-          <flex-row slot="actions" direction="row">
           <custom-button label="Annuleer" action="cancel" has-label="">Annuleer</custom-button>
           </flex-row>
         </custom-dialog>
