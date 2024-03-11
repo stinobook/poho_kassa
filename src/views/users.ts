@@ -75,7 +75,7 @@ export class UsersView extends LiteElement {
         width: 120px;
         margin: 0 auto;
         border-radius: 50%;
-        border: 5px solid var(--md-sys-color-primary-container);
+        border: 5px solid var(--md-sys-color-surface-variant);
         background: no-repeat;
         background-size: contain;
         overflow: hidden;
