@@ -2,7 +2,9 @@ import { property, html, LiteElement, css } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/wrap-center.js'
 import '@vandeurenglenn/flex-elements/column.js'
+import '@material/web/fab/fab.js'
 import { scrollbar } from '../mixins/styles.js'
+import Router from '../routing.js'
 
 @customElement('users-view')
 export class UsersView extends LiteElement {
@@ -19,9 +21,19 @@ export class UsersView extends LiteElement {
         overflow-y: auto;
         padding: 12px;
       }
-
+      md-fab {
+        position: absolute;
+        right: 24px;
+        bottom: 24px;
+      }
+      main,
+      md-icon-button,
+      md-fab,
+      md-list-item,
+      md-outlined-button {
+        pointer-events: auto;
+      }
       ${scrollbar}
-
       flex-wrap-center {
         width: 100%;
         gap: 24px;
@@ -78,6 +90,23 @@ export class UsersView extends LiteElement {
 
     `
   ]
+  connectedCallback() {
+    this.shadowRoot.addEventListener('click', this.#clickHandler)
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot.removeEventListener('click', this.#clickHandler)
+  }
+
+  #clickHandler = (event) => {
+    const key = event.target.getAttribute('key')
+    const action = event.target.getAttribute('action')
+    if (!action) return
+    this[`_${action}`](key)
+  }
+  _add() {
+    location.hash = Router.bang('add-member')
+  }
 
   render() {
     return html`
@@ -140,6 +169,7 @@ export class UsersView extends LiteElement {
           </div>
         </div>
         </flex-wrap-center>
+        <md-fab action="add"><custom-icon slot="icon">add</custom-icon></md-fab>
       </main>
     `
   }

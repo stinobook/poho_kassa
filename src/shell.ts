@@ -366,6 +366,7 @@ export class PoHoShell extends LiteElement {
           <add-event-view route="add-event"> </add-event-view>
           <products-view route="products"> </products-view>
           <add-product-view route="add-product"> </add-product-view>
+          <add-member-view route="add-member"> </add-member-view>
         </custom-pages>
       </custom-drawer-layout>
     `

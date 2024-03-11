@@ -60,3 +60,26 @@ export type Evenement = {
   adjustments: { [category: string]: number }
   key: string
 }
+
+export enum Group {
+  Bestuur, Instructeurs, Leden
+}
+
+export type User = {
+  key?: string
+  name: string
+  lastname: string
+  group: Group
+  title: string
+  birthday?: string
+  street?: string
+  community?: string
+  postalcode?: number
+  phone?: number
+  email?: string
+  dogname?: string
+  dograce?: string
+  pedigree?: string
+  chipnumber?: string
+}
+export type Users = User[]
