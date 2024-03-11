@@ -1,13 +1,7 @@
 import { property, html, LiteElement, css } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
-import '@vandeurenglenn/flex-elements/container.js'
-import '@vandeurenglenn/lit-elements/icon-button.js'
-import '@material/web/textfield/outlined-text-field.js'
-import '@material/web/list/list.js'
-import '@material/web/list/list-item.js'
-import '@material/web/fab/fab.js'
-import '@material/web/dialog/dialog.js'
-import '@material/web/button/outlined-button.js'
+import '@vandeurenglenn/flex-elements/wrap-center.js'
+import '@vandeurenglenn/flex-elements/column.js'
 import { scrollbar } from '../mixins/styles.js'
 
 @customElement('users-view')
@@ -20,56 +14,132 @@ export class UsersView extends LiteElement {
         width: 100%;
         height: 100%;
       }
+      main {
+        width: 100%;
+        overflow-y: auto;
+        padding: 12px;
+      }
+
       ${scrollbar}
 
-      md-list-item {
-        background: var(--md-sys-color-surface-container-high);
-        border: 1px solid rgba(0, 0, 0, 0.34);
-        border-radius: 48px;
-        margin-top: 8px;
+      flex-wrap-center {
         width: 100%;
-        --md-list-item-leading-space: 24px;
-        cursor: pointer;
+        gap: 24px;
       }
-      md-fab {
-        position: absolute;
-        right: 24px;
-        bottom: 24px;
+      flex-column {
+        width: 100%;
       }
 
-      md-outlined-text-field {
-        margin-top: 4px;
-        --_container-shape-start-start: 24px;
-        --_container-shape-end-end: 24px;
-        --_container-shape-start-end: 24px;
-        --_container-shape-end-start: 24px;
-        --_top-space: 4px;
-        --_bottom-space: 4px;
-      }
-      main,
-      md-icon-button,
-      md-fab,
-      md-list-item,
-      md-outlined-button {
-        pointer-events: auto;
+      .card {
+        width: 300px;
+        margin: 0 auto;
+        position: relative;
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        text-align: center;
+        height: 100%;
+        box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3),
+          0 0 40px rgba(0, 0, 0, 0.1) inset;
+        background: var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface-variant);
       }
 
-      main {
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
+
+      .bkg-photo {
+        position: relative;
+        height: 150px;
         width: 100%;
-        align-items: center;
+        border-radius: var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-extra-large) 0 0;
+        background: no-repeat;
+        background-size: cover;
+        overflow: hidden;
+        object-fit: cover;
       }
+
+      .user-photo {
+        position: relative;
+        top: -60px;
+        left: -75px;
+        height: 120px;
+        width: 120px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 5px solid var(--md-sys-color-primary-container);
+        background: no-repeat;
+        background-size: contain;
+        overflow: hidden;
+        object-fit: cover;
+      }
+
+      .content {
+        position: relative;
+        top: -55px;
+        margin: 0 auto;
+      }
+
     `
   ]
 
   render() {
     return html`
       <main>
-        <flex-container>
-        Users
-        </flex-container>
+      <flex-row><custom-typography><h4>Bestuur</h4></custom-typography> </flex-row>
+        <flex-wrap-center>
+        <div class="card">
+              <img class="bkg-photo" src="./img/users/user1_bg.jpg"/>
+              <img class="user-photo" src="./img/users/user1.jpg"/>
+              <div class="content">
+                <h1>Joke De Swaef</h1>
+                <h2>Bestuur</h2>
+                <h3>Voorzitter</h3>
+                <p>GSM: 0477/52.39.83</p>
+              </div>
+            </div>     
+          </div>
+        </div>
+        <div class="card">
+              <img class="bkg-photo" src="./img/users/user2_bg.jpg"/>
+              <img class="user-photo" src="./img/users/user2.jpg"/>
+              <div class="content">
+                <h1>Lieve Boelaert</h1>
+                <h2>Bestuur</h2>
+                <h3>Secretaris</h3>
+                <p>GSM: 0477/58.99.59</p>
+              </div>
+            </div>     
+          </div>
+        </div>
+        </flex-wrap-center>
+        <flex-column><custom-typography><h4>Instructeurs</h4></custom-typography> </flex-column>
+        <flex-wrap-center>
+        <div class="card">
+              <img class="bkg-photo" src="./img/users/user3_bg.jpg"/>
+              <img class="user-photo" src="./img/users/user3.jpg"/>
+              <div class="content">
+                <h1>Madeline De Kerpel</h1>
+                <h2>Instructeurs</h2>
+                <h3>Adjunct-hoofdinstructeur</h3>
+                <p>GSM: 0486/29.53.39</p>
+              </div>
+            </div>     
+          </div>
+        </div>
+        </flex-wrap-center>
+        <flex-column><custom-typography><h4>Leden</h4></custom-typography> </flex-column>
+        <flex-wrap-center>
+        <div class="card">
+              <img class="bkg-photo" src="./img/users/user4_bg.jpg"/>
+              <img class="user-photo" src="./img/users/user4.jpg"/>
+              <div class="content">
+                <h1>Joleen ...</h1>
+                <h2>Leden</h2>
+                <h3>Lid</h3>
+                <p>Teckel</p>
+                <p>Cooper</p>
+              </div>
+            </div>     
+          </div>
+        </div>
+        </flex-wrap-center>
       </main>
     `
   }
