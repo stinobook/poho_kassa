@@ -319,7 +319,7 @@ export class PoHoShell extends LiteElement {
         custom-pages {
           width: 100%;
           height: 100%;
-          display: block;
+          display: flex;
         }
         .logout {
           position: absolute;

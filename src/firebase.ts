@@ -13,18 +13,18 @@ import {
   onChildChanged as _onChildChanged
 } from 'firebase/database'
 import Router from './routing.js'
-import { getStorage, ref as fileref } from "firebase/storage"
+import { getStorage, ref as fileref, uploadBytes as _uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyASfmIWBP0bBdwd3uIWT9cxkaTV6DsncZE",
-  authDomain: "poho-app-8dce1.firebaseapp.com",
-  projectId: "poho-app",
-  storageBucket: "poho-app.appspot.com",
-  messagingSenderId: "878719433981",
-  appId: "1:878719433981:web:8bbc0d0bb355da551b9294",
-  measurementId: "G-7C3T5W3P3D",
+  apiKey: 'AIzaSyASfmIWBP0bBdwd3uIWT9cxkaTV6DsncZE',
+  authDomain: 'poho-app-8dce1.firebaseapp.com',
+  projectId: 'poho-app',
+  storageBucket: 'poho-app.appspot.com',
+  messagingSenderId: '878719433981',
+  appId: '1:878719433981:web:8bbc0d0bb355da551b9294',
+  measurementId: 'G-7C3T5W3P3D',
   databaseURL: 'https://poho-app-default-rtdb.europe-west1.firebasedatabase.app/'
-};
+}
 
 export type FirebaseDatabaseFormat = object | any[] | number | string | boolean
 
@@ -33,7 +33,9 @@ const app = initializeApp(firebaseConfig)
 
 const database = getDatabase()
 const storage = getStorage()
-const storageRef = fileref(storage)
+
+const uploadBytes = (path, data) => _uploadBytes(fileref(storage, path), data)
+
 const get = async (path: string): Promise<FirebaseDatabaseFormat> => {
   const snap = await _get(ref(database, path))
   return snap.val()
@@ -87,6 +89,8 @@ const _firebase = {
   onChildAdded,
   onChildRemoved,
   onChildChanged,
+  uploadBytes,
+  getDownloadURL,
   signOut: () => signOut(auth)
 }
 

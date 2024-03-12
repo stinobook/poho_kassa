@@ -1,6 +1,5 @@
 import { html, LiteElement, css, property, query, queryAll } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
-import { map } from 'lit/directives/map.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/lit-elements/tabs.js'
 import '@vandeurenglenn/lit-elements/tab.js'
@@ -16,14 +15,6 @@ import Router from '../routing.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
 import { scrollbar } from '../mixins/styles.js'
-import {
-  FirebaseStorage,
-  TaskState,
-  getDownloadURL,
-  ref as fileref,
-  uploadBytesResumable,
-  getStorage
-} from 'firebase/storage'
 
 @customElement('add-member-view')
 export class AddMemberView extends LiteElement {
@@ -85,31 +76,9 @@ export class AddMemberView extends LiteElement {
     const userphoto = (this.shadowRoot.querySelector('input[name=user]') as HTMLInputElement).files[0]
     const userphotobg = (this.shadowRoot.querySelector('input[name=userbg]') as HTMLInputElement).files[0]
     if (!userphoto || !userphotobg) return
-    const storage = getStorage()
-    const storageRefUser = fileref(storage, `members/${userphoto.name}`)
-    const storageRefUserbg = fileref(storage, `members/${userphotobg.name}`)
-    const uploadUserphoto = uploadBytesResumable(storageRefUser, userphoto)
-    uploadUserphoto.on(
-      'state_changed',
-      (snapshot) => {},
-      (error) => {
-        alert(error)
-      },
-      () => {}
-    )
-    const uploadUserphotobg = uploadBytesResumable(storageRefUserbg, userphotobg)
-    uploadUserphotobg.on(
-      'state_changed',
-      (snapshot) => {},
-      (error) => {
-        alert(error)
-      },
-      () => {
-        getDownloadURL(uploadUserphotobg.snapshot.ref).then((downloadURL) => {
-          user['userphotobgURL'] = downloadURL
-        })
-      }
-    )
+    const uploadUserphoto = await firebase.uploadBytes(`members/avatar`, userphoto)
+    const uploadUserphotobg = await firebase.uploadBytes(`members/image`, userphotobg)
+
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
     for (const field of fields) {
       if (field.value) user[field.name] = field.value
@@ -121,8 +90,8 @@ export class AddMemberView extends LiteElement {
       this.editing = false
       this.back()
     } else {
-      user['userphotoURL'] = await getDownloadURL(uploadUserphoto.snapshot.ref)
-      user['userphotobgURL'] = await getDownloadURL(uploadUserphotobg.snapshot.ref)
+      user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
+      user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
       firebase.push(`members`, user)
       this.reset()
     }
