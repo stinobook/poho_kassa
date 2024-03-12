@@ -67,6 +67,8 @@ export enum Group {
 
 export type User = {
   key?: string
+  userphotoURL: string
+  userphotobgURL: string
   name: string
   lastname: string
   group: Group

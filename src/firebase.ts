@@ -13,6 +13,7 @@ import {
   onChildChanged as _onChildChanged
 } from 'firebase/database'
 import Router from './routing.js'
+import { getStorage, ref as fileref } from "firebase/storage"
 
 const firebaseConfig = {
   apiKey: "AIzaSyASfmIWBP0bBdwd3uIWT9cxkaTV6DsncZE",
@@ -31,6 +32,8 @@ export type FirebaseDatabaseFormat = object | any[] | number | string | boolean
 const app = initializeApp(firebaseConfig)
 
 const database = getDatabase()
+const storage = getStorage()
+const storageRef = fileref(storage)
 const get = async (path: string): Promise<FirebaseDatabaseFormat> => {
   const snap = await _get(ref(database, path))
   return snap.val()

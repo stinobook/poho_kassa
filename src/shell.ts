@@ -347,7 +347,7 @@ export class PoHoShell extends LiteElement {
           <custom-drawer-item route="products"> Producten </custom-drawer-item>
           <custom-drawer-item route="categories"> Categorieën </custom-drawer-item>
           <custom-drawer-item route="events"> Evenementinstellingen </custom-drawer-item>
-          <custom-drawer-item route="users"> Leden </custom-drawer-item>
+          <custom-drawer-item route="members"> Leden </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
           <custom-drawer-item route="logout" class="logout"> Uitloggen </custom-drawer-item>
@@ -362,7 +362,7 @@ export class PoHoShell extends LiteElement {
           <bookkeeping-view route="bookkeeping"> </bookkeeping-view>
           <categories-view route="categories"> </categories-view>
           <events-view route="events"> </events-view>
-          <users-view route="users"> </users-view>
+          <members-view route="members"> </members-view>
           <add-event-view route="add-event"> </add-event-view>
           <products-view route="products"> </products-view>
           <add-product-view route="add-product"> </add-product-view>

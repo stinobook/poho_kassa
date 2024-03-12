@@ -6,8 +6,8 @@ import '@material/web/fab/fab.js'
 import { scrollbar } from '../mixins/styles.js'
 import Router from '../routing.js'
 
-@customElement('users-view')
-export class UsersView extends LiteElement {
+@customElement('members-view')
+export class MembersView extends LiteElement {
     static styles = [
     css`
       :host {

@@ -16,7 +16,7 @@ import Router from '../routing.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
 import { scrollbar } from '../mixins/styles.js'
-
+import { FirebaseStorage, TaskState, getDownloadURL, ref as fileref, uploadBytesResumable, getStorage } from 'firebase/storage'
 
 @customElement('add-member-view')
 export class AddMemberView extends LiteElement {
@@ -75,21 +75,46 @@ export class AddMemberView extends LiteElement {
 
   async save() {
     const user = {}
+    const userphoto = (this.shadowRoot.querySelector('input[name=user]') as HTMLInputElement).files[0]
+    const userphotobg = (this.shadowRoot.querySelector('input[name=userbg]') as HTMLInputElement).files[0]
+    if (!userphoto || !userphotobg) return
+    const storage = getStorage()
+    const storageRefUser = fileref(storage, `members/${userphoto.name}`)
+    const storageRefUserbg = fileref(storage, `members/${userphotobg.name}`)
+    const uploadUserphoto = uploadBytesResumable(storageRefUser, userphoto)
+    uploadUserphoto.on("state_changed", (snapshot) => {},
+    (error) => {alert(error)},
+    () => {}
+  )
+  const uploadUserphotobg = uploadBytesResumable(storageRefUserbg, userphotobg)
+  uploadUserphotobg.on("state_changed", (snapshot) => {},
+  (error) => {alert(error)},
+  () => {
+    getDownloadURL(uploadUserphotobg.snapshot.ref).then((downloadURL) => {
+      user['userphotobgURL'] = downloadURL
+    });
+  }
+)
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
     for (const field of fields) {
       if (field.value) user[field.name] = field.value
     }
+    user['group'] = this.shadowRoot.querySelector('md-outlined-select').value
     if (this.editing) {
       await firebase.set(`members/${this.params.edit}`, user)
       this.params = undefined
       this.editing = false
       this.back()
     } else {
+      user['userphotoURL'] = await getDownloadURL(uploadUserphoto.snapshot.ref)
+      user['userphotobgURL'] = await getDownloadURL(uploadUserphotobg.snapshot.ref)
       firebase.push(`members`, user)
       this.reset()
     }
   }
 
+
+  
   static styles = [
     css`
       :host {
@@ -129,6 +154,10 @@ export class AddMemberView extends LiteElement {
   render() {
     return html`
       <flex-container>
+        <flex-wrap-between>
+        <span>Foto persoon</span><input type='file' name="user"/>
+        <span>Foto hond</span><input type='file' name="userbg"/>
+        </flex-wrap-between>
         <flex-wrap-between>
           <md-outlined-text-field label="Voornaam" name="name" required></md-outlined-text-field>
           <md-outlined-text-field label="Naam" name="lastname" required></md-outlined-text-field>
