@@ -9,18 +9,8 @@ import './../components/card/card.js'
 import { scrollbar } from '../mixins/styles.js'
 import Router from '../routing.js'
 
-@customElement('members-view')
-export class MembersView extends LiteElement {
-  @property({ type: Array })
-  accessor members = [
-    {
-      image: './img/users/user1_bg.jpg',
-      avatar: './img/users/user1.jpg',
-      section: 'Bestuur',
-      title: 'Voorzitter',
-      name: 'Joke De Swaef'
-    }
-  ]
+@customElement('member-view')
+export class MemberView extends LiteElement {
   static styles = [
     css`
       * {
@@ -28,6 +18,7 @@ export class MembersView extends LiteElement {
       }
       :host {
         display: flex;
+        align-items: center;
         justify-content: center;
         width: 100%;
         height: 100%;
@@ -97,48 +88,55 @@ export class MembersView extends LiteElement {
       <flex-container>
         <custom-typography>Bestuur</custom-typography>
         <flex-wrap-center>
-          <card-element
-            center
-            image="./img/users/user1_bg.jpg"
-            avatar="./img/users/user1.jpg"
-            headline="Joke De Swaef"
-            subline="Voorzitter"
-          >
+          <card-element center>
+            <img slot="image" src="./img/users/user1_bg.jpg" />
+            <img slot="avatar" src="./img/users/user1.jpg" />
             <flex-it></flex-it>
             <div class="content">
-              <h3></h3>
+              <h1>Joke De Swaef</h1>
+              <h2>Bestuur</h2>
+              <h3>Voorzitter</h3>
               <p>GSM: 0477/52.39.83</p>
             </div>
           </card-element>
-          <card-element
-            center
-            image="./img/users/user2_bg.jpg"
-            avatar="./img/users/user2.jpg"
-            headline="Lieve Boelaert"
-            subline="Secretaris"
-          >
+          <card-element center>
+            <img slot="image" src="./img/users/user2_bg.jpg" />
+            <img slot="avatar" src="./img/users/user2.jpg" />
             <flex-it></flex-it>
             <div class="content">
+              <h1>Lieve Boelaert</h1>
+              <h2>Bestuur</h2>
+              <h3>Secretaris</h3>
               <p>GSM: 0477/58.99.59</p>
             </div>
           </card-element>
         </flex-wrap-center>
         <custom-typography>Instructeurs</custom-typography>
         <flex-wrap-center>
-          <card-element
-            center
-            image="./img/users/user3_bg.jpg"
-            avatar="./img/users/user3.jpg"
-            headline="Madeline De Kerpel"
-            subline="Adjunct-hoofdinstructeur"
-          >
+          <card-element center>
+            <img slot="image" src="./img/users/user3_bg.jpg" />
+            <img slot="avatar" src="./img/users/user3.jpg" />
             <flex-it></flex-it>
-            <span>GSM: 0486/29.53.39</span>
+            <div class="content">
+              <h1>Madeline De Kerpel</h1>
+              <h2>Instructeurs</h2>
+              <h3>Adjunct-hoofdinstructeur</h3>
+              <p>GSM: 0486/29.53.39</p>
+            </div>
           </card-element>
         </flex-wrap-center>
         <custom-typography>Leden</custom-typography>
         <flex-wrap-center>
-          <card-element center image="./img/users/user4_bg.jpg" avatar="./img/users/user4.jpg" headline="Joleen ...">
+          <card-element center>
+            <img slot="image" src="./img/users/user4_bg.jpg" />
+            <img slot="avatar" src="./img/users/user4.jpg" />
+            <div class="content">
+              <h1>Joleen ...</h1>
+              <h2>Leden</h2>
+              <h3>Lid</h3>
+              <p>Teckel</p>
+              <p>Cooper</p>
+            </div>
           </card-element>
         </flex-wrap-center>
       </flex-container>

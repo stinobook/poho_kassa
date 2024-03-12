@@ -16,11 +16,18 @@ import Router from '../routing.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
 import { scrollbar } from '../mixins/styles.js'
-import { FirebaseStorage, TaskState, getDownloadURL, ref as fileref, uploadBytesResumable, getStorage } from 'firebase/storage'
+import {
+  FirebaseStorage,
+  TaskState,
+  getDownloadURL,
+  ref as fileref,
+  uploadBytesResumable,
+  getStorage
+} from 'firebase/storage'
 
 @customElement('add-member-view')
 export class AddMemberView extends LiteElement {
-    @property({ type: Object })
+  @property({ type: Object })
   accessor params
 
   @query('md-outlined-select')
@@ -82,19 +89,27 @@ export class AddMemberView extends LiteElement {
     const storageRefUser = fileref(storage, `members/${userphoto.name}`)
     const storageRefUserbg = fileref(storage, `members/${userphotobg.name}`)
     const uploadUserphoto = uploadBytesResumable(storageRefUser, userphoto)
-    uploadUserphoto.on("state_changed", (snapshot) => {},
-    (error) => {alert(error)},
-    () => {}
-  )
-  const uploadUserphotobg = uploadBytesResumable(storageRefUserbg, userphotobg)
-  uploadUserphotobg.on("state_changed", (snapshot) => {},
-  (error) => {alert(error)},
-  () => {
-    getDownloadURL(uploadUserphotobg.snapshot.ref).then((downloadURL) => {
-      user['userphotobgURL'] = downloadURL
-    });
-  }
-)
+    uploadUserphoto.on(
+      'state_changed',
+      (snapshot) => {},
+      (error) => {
+        alert(error)
+      },
+      () => {}
+    )
+    const uploadUserphotobg = uploadBytesResumable(storageRefUserbg, userphotobg)
+    uploadUserphotobg.on(
+      'state_changed',
+      (snapshot) => {},
+      (error) => {
+        alert(error)
+      },
+      () => {
+        getDownloadURL(uploadUserphotobg.snapshot.ref).then((downloadURL) => {
+          user['userphotobgURL'] = downloadURL
+        })
+      }
+    )
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
     for (const field of fields) {
       if (field.value) user[field.name] = field.value
@@ -113,8 +128,6 @@ export class AddMemberView extends LiteElement {
     }
   }
 
-
-  
   static styles = [
     css`
       :host {
@@ -129,7 +142,8 @@ export class AddMemberView extends LiteElement {
       }
       md-outlined-text-field,
       md-outlined-select,
-      label, span {
+      label,
+      span {
         margin-top: 16px;
       }
       md-fab {
