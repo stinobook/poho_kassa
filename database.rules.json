@@ -1,0 +1,42 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "products": {
+      ".write": "root.child('admins').child(auth.uid).exists() === true",
+      ".read": true
+    },
+    "transactions": {
+      ".write": "root.child('admins').child(auth.uid).exists() === true",
+      ".read": true
+    },
+    "events": {
+      ".write": "root.child('admins').child(auth.uid).exists() === true",
+      ".read": true
+    },
+    "sales": {
+      ".write": "root.child('admins').child(auth.uid).exists() === true",
+      ".read": true
+    },
+    "categories": {
+      ".write": "root.child('admins').child(auth.uid).exists() === true",
+      ".read": true
+    },
+    "members": {
+      ".write": "root.child('admins').child(auth.uid).exists() === true",
+      ".read": true
+    },
+    "admins": {
+      "$userId": {
+        ".write": "$userId === auth.uid",
+        ".read": "$userId === auth.uid"
+      }
+    },
+    "users": {
+      "$userId": {
+        ".write": "$userId === auth.uid",
+        ".read": true
+      }
+    }
+  }
+}

@@ -15,15 +15,15 @@ import {
 import Router from './routing.js'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCaKlJXmek0TtPBocP0FXWRuUxItL1yZx0',
-  authDomain: 'kassa-systems.firebaseapp.com',
-  projectId: 'kassa-systems',
-  storageBucket: 'kassa-systems.appspot.com',
-  messagingSenderId: '1006430419680',
-  appId: '1:1006430419680:web:03bd1a5b3266e264d76e85',
-  measurementId: 'G-0FF6DRPT6D',
-  databaseURL: 'https://kassa-systems-default-rtdb.europe-west1.firebasedatabase.app/'
-}
+  apiKey: "AIzaSyASfmIWBP0bBdwd3uIWT9cxkaTV6DsncZE",
+  authDomain: "poho-app-8dce1.firebaseapp.com",
+  projectId: "poho-app",
+  storageBucket: "poho-app.appspot.com",
+  messagingSenderId: "878719433981",
+  appId: "1:878719433981:web:8bbc0d0bb355da551b9294",
+  measurementId: "G-7C3T5W3P3D",
+  databaseURL: 'https://poho-app-default-rtdb.europe-west1.firebasedatabase.app/'
+};
 
 export type FirebaseDatabaseFormat = object | any[] | number | string | boolean
 
