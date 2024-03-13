@@ -32,13 +32,7 @@ export class MembersView extends LiteElement {
         width: 100%;
         height: 100%;
       }
-
-      :host(.custom-selected) {
-        position: fixed !important;
-      }
-
       flex-container {
-        margin-top: 64px;
         max-width: 100%;
         align-items: center;
         overflow-y: auto;
