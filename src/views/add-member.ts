@@ -43,6 +43,8 @@ export class AddMemberView extends LiteElement {
         label.value = label.placeholder
       }
     }
+    this.shadowRoot.querySelector('input[name=user]').value = []
+    this.shadowRoot.querySelector('input[name=userbg]').value = []
   }
 
   back() {
@@ -76,13 +78,12 @@ export class AddMemberView extends LiteElement {
     const userphoto = (this.shadowRoot.querySelector('input[name=user]') as HTMLInputElement).files[0]
     const userphotobg = (this.shadowRoot.querySelector('input[name=userbg]') as HTMLInputElement).files[0]
     if (!userphoto || !userphotobg) return
-    const uploadUserphoto = await firebase.uploadBytes(`members/avatar`, userphoto)
-    const uploadUserphotobg = await firebase.uploadBytes(`members/image`, userphotobg)
-
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
     for (const field of fields) {
       if (field.value) user[field.name] = field.value
     }
+    const uploadUserphoto = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}avatar`, userphoto)
+    const uploadUserphotobg = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}background`, userphotobg)
     user['group'] = this.shadowRoot.querySelector('md-outlined-select').value
     if (this.editing) {
       await firebase.set(`members/${this.params.edit}`, user)
@@ -93,7 +94,7 @@ export class AddMemberView extends LiteElement {
       user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
       user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
       firebase.push(`members`, user)
-      this.reset()
+      this.back()
     }
   }
 
