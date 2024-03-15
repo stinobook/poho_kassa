@@ -12,8 +12,8 @@ import type { Member } from '../types.js'
 
 @customElement('members-view')
 export class MembersView extends LiteElement {
-  @property({ consumer: true })
-  accessor members: Member[]
+  @property({ type: Array, consumer: true })
+  accessor members: { [group: string]: Member[] }
 
   static styles = [
     css`
@@ -65,6 +65,17 @@ export class MembersView extends LiteElement {
       }
     `
   ]
+  async willChange(propertyKey: string, value: any): Promise<any> {
+    if (propertyKey === 'members') {
+      const members = {}
+      for (const member of value) {
+        if (!members[member.group]) members[member.group] = []
+        members[member.group].push(member)
+      }
+      return members
+    }
+    return value
+  }
   connectedCallback() {
     this.shadowRoot.addEventListener('click', this.#clickHandler)
   }
@@ -86,18 +97,23 @@ export class MembersView extends LiteElement {
     location.hash = Router.bang(`add-member?edit=${target}`)
   }
 
-  renderMembers(input) {
-    return this.members.map((member) => { 
-      if (member.group === input) {
-        let card = html `
+  renderMembers() {
+    return Object.entries(this.members).map(
+      ([group, members]) =>
+        html`
+          <custom-typography>${group}</custom-typography>
+          <flex-wrap-center>
+            ${members.map(
+              (member) =>
+                html`
                   <card-element
-                    action="edit" 
+                    action="edit"
                     key=${member.key}
                     center
-                    image=${member.userphotobgURL}
-                    avatar=${member.userphotoURL}
-                    headline=${member.name + ' ' + member.lastname}
-                    subline=${member.title}
+                    .image=${member.userphotobgURL}
+                    .avatar=${member.userphotoURL}
+                    .headline=${member.name + ' ' + member.lastname}
+                    .subline=${member.title}
                   >
                     <flex-it></flex-it>
                     <div class="content">
@@ -106,25 +122,14 @@ export class MembersView extends LiteElement {
                     </div>
                   </card-element>
                 `
-        return [card]
-      }
-    })
+            )}
+          </flex-wrap-center>
+        `
+    )
   }
-
   render() {
     return html`
-      <flex-container>
-        <custom-typography>Bestuur</custom-typography>
-        ${this.members ? this.renderMembers('Bestuur') : ''}
-        </flex-wrap-center>
-        <custom-typography>Instructeurs</custom-typography>
-        ${this.members ? this.renderMembers('Instructeurs') : ''}
-        </flex-wrap-center>
-        <custom-typography>Leden</custom-typography>
-        <flex-wrap-center>
-        ${this.members ? this.renderMembers('Leden') : ''}
-        </flex-wrap-center>
-      </flex-container>
+      <flex-container> ${this.members ? this.renderMembers() : ''} </flex-container>
       <md-fab action="add"><custom-icon slot="icon">add</custom-icon></md-fab>
     `
   }
