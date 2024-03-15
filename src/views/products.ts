@@ -84,10 +84,10 @@ export class ProductsView extends LiteElement {
     const dialog = document.querySelector('po-ho-shell').shadowRoot.querySelector('md-dialog')
     dialog.innerHTML = `
     <div slot="headline">
-      Deleting category
+      Deleting Product
     </div>
     <form slot="content" id="delete-form" method="dialog">
-      Are you sure you want to delete ${target}?
+      Are you sure you want to delete ${target.name}?
     </form>
     <div slot="actions">
       <md-outlined-button form="delete-form" value="cancel">Cancel</md-outlined-button>
