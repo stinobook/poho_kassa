@@ -9,6 +9,8 @@ import type { Member } from '../types.js'
 export class AttendanceView extends LiteElement {
   @property({ consumer: true })
   accessor members: Member[]
+  @property({ consumer: true })
+  accessor attendance: {}
   static styles = [
     css`
       :host {

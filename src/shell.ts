@@ -51,6 +51,9 @@ export class PoHoShell extends LiteElement {
   @property({ provider: true })
   accessor members = []
 
+  @property({ provider: true })
+  accessor attendance = []
+
   @query('custom-drawer-layout')
   accessor drawerLayout: CustomDrawerLayout
 
@@ -61,6 +64,45 @@ export class PoHoShell extends LiteElement {
       this.drawerLayout.drawerOpen = false
       location.hash = Router.bang(detail)
     }
+  }
+  setupAttendanceListener() {
+    this.#listeners.push('attendance')
+    firebase.onChildAdded('attendance', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      if (!this.attendance) {
+        this.attendance = [val]
+      } else if (!this.attendance.includes(val)) {
+        this.attendance.push(val)
+      }
+      this.attendance = [...this.attendance]
+    })
+    firebase.onChildChanged('attendance', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      let i = -1
+
+      for (const event of this.attendance) {
+        i += 1
+        if (event.key === val.key) break
+      }
+      this.attendance.splice(i, val)
+      this.attendance = [...this.attendance]
+    })
+    firebase.onChildRemoved('attendance', async (snap) => {
+      const val = await snap.val()
+      val.key = snap.key
+      let i = -1
+
+      for (const event of this.attendance) {
+        i += 1
+        if (event.key === val.key) break
+      }
+      this.attendance.splice(i)
+      this.attendance = [...this.attendance]
+    })
   }
   setupMembersListener() {
     this.#listeners.push('members')
@@ -291,6 +333,9 @@ export class PoHoShell extends LiteElement {
     }
     if (selected === 'members' || selected === 'attendance') {
       if (!this.#listeners.includes('members')) this.setupMembersListener()
+    }
+    if (selected === 'attendance') {
+      if (!this.#listeners.includes('attendance')) this.setupAttendanceListener()
     }
 
     if (selected === 'categories' || selected === 'add-product' || selected === 'add-event') {

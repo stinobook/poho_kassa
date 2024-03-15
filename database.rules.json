@@ -26,6 +26,10 @@
       ".write": "root.child('admins').child(auth.uid).exists() === true",
       ".read": true
     },
+    "attendance": {
+      ".write": "root.child('admins').child(auth.uid).exists() === true",
+      ".read": true
+    },
     "admins": {
       "$userId": {
         ".write": "$userId === auth.uid",
