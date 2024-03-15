@@ -47,6 +47,9 @@ export class PoHoShell extends LiteElement {
   @property({ provider: true })
   accessor transactions = []
 
+  @property({ provider: true })
+  accessor members = []
+
   @query('custom-drawer-layout')
   accessor drawerLayout: CustomDrawerLayout
 
@@ -58,6 +61,46 @@ export class PoHoShell extends LiteElement {
       location.hash = Router.bang(detail)
     }
   }
+  setupMembersListener() {
+    this.#listeners.push('members')
+    firebase.onChildAdded('members', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      if (!this.members) {
+        this.members = [val]
+      } else if (!this.members.includes(val)) {
+        this.members.push(val)
+      }
+      this.members = [...this.members]
+    })
+    firebase.onChildChanged('members', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      let i = -1
+
+      for (const event of this.members) {
+        i += 1
+        if (event.key === val.key) break
+      }
+      this.members.splice(i, val)
+      this.members = [...this.members]
+    })
+    firebase.onChildRemoved('members', async (snap) => {
+      const val = await snap.val()
+      val.key = snap.key
+      let i = -1
+
+      for (const event of this.members) {
+        i += 1
+        if (event.key === val.key) break
+      }
+      this.members.splice(i)
+      this.members = [...this.members]
+    })
+  }
+
   setupProductsListener() {
     this.#listeners.push('products')
     firebase.onChildAdded('products', async (snap) => {
@@ -244,6 +287,9 @@ export class PoHoShell extends LiteElement {
         this.setupProductsListener()
         return
       }
+    }
+    if (selected === 'members' || selected === 'attendance') {
+      if (!this.#listeners.includes('members')) this.setupMembersListener()
     }
 
     if (selected === 'categories' || selected === 'add-product' || selected === 'add-event') {

@@ -65,7 +65,7 @@ export enum Group {
   Bestuur, Instructeurs, Leden
 }
 
-export type User = {
+export type Member = {
   key?: string
   userphotoURL: string
   userphotobgURL: string
@@ -84,4 +84,4 @@ export type User = {
   pedigree?: string
   chipnumber?: string
 }
-export type Users = User[]
+export type Members = Member[]

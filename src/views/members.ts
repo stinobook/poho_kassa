@@ -8,19 +8,13 @@ import '@material/web/fab/fab.js'
 import './../components/card/card.js'
 import { scrollbar } from '../mixins/styles.js'
 import Router from '../routing.js'
+import type { Member } from '../types.js'
 
 @customElement('members-view')
 export class MembersView extends LiteElement {
-  @property({ type: Array })
-  accessor members = [
-    {
-      image: './img/users/user1_bg.jpg',
-      avatar: './img/users/user1.jpg',
-      section: 'Bestuur',
-      title: 'Voorzitter',
-      name: 'Joke De Swaef'
-    }
-  ]
+  @property({ consumer: true })
+  accessor members: Member[]
+
   static styles = [
     css`
       * {
@@ -86,9 +80,29 @@ export class MembersView extends LiteElement {
     location.hash = Router.bang('add-member')
   }
 
+  renderMembers(members = this.members) {
+    return members.map((member) => html `
+        <card-element
+          center
+          image=${member.userphotobgURL}
+          avatar=${member.userphotoURL}
+          headline=${member.name + ' ' + member.lastname}
+          subline=${member.title}
+        >
+          <flex-it></flex-it>
+          <div class="content">
+            <h3></h3>
+            <p>extra info to be coded</p>
+          </div>
+        </card-element>
+      `
+    )
+  }
+
   render() {
     return html`
       <flex-container>
+      ${this.members ? this.renderMembers() : ''}
         <custom-typography>Bestuur</custom-typography>
         <flex-wrap-center>
           <card-element
