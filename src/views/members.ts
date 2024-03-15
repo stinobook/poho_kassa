@@ -44,6 +44,9 @@ export class MembersView extends LiteElement {
       md-outlined-button {
         pointer-events: auto;
       }
+      card-element {
+        pointer-events: auto;
+      }
 
       ${scrollbar}
 
@@ -79,75 +82,47 @@ export class MembersView extends LiteElement {
   _add() {
     location.hash = Router.bang('add-member')
   }
+  _edit = (target) => {
+    location.hash = Router.bang(`add-member?edit=${target}`)
+  }
 
-  renderMembers(members = this.members) {
-    return members.map((member) => html `
-        <card-element
-          center
-          image=${member.userphotobgURL}
-          avatar=${member.userphotoURL}
-          headline=${member.name + ' ' + member.lastname}
-          subline=${member.title}
-        >
-          <flex-it></flex-it>
-          <div class="content">
-            <h3></h3>
-            <p>extra info to be coded</p>
-          </div>
-        </card-element>
-      `
-    )
+  renderMembers(input) {
+    return this.members.map((member) => { 
+      if (member.group === input) {
+        let card = html `
+                  <card-element
+                    action="edit" 
+                    key=${member.key}
+                    center
+                    image=${member.userphotobgURL}
+                    avatar=${member.userphotoURL}
+                    headline=${member.name + ' ' + member.lastname}
+                    subline=${member.title}
+                  >
+                    <flex-it></flex-it>
+                    <div class="content">
+                      <h3></h3>
+                      <p>extra info to be coded</p>
+                    </div>
+                  </card-element>
+                `
+        return [card]
+      }
+    })
   }
 
   render() {
     return html`
       <flex-container>
-      ${this.members ? this.renderMembers() : ''}
         <custom-typography>Bestuur</custom-typography>
-        <flex-wrap-center>
-          <card-element
-            center
-            image="./img/users/user1_bg.jpg"
-            avatar="./img/users/user1.jpg"
-            headline="Joke De Swaef"
-            subline="Voorzitter"
-          >
-            <flex-it></flex-it>
-            <div class="content">
-              <h3></h3>
-              <p>GSM: 0477/52.39.83</p>
-            </div>
-          </card-element>
-          <card-element
-            center
-            image="./img/users/user2_bg.jpg"
-            avatar="./img/users/user2.jpg"
-            headline="Lieve Boelaert"
-            subline="Secretaris"
-          >
-            <flex-it></flex-it>
-            <div class="content">
-              <p>GSM: 0477/58.99.59</p>
-            </div>
-          </card-element>
+        ${this.members ? this.renderMembers('Bestuur') : ''}
         </flex-wrap-center>
         <custom-typography>Instructeurs</custom-typography>
-        <flex-wrap-center>
-          <card-element
-            center
-            image="./img/users/user3_bg.jpg"
-            avatar="./img/users/user3.jpg"
-            headline="Madeline De Kerpel"
-            subline="Adjunct-hoofdinstructeur"
-          >
-            <flex-it></flex-it>
-            <span>GSM: 0486/29.53.39</span>
-          </card-element>
+        ${this.members ? this.renderMembers('Instructeurs') : ''}
         </flex-wrap-center>
         <custom-typography>Leden</custom-typography>
         <flex-wrap-center>
-          <card-element center image="./img/users/user4_bg.jpg" avatar="./img/users/user4.jpg" headline="Joleen ...">
-          </card-element>
+        ${this.members ? this.renderMembers('Leden') : ''}
         </flex-wrap-center>
       </flex-container>
       <md-fab action="add"><custom-icon slot="icon">add</custom-icon></md-fab>

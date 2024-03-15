@@ -43,8 +43,8 @@ export class AddMemberView extends LiteElement {
         label.value = label.placeholder
       }
     }
-    this.shadowRoot.querySelector('input[name=user]').value = []
-    this.shadowRoot.querySelector('input[name=userbg]').value = []
+    this.shadowRoot.querySelector('input[name=userphotoURL]').value = []
+    this.shadowRoot.querySelector('input[name=userphotobgURL]').value = []
   }
 
   back() {
@@ -55,7 +55,7 @@ export class AddMemberView extends LiteElement {
   async updateView(value) {
     const member = await firebase.get(`members/${value.edit}`)
     for (const [key, value] of Object.entries(member)) {
-      const field = this.shadowRoot.querySelector(`[label=${key}]`) as MdFilledTextField | MdOutlinedSelect
+      const field = this.shadowRoot.querySelector(`[name=${key}]`) as MdFilledTextField | MdOutlinedSelect
       if (!field) alert(`property declared but no field found for: ${key}`)
       else field.value = value as string
     }
@@ -75,22 +75,30 @@ export class AddMemberView extends LiteElement {
 
   async save() {
     const user = {}
-    const userphoto = (this.shadowRoot.querySelector('input[name=user]') as HTMLInputElement).files[0]
-    const userphotobg = (this.shadowRoot.querySelector('input[name=userbg]') as HTMLInputElement).files[0]
-    if (!userphoto || !userphotobg) return
+    const userphoto = (this.shadowRoot.querySelector('input[name=userphotoURL]') as HTMLInputElement).files[0]
+    const userphotobg = (this.shadowRoot.querySelector('input[name=userphotobgURL]') as HTMLInputElement).files[0]
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
     for (const field of fields) {
       if (field.value) user[field.name] = field.value
     }
-    const uploadUserphoto = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}avatar`, userphoto)
-    const uploadUserphotobg = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}background`, userphotobg)
     user['group'] = this.shadowRoot.querySelector('md-outlined-select').value
     if (this.editing) {
+      if (!userphoto) {} else {
+        let uploadUserphoto = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}avatar`, userphoto)
+        user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
+      }
+      if (!userphotobg) {} else {
+        let uploadUserphotobg = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}background`, userphotobg)
+        user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
+      }
       await firebase.set(`members/${this.params.edit}`, user)
       this.params = undefined
       this.editing = false
       this.back()
     } else {
+      if (!userphoto || !userphotobg) { alert('Picture missing!'); return }
+      let uploadUserphoto = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}avatar`, userphoto)
+      let uploadUserphotobg = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}background`, userphotobg)
       user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
       user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
       firebase.push(`members`, user)
@@ -139,8 +147,8 @@ export class AddMemberView extends LiteElement {
     return html`
       <flex-container>
         <flex-wrap-between>
-        <span>Foto persoon</span><input type='file' name="user"/>
-        <span>Foto hond</span><input type='file' name="userbg"/>
+        <span>Foto persoon</span><input type='file' name="userphotoURL"/>
+        <span>Foto hond</span><input type='file' name="userphotobgURL"/>
         </flex-wrap-between>
         <flex-wrap-between>
           <md-outlined-text-field label="Voornaam" name="name" required></md-outlined-text-field>

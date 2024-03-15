@@ -7,7 +7,6 @@ import * as rm from 'rimraf'
 import { execSync } from 'child_process'
 import { env } from 'process'
 import { rimraf } from 'rimraf'
-import copy from 'rollup-plugin-copy'
 
 try {
   await opendir('./www/themes')
@@ -90,11 +89,7 @@ export default [
       cleanBuild(),
       resolve(),
       typescript(),
-      generateServiceWorker(),
-      copy({
-        targets: [{ src: 'src/img/**/*', dest: './www/' }],
-        flatten: false
-      })
+      generateServiceWorker()
     ]
   }
 ]
