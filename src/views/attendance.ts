@@ -3,9 +3,12 @@ import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/wrap-center.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import { scrollbar } from '../mixins/styles.js'
+import type { Member } from '../types.js'
 
 @customElement('attendance-view')
 export class AttendanceView extends LiteElement {
+  @property({ consumer: true })
+  accessor members: Member[]
   static styles = [
     css`
       :host {
@@ -61,27 +64,30 @@ export class AttendanceView extends LiteElement {
     `
   ]
 
+  renderMembers(input) {
+    return this.members.map((member) => {
+      if (member.group === input) {
+        let card = html `
+                    <div class="card">
+                        <img class="user-photo" src=${member.userphotoURL} />
+                        <h3>${member.name + ' ' + member.lastname}</h3>
+                    </div>
+                  `
+        return [card]
+      }
+  })
+  }
+
   render() {
     return html`
       <main>
       <flex-row><custom-typography><h4>Bestuur</h4></custom-typography> </flex-row>
         <flex-wrap-center>
-        <div class="card">
-            <img class="user-photo" src="./img/users/user1.jpg"/>
-            <h3>Joke De Swaef</h3>
-        </div>
-        <div class="card" style="background: var(--md-sys-color-primary-container);color: var(--md-sys-color-on-primary-container);">
-            <img class="user-photo" src="./img/users/user2.jpg"/>
-            <h3>Lieve Boelaert</h3>
-          </div>
-        </div>
+        ${this.members ? this.renderMembers('Bestuur') : ''}
         </flex-wrap-center>
         <flex-column><custom-typography><h4>Instructeurs</h4></custom-typography> </flex-column>
         <flex-wrap-center>
-        <div class="card">
-            <img class="user-photo" src="./img/users/user3.jpg"/>
-            <h3>Madeline De Kerpel</h3>
-        </div>
+        ${this.members ? this.renderMembers('Instructeurs') : ''}
         </flex-wrap-center>
       </main>
     `
