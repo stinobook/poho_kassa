@@ -1,6 +1,6 @@
 import { LiteElement, css, customElement, html, property, queryAll } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/container.js'
-import '@vandeurenglenn/lit-elements/typography.js'
+import '@vandeurenglenn/lite-elements/typography.js'
 import '@material/web/fab/fab.js'
 import '@material/web/textfield/outlined-text-field.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'

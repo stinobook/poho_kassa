@@ -26,7 +26,6 @@
   "dependencies": {
     "@material/web": "^1.3.0",
     "@vandeurenglenn/flex-elements": "^1.2.3",
-    "@vandeurenglenn/lit-elements": "^0.3.21",
     "@vandeurenglenn/lite": "^0.2.32",
     "@vandeurenglenn/lite-elements": "^0.3.19",
     "firebase": "^10.8.1",

@@ -1,10 +1,5 @@
-import { html, LiteElement, css, property, query, queryAll } from '@vandeurenglenn/lite'
-import { customElement } from 'lit/decorators.js'
+import { html, LiteElement, css, property, query, queryAll, customElement } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/container.js'
-import '@vandeurenglenn/lit-elements/tabs.js'
-import '@vandeurenglenn/lit-elements/tab.js'
-import '@vandeurenglenn/lit-elements/divider.js'
-import '@vandeurenglenn/lit-elements/icon-button.js'
 import '@material/web/fab/fab.js'
 import '@material/web/select/outlined-select.js'
 import '@material/web/textfield/outlined-text-field.js'
@@ -83,12 +78,17 @@ export class AddMemberView extends LiteElement {
     }
     user['group'] = this.shadowRoot.querySelector('md-outlined-select').value
     if (this.editing) {
-      if (!userphoto) {} else {
+      if (!userphoto) {
+      } else {
         let uploadUserphoto = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}avatar`, userphoto)
         user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
       }
-      if (!userphotobg) {} else {
-        let uploadUserphotobg = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}background`, userphotobg)
+      if (!userphotobg) {
+      } else {
+        let uploadUserphotobg = await firebase.uploadBytes(
+          `members/${user['lastname'] + user['name']}background`,
+          userphotobg
+        )
         user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
       }
       await firebase.set(`members/${this.params.edit}`, user)
@@ -96,9 +96,15 @@ export class AddMemberView extends LiteElement {
       this.editing = false
       this.back()
     } else {
-      if (!userphoto || !userphotobg) { alert('Picture missing!'); return }
+      if (!userphoto || !userphotobg) {
+        alert('Picture missing!')
+        return
+      }
       let uploadUserphoto = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}avatar`, userphoto)
-      let uploadUserphotobg = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}background`, userphotobg)
+      let uploadUserphotobg = await firebase.uploadBytes(
+        `members/${user['lastname'] + user['name']}background`,
+        userphotobg
+      )
       user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
       user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
       firebase.push(`members`, user)
@@ -147,8 +153,8 @@ export class AddMemberView extends LiteElement {
     return html`
       <flex-container>
         <flex-wrap-between>
-        <span>Foto persoon</span><input type='file' name="userphotoURL"/>
-        <span>Foto hond</span><input type='file' name="userphotobgURL"/>
+          <span>Foto persoon</span><input type="file" name="user" /> <span>Foto hond</span
+          ><input type="file" name="userbg" />
         </flex-wrap-between>
         <flex-wrap-between>
           <md-outlined-text-field label="Voornaam" name="name" required></md-outlined-text-field>
@@ -178,7 +184,7 @@ export class AddMemberView extends LiteElement {
         <flex-wrap-between>
           <md-outlined-text-field label="Stamboomnummer" name="pedigree"></md-outlined-text-field>
           <md-outlined-text-field label="Chipnummer" name="chipnumber"></md-outlined-text-field>
-        <flex-wrap-between>
+        </flex-wrap-between>
       </flex-container>
 
       <md-fab @click=${this.back.bind(this)} class="back"

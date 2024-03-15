@@ -4,7 +4,7 @@ import '@vandeurenglenn/flex-elements/container.js'
 import '@material/web/button/filled-button.js'
 import '@material/web/button/outlined-button.js'
 import '@material/web/textfield/outlined-text-field.js'
-import '@vandeurenglenn/lit-elements/typography.js'
+import '@vandeurenglenn/lite-elements/typography.js'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
 
@@ -67,6 +67,11 @@ export class LoginView extends LiteElement {
       h4 {
         margin-bottom: 24px;
       }
+
+      form {
+        display: flex;
+        flex-direction: column;
+      }
     `
   ]
 
@@ -75,9 +80,23 @@ export class LoginView extends LiteElement {
       <flex-container>
         <h3><custom-typography>Welcome Back</custom-typography></h3>
         <custom-typography size="medium"><h4>Login To Continue</h4></custom-typography>
-        <md-outlined-text-field label="email" type="email" placeholder="email@domain.com"> </md-outlined-text-field>
-        <md-outlined-text-field label="password" type="password"> </md-outlined-text-field>
-
+        <form>
+          <md-outlined-text-field
+            label="email"
+            type="email"
+            placeholder="email@domain.com"
+            autocomplete="email"
+            name="email"
+          >
+          </md-outlined-text-field>
+          <md-outlined-text-field
+            label="password"
+            type="password"
+            autocomplete="current-password"
+            name="current-password"
+          >
+          </md-outlined-text-field>
+        </form>
         <flex-row>
           <md-outlined-button @click=${this.cancel.bind(this)}>cancel</md-outlined-button>
           <flex-it></flex-it>

@@ -2,8 +2,8 @@ import { html, css, LiteElement, property, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
 import type { Evenement, Product, ReceiptItem } from '../../../types.js'
-import '@vandeurenglenn/lit-elements/button.js'
-import '@vandeurenglenn/lit-elements/dialog.js'
+import '@vandeurenglenn/lite-elements/button.js'
+import '@vandeurenglenn/lite-elements/dialog.js'
 import '@material/web/textfield/filled-text-field.js'
 
 @customElement('sales-receipt')
@@ -138,7 +138,8 @@ export class SalesReceipt extends LiteElement {
         const value = await this.dialogInput()
         product.description = value
       }
-      if (this.currentEvent) product.price = Number(product.price) + Number(this.currentEvent.adjustments[product.category])
+      if (this.currentEvent)
+        product.price = Number(product.price) + Number(this.currentEvent.adjustments[product.category])
       this.items[productKey] = { ...product, amount, key: productKey }
       this.requestRender()
       this.total += product.price * amount

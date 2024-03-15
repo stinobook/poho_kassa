@@ -1,7 +1,7 @@
 import { property, html, LiteElement, css } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
-import '@vandeurenglenn/lit-elements/icon-button.js'
+import '@vandeurenglenn/lite-elements/icon-button.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'

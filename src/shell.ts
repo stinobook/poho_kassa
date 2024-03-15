@@ -1,11 +1,12 @@
 import { html, LiteElement, query, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
-import '@vandeurenglenn/lit-elements/drawer-layout.js'
-import '@vandeurenglenn/lit-elements/icon-set.js'
-import '@vandeurenglenn/lit-elements/theme.js'
-import '@vandeurenglenn/lit-elements/selector.js'
+import '@vandeurenglenn/lite-elements/drawer-layout.js'
+import '@vandeurenglenn/lite-elements/icon-set.js'
+import '@vandeurenglenn/lite-elements/theme.js'
+import '@vandeurenglenn/lite-elements/selector.js'
 import '@vandeurenglenn/lite-elements/pages.js'
-import '@vandeurenglenn/lit-elements/divider.js'
+import '@vandeurenglenn/lite-elements/divider.js'
+import '@vandeurenglenn/lite-elements/theme.js'
 import './components/search.js'
 import icons from './icons.js'
 import Router from './routing.js'
@@ -379,6 +380,7 @@ export class PoHoShell extends LiteElement {
       ${icons}
 
       <md-dialog></md-dialog>
+      <custom-theme loadFont="false"></custom-theme>
       <!-- see https://vandeurenglenn.github.io/custom-elements/ -->
       <custom-drawer-layout appBarType="small">
         <span slot="top-app-bar-title">Poho</span>
