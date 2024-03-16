@@ -9,12 +9,12 @@ import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import type { Cashtotal, Transaction, Sales } from '../types.js'
-import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
+import { ref, push, getDatabase, set } from 'firebase/database'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
   @property({ type: Array, consumer: true, renders: false }) accessor transactions: Transaction[]
-  @property({ type: Array }) accessor cashTotals: Cashtotal[] = []
+  @property({ type: Array }) accessor cashTotals: Cashtotal[]
   @property({ type: Number }) accessor cashTotal: number = 0
   @property({ type: Number }) accessor cashExpected: number = 0
   @property({ type: Number }) accessor cashDifference: number = 0
@@ -26,7 +26,7 @@ export class CheckoutView extends LiteElement {
   @property({ type: Number }) accessor payconiqWinkel: number = 0
   @property({ type: Number }) accessor payconiqLidgeld: number = 0
   @property({ type: Number }) accessor cashStart: number = 100
-  @property() accessor transactionsByCategory: { [category: string]: Transaction[] } = {}
+  @property() accessor transactionsByCategory: { [category: string]: Transaction[] }
 
   static styles = [
     css`
@@ -76,7 +76,7 @@ export class CheckoutView extends LiteElement {
       details[open] summary ~ * {
         animation: open 0.3s ease-in-out;
       }
-      
+
       @keyframes open {
         0% {
           opacity: 0;
@@ -88,7 +88,7 @@ export class CheckoutView extends LiteElement {
       details summary::-webkit-details-marker {
         display: none;
       }
-      
+
       details summary {
         width: 100%;
         padding: 0.5rem 0;
@@ -96,9 +96,9 @@ export class CheckoutView extends LiteElement {
         cursor: pointer;
         list-style: none;
       }
-      
+
       details summary:after {
-        content: "+";
+        content: '+';
         position: absolute;
         font-size: 1.75rem;
         line-height: 0;
@@ -128,9 +128,9 @@ export class CheckoutView extends LiteElement {
         outline: 0;
         margin-left: 24px;
         margin-right: 4px;
-        width:50%
+        width: 50%;
       }
-      
+
       .cashtelling label {
         width: 100%;
         text-align: end;
@@ -146,7 +146,6 @@ export class CheckoutView extends LiteElement {
       .cashtelling md-filled-button {
         margin: 24px auto;
       }
-
     `
   ]
 
@@ -172,12 +171,14 @@ export class CheckoutView extends LiteElement {
     })
     this.shadowRoot.addEventListener('click', ({ target }: CustomEvent) => {
       // @ts-ignore
-      let checkout = new CustomEvent('checkoutTap', { detail: target.getAttribute('checkout-tap')})
+      let checkout = new CustomEvent('checkoutTap', { detail: target.getAttribute('checkout-tap') })
       this.checkoutTap(checkout)
     })
   }
 
   async onChange(propertyKey: any, value: any) {
+    console.log({ propertyKey, value })
+
     if (propertyKey === 'transactions') {
       const transactionsByCategory = {}
       this.cashExpected = this.cashStart
@@ -202,23 +203,22 @@ export class CheckoutView extends LiteElement {
         }
       }
 
-      this.transactionsByCategory = { ...transactionsByCategory }
+      this.transactionsByCategory = transactionsByCategory
     }
   }
 
-  async checkoutTap({ detail }: CustomEvent){
-    if ( detail === 'checkout') {
-      if (confirm("Are you sure?") === true ) {
-      const salesDB = ref(getDatabase(), 'sales')
-      const transactionsDB = ref(getDatabase(), 'transactions')
-      let cashKantine = 0
-      let cashWinkel = 0
-      let cashLidgeld = 0
-      let payconiqKantine = 0
-      let payconiqWinkel = 0
-      let payconiqLidgeld = 0
-      Object.entries(this.transactionsByCategory).map(
-        ([key, value]) => {
+  async checkoutTap({ detail }: CustomEvent) {
+    if (detail === 'checkout') {
+      if (confirm('Are you sure?') === true) {
+        const salesDB = ref(getDatabase(), 'sales')
+        const transactionsDB = ref(getDatabase(), 'transactions')
+        let cashKantine = 0
+        let cashWinkel = 0
+        let cashLidgeld = 0
+        let payconiqKantine = 0
+        let payconiqWinkel = 0
+        let payconiqLidgeld = 0
+        Object.entries(this.transactionsByCategory).map(([key, value]) => {
           if (key === 'Winkel') {
             this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
             this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
@@ -229,96 +229,123 @@ export class CheckoutView extends LiteElement {
             this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
             this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
           }
-        }
-      )
+        })
 
-      let sales: Sales = {
-        date: new Date().toISOString().slice(0, 16).replace('T',' '),
-        cashDifferenceCheckout: this.cashDifference,
-        cashStartCheckout: this.cashStart,
-        cashTransferCheckout: this.cashTransfer,
-        cashKantine: this.cashKantine,
-        cashWinkel: this.cashWinkel,
-        cashLidgeld: this.cashLidgeld,
-        payconiqKantine: this.payconiqKantine,
-        payconiqWinkel: this.payconiqWinkel,
-        payconiqLidgeld: this.payconiqLidgeld,
-        transactions: this.transactions
+        let sales: Sales = {
+          date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+          cashDifferenceCheckout: this.cashDifference,
+          cashStartCheckout: this.cashStart,
+          cashTransferCheckout: this.cashTransfer,
+          cashKantine: this.cashKantine,
+          cashWinkel: this.cashWinkel,
+          cashLidgeld: this.cashLidgeld,
+          payconiqKantine: this.payconiqKantine,
+          payconiqWinkel: this.payconiqWinkel,
+          payconiqLidgeld: this.payconiqLidgeld,
+          transactions: this.transactions
+        }
+        await push(salesDB, sales)
+        await set(transactionsDB, null)
+        this.transactionsByCategory = {}
+        this.cashExpected = this.cashStart
       }
-      await push(salesDB, sales)
-      await set(transactionsDB, null)
-      this.transactionsByCategory = {}
-      this.cashExpected = this.cashStart
-    }}}
+    }
+  }
 
   render() {
     return html`
       <flex-container direction="row">
         <flex-column class="cashtelling">
-        <custom-elevation level="1"></custom-elevation>
-        <span><label>&euro;100<input class="cashInputfield" type="text" input-cash="100"/></label></span>
-        <span><label>&euro;50<input class="cashInputfield" type="text" input-cash="50"/></label></span>
-        <span><label>&euro;20<input class="cashInputfield" type="text" input-cash="20"/></label></span>
-        <span><label>&euro;10<input class="cashInputfield" type="text" input-cash="10"/></label></span>
-        <span><label>&euro;5<input class="cashInputfield" type="text" input-cash="5"/></label></span>
-        <span><label>&euro;2<input class="cashInputfield" type="text" input-cash="2"/></label></span>
-        <span><label>&euro;1<input class="cashInputfield" type="text" input-cash="1"/></label></span>
-        <span><label>&euro;0.50<input class="cashInputfield" type="text" input-cash="0.50"/></label></span>
-        <span><label>&euro;0.20<input class="cashInputfield" type="text" input-cash="0.20"/></label></span>
-        <span><label>&euro;0.10<input class="cashInputfield" type="text" input-cash="0.10"/></label></span>
-        <span><label>&euro;0.05<input class="cashInputfield" type="text" input-cash="0.05"/></label></span>
-        <flex-row center class="total">
-          <strong>Totaal:</strong>
-          <flex-it></flex-it>
-          &euro;${this.cashTotal}
-        </flex-row>
-        <flex-row center class="total">
-          <strong>Verwacht:</strong>
-          <flex-it></flex-it>
-          &euro;${this.cashExpected}
-        </flex-row>
-        <flex-row center class="total">
-          <strong>Verschil:</strong>
-          <flex-it></flex-it>
-          &euro;${this.cashDifference}
-        </flex-row>
-        <flex-row center class="total">
-          <strong>Overdracht:</strong>
-          <flex-it></flex-it>
-          &euro;${this.cashTransfer}
-        </flex-row>
-        <flex-row center class="total">
-          <strong>Startgeld:</strong>
-          <flex-it></flex-it>
-          &euro;${this.cashStart}
-        </flex-row>
-        <md-filled-button @checkout-click=${(event) => this.checkoutTap(event)} checkout-tap="checkout">Bevestig Afsluit</md-filled-button>
+          <custom-elevation level="1"></custom-elevation>
+          <span
+            ><label>&euro;100<input class="cashInputfield" type="text" input-cash="100" /></label
+          ></span>
+          <span
+            ><label>&euro;50<input class="cashInputfield" type="text" input-cash="50" /></label
+          ></span>
+          <span
+            ><label>&euro;20<input class="cashInputfield" type="text" input-cash="20" /></label
+          ></span>
+          <span
+            ><label>&euro;10<input class="cashInputfield" type="text" input-cash="10" /></label
+          ></span>
+          <span
+            ><label>&euro;5<input class="cashInputfield" type="text" input-cash="5" /></label
+          ></span>
+          <span
+            ><label>&euro;2<input class="cashInputfield" type="text" input-cash="2" /></label
+          ></span>
+          <span
+            ><label>&euro;1<input class="cashInputfield" type="text" input-cash="1" /></label
+          ></span>
+          <span
+            ><label>&euro;0.50<input class="cashInputfield" type="text" input-cash="0.50" /></label
+          ></span>
+          <span
+            ><label>&euro;0.20<input class="cashInputfield" type="text" input-cash="0.20" /></label
+          ></span>
+          <span
+            ><label>&euro;0.10<input class="cashInputfield" type="text" input-cash="0.10" /></label
+          ></span>
+          <span
+            ><label>&euro;0.05<input class="cashInputfield" type="text" input-cash="0.05" /></label
+          ></span>
+          <flex-row center class="total">
+            <strong>Totaal:</strong>
+            <flex-it></flex-it>
+            &euro;${this.cashTotal}
+          </flex-row>
+          <flex-row center class="total">
+            <strong>Verwacht:</strong>
+            <flex-it></flex-it>
+            &euro;${this.cashExpected}
+          </flex-row>
+          <flex-row center class="total">
+            <strong>Verschil:</strong>
+            <flex-it></flex-it>
+            &euro;${this.cashDifference}
+          </flex-row>
+          <flex-row center class="total">
+            <strong>Overdracht:</strong>
+            <flex-it></flex-it>
+            &euro;${this.cashTransfer}
+          </flex-row>
+          <flex-row center class="total">
+            <strong>Startgeld:</strong>
+            <flex-it></flex-it>
+            &euro;${this.cashStart}
+          </flex-row>
+          <md-filled-button @checkout-click=${(event) => this.checkoutTap(event)} checkout-tap="checkout"
+            >Bevestig Afsluit</md-filled-button
+          >
         </flex-column>
         <flex-container class="variasales" direction="column">
           ${this.transactionsByCategory
             ? Object.entries(this.transactionsByCategory).map(
                 ([key, value]) => html`
-                    <md-list>
+                  <md-list>
                     <details>
-                    <summary>${key}</summary>
-                    ${map(
-                      value.transactionItems,
-                      (item) =>
-                        html`
-                          <md-list-item>
-                          <span slot="start">${(item.description) ? item.name : item.name + ' x ' + item.amount}</span>
-                          <span slot="supporting-text">${(item.description) ? item.description : ''}</span>
-                            <span slot="end"
-                              >${(item.amount * item.price).toLocaleString(navigator.language, {
-                                style: 'currency',
-                                currency: 'EUR'
-                              })}</span
-                            >
-                            <span slot="trailing-supporting-text">${item.paymentMethod}</span>
-                          </md-list-item>
-                        `
-                    )}
-                  </details>
+                      <summary>${key}</summary>
+                      ${map(
+                        value.transactionItems,
+                        (item) =>
+                          html`
+                            <md-list-item>
+                              <span slot="start"
+                                >${item.description ? item.name : item.name + ' x ' + item.amount}</span
+                              >
+                              <span slot="supporting-text">${item.description ? item.description : ''}</span>
+                              <span slot="end"
+                                >${(item.amount * item.price).toLocaleString(navigator.language, {
+                                  style: 'currency',
+                                  currency: 'EUR'
+                                })}</span
+                              >
+                              <span slot="trailing-supporting-text">${item.paymentMethod}</span>
+                            </md-list-item>
+                          `
+                      )}
+                    </details>
                   </md-list>
                   <flex-row center class="total">
                     <strong>Totaal:</strong>
