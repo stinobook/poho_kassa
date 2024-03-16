@@ -128,7 +128,16 @@ export class AttendanceView extends LiteElement {
     }
   }
 
-  colorAttendance() {
+  async colorAttendance() {
+    const today = new Date().toISOString().slice(0, 10)
+    let attendance = await this.attendance
+    let filteredKeys = Object.values(attendance).filter((filtered: Attendee) => filtered.attended.includes(today))
+    for (const [key, value] of Object.entries(filteredKeys)) {
+      const cardKey = value['key']
+      const card = this.shadowRoot.querySelector('[key=' + cardKey + ']') as HTMLElement  
+      card.style.setProperty("background", "var(--md-sys-color-primary)")
+      card.style.setProperty("color", "var(--md-sys-color-on-primary)") 
+    }
 
   }
 
@@ -137,7 +146,7 @@ export class AttendanceView extends LiteElement {
     const today = new Date().toISOString().slice(0, 10)
     let attendee = Object.values(this.attendance).filter((filtered: Attendee) => filtered.key === value)
     let card = this.shadowRoot.querySelector('[key=' + value + ']') as HTMLElement
-    if (attendee.length === 0) {
+    if (attendee.length === 0 || !attendee[0].attended) {
       let newAttendee: Attendee = {
         key: value,
         promo: true,
@@ -152,12 +161,12 @@ export class AttendanceView extends LiteElement {
       if (attendee[0].attended.includes(today)) {
           let i = attendee[0].attended.indexOf(today)
           attendee[0].attended.splice(i, 1)
-          attendee[0].promo = 'false'
+          attendee[0].promo = false
           card.style.setProperty("background", "var(--md-sys-color-error-container)")
           card.style.setProperty("color", "var(--md-sys-color-on-error-container)")
       } else {
         attendee[0].attended.push(today)
-        attendee[0].promo = 'true'
+        attendee[0].promo = true
         card.style.setProperty("background", "var(--md-sys-color-primary)")
         card.style.setProperty("color", "var(--md-sys-color-on-primary)")
       }
