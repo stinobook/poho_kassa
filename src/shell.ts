@@ -323,28 +323,23 @@ export class PoHoShell extends LiteElement {
     }
     this.selector.select(selected)
     this.pages.select(selected)
-
     if (selected === 'products' || selected === 'sales') {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
-      if (!this.#listeners.includes('products')) {
-        this.setupProductsListener()
-        return
-      }
-    }
-    if (selected === 'members' || selected === 'attendance') {
-      if (!this.#listeners.includes('members')) this.setupMembersListener()
-    }
-    if (selected === 'attendance') {
+      if (!this.#listeners.includes('products')) this.setupProductsListener()
+    } else if (selected === 'checkout') {
+      if (!this.#listeners.includes('transactions')) this.setupTransactionsListener() 
+    } else if (selected === 'attendance') {
       if (!this.#listeners.includes('attendance')) this.setupAttendanceListener()
-    }
-
-    if (selected === 'categories' || selected === 'add-product' || selected === 'add-event') {
+      if (!this.#listeners.includes('members')) this.setupMembersListener()
+    } else if (selected === 'categories' || selected === 'add-product' || selected === 'add-event') {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
-    } else if (selected === 'checkout' && !this.#listeners.includes('transactions')) this.setupTransactionsListener()
-    else if (selected === 'events') {
+    } else if (selected === 'members' || selected === 'add-member') {
+      if (!this.#listeners.includes('members')) this.setupMembersListener()
+    } else if (selected === 'events') {
       if (!this.#listeners.includes('events')) this.setupEventsListener()
     }
     this.drawerLayout.drawerOpen = false
+    console.log(this.#listeners)
   }
 
   didStart({ startDate, startTime }) {
