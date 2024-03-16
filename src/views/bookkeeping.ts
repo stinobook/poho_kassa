@@ -197,13 +197,9 @@ export class BookkeepingView extends LiteElement {
 
   async connectedCallback() {
     this.shadowRoot.addEventListener('input', ({ detail }: CustomEvent) => {
-      // @ts-ignore
-      let event = new CustomEvent('loadBooksInput', { detail: 'loadbooks' })
-
-      if (detail === 'loadbooks') {
-        this.loadBooks()
-      }
+      this.loadBooks()
     })
+    this.loadBooks()
   }
 
   async loadBooks() {
