@@ -64,6 +64,9 @@ export class MembersView extends LiteElement {
       .card {
         cursor: pointer;
       }
+      custom-typography {
+        text-transform: capitalize;
+      }
     `
   ]
   async willChange(propertyKey: string, value: any): Promise<any> {

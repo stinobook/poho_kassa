@@ -162,9 +162,9 @@ export class AddMemberView extends LiteElement {
         </flex-wrap-between>
         <flex-wrap-between>
           <md-outlined-select label="Groep" name="group" required>
-            <md-select-option value="Bestuur" headline="Bestuur">Bestuur</md-select-option>
-            <md-select-option value="Instructeurs" headline="Instructeurs">Instructeurs</md-select-option>
-            <md-select-option value="Leden" headline="Leden">Leden</md-select-option>
+            <md-select-option value="Bestuur" headline="bestuur">Bestuur</md-select-option>
+            <md-select-option value="Instructeurs" headline="instructeurs">Instructeurs</md-select-option>
+            <md-select-option value="Leden" headline="leden">Leden</md-select-option>
           </md-outlined-select>
           <md-outlined-text-field label="Functie" name="title" required></md-outlined-text-field>
         </flex-wrap-between>

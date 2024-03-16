@@ -14,7 +14,7 @@ import { ref, push, getDatabase, set } from 'firebase/database'
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
   @property({ type: Array, consumer: true, renders: false }) accessor transactions: Transaction[]
-  @property({ type: Array }) accessor cashTotals: Cashtotal[]
+  @property({ type: Array }) accessor cashTotals: Cashtotal[] = []
   @property({ type: Number }) accessor cashTotal: number = 0
   @property({ type: Number }) accessor cashExpected: number = 0
   @property({ type: Number }) accessor cashDifference: number = 0

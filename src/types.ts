@@ -62,7 +62,7 @@ export type Evenement = {
 }
 
 export enum Group {
-  Bestuur, Instructeurs, Leden
+  bestuur, instructeurs, leden
 }
 
 export type Member = {
@@ -85,3 +85,11 @@ export type Member = {
   chipnumber?: string
 }
 export type Members = Member[]
+
+export type Attendee = {
+  key?: string
+  promo: boolean
+  attended: [string]
+}
+
+export type Attendance = Attendee[]

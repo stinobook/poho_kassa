@@ -3,12 +3,13 @@ import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/wrap-center.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import { scrollbar } from '../mixins/styles.js'
-import type { Member } from '../types.js'
+import type { Member, Attendee, Attendance } from '../types.js'
+import { getDatabase, ref, child, push, update } from 'firebase/database'
 
 @customElement('attendance-view')
 export class AttendanceView extends LiteElement {
-  @property({ consumer: true })
-  accessor members: Member[]
+  @property({ type: Array, consumer: true })
+  accessor members: { [group: string]: Member[] }
   @property({ consumer: true })
   accessor attendance: {}
   static styles = [
@@ -47,6 +48,8 @@ export class AttendanceView extends LiteElement {
         background: var(--md-sys-color-error-container);
         color: var(--md-sys-color-on-error-container);
         min-width: max-content;
+        pointer-events: auto;
+        padding-right: 24px;
       }
 
       .user-photo {
@@ -61,37 +64,112 @@ export class AttendanceView extends LiteElement {
         object-fit: cover;
         flex-shrink: 0;
         margin-right: 12px;
+        pointer-events: none;
+      }
+      h3 {
+        pointer-events: none;
+      }
+      custom-typography {
+        text-transform: capitalize;
       }
 
     `
   ]
-
-  renderMembers(input) {
-    return this.members.map((member) => {
-      if (member.group === input) {
-        let card = html `
-                    <div class="card">
-                        <img class="user-photo" src=${member.userphotoURL} />
-                        <h3>${member.name + ' ' + member.lastname}</h3>
-                    </div>
-                  `
-        return [card]
+  async willChange(propertyKey: string, value: any): Promise<any> {
+    if (propertyKey === 'members') {
+      const members = {}
+      for (const member of value) {
+        if (!members[member.group]) members[member.group] = []
+        members[member.group].push(member)
       }
-  })
+      return members
+    }
+    return value
+  }
+
+  renderMembers() {
+    return Object.entries(this.members).map(
+      ([group, members]) =>
+          html `
+              <flex-row>
+                <custom-typography><h4>${group}</h4></custom-typography>
+              </flex-row>
+              <flex-wrap-center>
+                ${members.map(
+                  (member) =>
+                    html`
+                      <div class="card" key=${member.key} action="toggle">
+                          <img class="user-photo" src=${member.userphotoURL} />
+                          <h3>${member.name + ' ' + member.lastname}</h3>
+                      </div>
+                    `
+                  )
+                }
+              </flex-wrap-center>
+            `
+    )
+  }
+
+  connectedCallback() {
+    this.shadowRoot.addEventListener('click', this.#clickHandler)
+    this.colorAttendance()
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot.removeEventListener('click', this.#clickHandler)
+  }
+
+  #clickHandler = (event) => {
+    const key = event.target.getAttribute('key')
+    const action = event.target.getAttribute('action')
+    if (!action) return
+    if (action === 'toggle') {
+      this.toggleAttendance(key)
+    }
+  }
+
+  colorAttendance() {
+
+  }
+
+  toggleAttendance(value) {
+    const attendanceDB = ref(getDatabase(), 'attendance')
+    const today = new Date().toISOString().slice(0, 10)
+    let attendee = Object.values(this.attendance).filter((filtered: Attendee) => filtered.key === value)
+    let card = this.shadowRoot.querySelector('[key=' + value + ']') as HTMLElement
+    if (attendee.length === 0) {
+      let newAttendee: Attendee = {
+        key: value,
+        promo: true,
+        attended: [today]
+      }
+      const updates = {}
+      updates[value] = newAttendee
+      update(attendanceDB, updates)
+      card.style.setProperty("background", "var(--md-sys-color-primary)")
+      card.style.setProperty("color", "var(--md-sys-color-on-primary)")
+    } else {
+      if (attendee[0].attended.includes(today)) {
+          let i = attendee[0].attended.indexOf(today)
+          attendee[0].attended.splice(i, 1)
+          attendee[0].promo = 'false'
+          card.style.setProperty("background", "var(--md-sys-color-error-container)")
+          card.style.setProperty("color", "var(--md-sys-color-on-error-container)")
+      } else {
+        attendee[0].attended.push(today)
+        attendee[0].promo = 'true'
+        card.style.setProperty("background", "var(--md-sys-color-primary)")
+        card.style.setProperty("color", "var(--md-sys-color-on-primary)")
+      }
+      const updates = {}
+      updates[value] = attendee[0]
+      update(attendanceDB, updates)
+    }
   }
 
   render() {
     return html`
-      <main>
-      <flex-row><custom-typography><h4>Bestuur</h4></custom-typography> </flex-row>
-        <flex-wrap-center>
-        ${this.members ? this.renderMembers('Bestuur') : ''}
-        </flex-wrap-center>
-        <flex-column><custom-typography><h4>Instructeurs</h4></custom-typography> </flex-column>
-        <flex-wrap-center>
-        ${this.members ? this.renderMembers('Instructeurs') : ''}
-        </flex-wrap-center>
-      </main>
+      <main>${this.members ? this.renderMembers() : ''}</main>
     `
   }
 }

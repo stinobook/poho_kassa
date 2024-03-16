@@ -49,7 +49,7 @@ export class SalesGrid extends LiteElement {
         pointer-events: auto;
         height: 86.33px;
         margin: 4px;
-        min-width: 86.33px;
+        min-width: min-content;
       }
       flex-wrap-between {
         width: 100%;
