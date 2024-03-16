@@ -82,12 +82,12 @@ export class CardElement extends LiteElement {
 
   _renderImage() {
     if (!this.image) return ''
-    return html` <img class="image" src=${this.image} /> `
+    return html` <img class="image" loading="lazy" src=${this.image} /> `
   }
 
   _renderAvatar() {
     if (!this.avatar) return ''
-    return html` <img class="avatar" src=${this.avatar} /> `
+    return html` <img class="avatar" loading="lazy" src=${this.avatar} /> `
   }
 
   _renderHeadline() {
