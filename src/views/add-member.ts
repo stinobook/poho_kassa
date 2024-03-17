@@ -1,11 +1,13 @@
 import { html, LiteElement, css, property, query, queryAll, customElement } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/container.js'
+import '@vandeurenglenn/lite-elements/typography.js'
 import '@material/web/fab/fab.js'
 import '@material/web/select/outlined-select.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@material/web/select/select-option.js'
 import '@material/web/checkbox/checkbox.js'
 import '@vandeurenglenn/flex-elements/wrap-between.js'
+import '@vandeurenglenn/flex-elements/it.js'
 import Router from '../routing.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
@@ -130,10 +132,10 @@ export class AddMemberView extends LiteElement {
         justify-content: center;
         width: 100%;
         height: 100%;
-      }
-      flex-container {
         overflow-y: auto;
-        min-width: 80%;
+      }
+      flex-column {
+        width: auto;
       }
       md-outlined-text-field,
       md-outlined-select,
@@ -163,44 +165,50 @@ export class AddMemberView extends LiteElement {
   render() {
     return html`
       <image-selector-dialog></image-selector-dialog>
-      <flex-container>
-        <flex-wrap-between>
-          <span>Foto persoon</span><input type="file" name="user" /> <span>Foto hond</span
-          ><input type="file" name="userbg" />
-        </flex-wrap-between>
-        <flex-wrap-between>
-          <md-outlined-text-field label="Voornaam" name="name" required></md-outlined-text-field>
-          <md-outlined-text-field label="Naam" name="lastname" required></md-outlined-text-field>
-        </flex-wrap-between>
-        <flex-wrap-between>
-          <img name="userphotoURL" @click=${() => this.dialog.addImage('userphotoURL')} />
-          <img name="userphotobgURL" @click=${() => this.dialog.addImage('userphotobgURL')} />
-          <md-outlined-select label="Groep" name="group" required>
-            <md-select-option value="Bestuur" headline="bestuur">Bestuur</md-select-option>
-            <md-select-option value="Instructeurs" headline="instructeurs">Instructeurs</md-select-option>
-            <md-select-option value="Leden" headline="leden">Leden</md-select-option>
-          </md-outlined-select>
-          <md-outlined-text-field label="Functie" name="title" required></md-outlined-text-field>
-        </flex-wrap-between>
-        <span>Hieronder is optioneel</span>
-        <md-outlined-text-field label="Geboortedatum" type="date" name="birthday"></md-outlined-text-field>
-        <md-outlined-text-field label="Straat + huisnummer" name="street"></md-outlined-text-field>
-        <flex-wrap-between>
-          <md-outlined-text-field label="Gemeente" name="community"></md-outlined-text-field>
-          <md-outlined-text-field label="Postcode" name="postalcode"></md-outlined-text-field>
-        </flex-wrap-between>
-        <md-outlined-text-field label="Telefoonnummer" name="phone"></md-outlined-text-field>
-        <md-outlined-text-field label="E-mail adres" name="email"></md-outlined-text-field>
-        <flex-wrap-between>
-          <md-outlined-text-field label="Naam hond" name="dogname"></md-outlined-text-field>
-          <md-outlined-text-field label="Ras hond" name="dograce"></md-outlined-text-field>
-        </flex-wrap-between>
-        <flex-wrap-between>
-          <md-outlined-text-field label="Stamboomnummer" name="pedigree"></md-outlined-text-field>
-          <md-outlined-text-field label="Chipnummer" name="chipnumber"></md-outlined-text-field>
-        </flex-wrap-between>
-      </flex-container>
 
+      <flex-container>
+        <flex-column>
+          <flex-column>
+            <label><custom-typography>Lid</custom-typography></label>
+            <img name="userphotobgURL" @click=${() => this.dialog.addImage('userphotobgURL')} />
+          </flex-column>
+          <flex-wrap-between>
+            <md-outlined-text-field label="Geboortedatum" type="date" name="birthday"></md-outlined-text-field>
+
+            <md-outlined-text-field label="naam" name="dogname"></md-outlined-text-field>
+            <md-outlined-text-field label="ras" name="dograce"></md-outlined-text-field>
+
+            <md-outlined-text-field label="Stamboomnummer" name="pedigree"></md-outlined-text-field>
+            <md-outlined-text-field label="Chipnummer" name="chipnumber"></md-outlined-text-field>
+          </flex-wrap-between>
+        </flex-column>
+
+        <flex-column>
+          <flex-column>
+            <label><custom-typography>Baasje</custom-typography></label>
+            <img name="userphotoURL" @click=${() => this.dialog.addImage('userphotoURL')} />
+          </flex-column>
+
+          <flex-wrap-between>
+            <md-outlined-text-field label="Voornaam" name="name" required></md-outlined-text-field>
+            <md-outlined-text-field label="Naam" name="lastname" required></md-outlined-text-field>
+
+            <md-outlined-select label="Groep" name="group" required>
+              <md-select-option value="Bestuur" headline="bestuur">Bestuur</md-select-option>
+              <md-select-option value="Instructeurs" headline="instructeurs">Instructeurs</md-select-option>
+              <md-select-option value="Leden" headline="leden">Leden</md-select-option>
+            </md-outlined-select>
+            <md-outlined-text-field label="Functie" name="title" required></md-outlined-text-field>
+            <md-outlined-text-field label="Straat + huisnummer" name="street"></md-outlined-text-field>
+
+            <md-outlined-text-field label="Gemeente" name="community"></md-outlined-text-field>
+            <md-outlined-text-field label="Postcode" name="postalcode"></md-outlined-text-field>
+
+            <md-outlined-text-field label="Telefoonnummer" name="phone"></md-outlined-text-field>
+            <md-outlined-text-field label="E-mail adres" name="email"></md-outlined-text-field>
+          </flex-wrap-between>
+        </flex-column>
+      </flex-container>
       <md-fab @click=${this.back.bind(this)} class="back"
         ><custom-icon slot="icon" icon="arrow_back"></custom-icon
       ></md-fab>

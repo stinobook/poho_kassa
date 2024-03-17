@@ -28,6 +28,12 @@ export default html`
       <span name="voting_chip">@symbol-voting_chip</span>
       <span name="check">@symbol-check</span>
       <span name="close">@symbol-close</span>
+      <span name="link">@symbol-link</span>
+      <span name="camera">@symbol-camera</span>
+      <span name="upload">@symbol-upload</span>
+      <span name="photo_camera_back">@symbol-photo_camera_back</span>
+      <span name="photo_camera_front">@symbol-photo_camera_front</span>
+      <span name="photo_camera">@symbol-photo_camera</span>
       <span name="shopping_cart_checkout">@symbol-shopping_cart_checkout</span>
     </template>
   </custom-icon-set>

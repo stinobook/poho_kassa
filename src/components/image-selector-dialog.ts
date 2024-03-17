@@ -6,7 +6,9 @@ import '@material/web/textfield/outlined-text-field.js'
 import { DeviceApi } from './../apis/device.js'
 import '@material/web/progress/circular-progress.js'
 
+import '@vandeurenglenn/lite-elements/icon.js'
 import '@vandeurenglenn/lite-elements/tabs.js'
+import '@vandeurenglenn/lite-elements/tab.js'
 import '@vandeurenglenn/lite-elements/selector.js'
 import '@vandeurenglenn/lite-elements/pages.js'
 
@@ -62,7 +64,7 @@ export class ImageSelectorDialog extends LiteElement {
       }
 
       custom-tab.custom-selected span,
-      custom-tab.custom-selected md-icon {
+      custom-tab.custom-selected custom-icon {
         color: var(--md-sys-color-on-tertiary);
       }
 
@@ -248,25 +250,25 @@ export class ImageSelectorDialog extends LiteElement {
           ${this.hasLibrary
             ? html`
                 <custom-tab route="library">
-                  <md-icon>photo_library</md-icon>
+                  <custom-icon>photo_library</custom-icon>
                   <span>library</span>
                 </custom-tab>
               `
             : ''}
           <custom-tab route="url">
-            <md-icon>link</md-icon>
+            <custom-icon>link</custom-icon>
             <span>url</span>
           </custom-tab>
           <flex-it flex="1"></flex-it>
 
           <custom-tab route="camera">
-            <md-icon>camera</md-icon>
+            <custom-icon>camera</custom-icon>
             <span>camera</span>
           </custom-tab>
           <flex-it flex="1"></flex-it>
 
           <custom-tab route="file">
-            <md-icon>upload</md-icon>
+            <custom-icon>upload</custom-icon>
             <span>file</span>
           </custom-tab>
           <flex-it flex="2"></flex-it>
@@ -307,13 +309,13 @@ export class ImageSelectorDialog extends LiteElement {
                 @click=${() => (this.#cameraFacingMode = 'user')}
                 ?disabled=${this.frontCameraDisabled}
               >
-                <md-icon>photo_camera_front</md-icon>
+                <custom-icon>photo_camera_front</custom-icon>
               </md-standard-icon-button>
 
               <flex-it flex="1"></flex-it>
 
               <md-standard-icon-button style="transform: scale(1.66);" @click=${this.#takePhoto}>
-                <md-icon>photo_camera</md-icon>
+                <custom-icon>photo_camera</custom-icon>
               </md-standard-icon-button>
 
               <flex-it flex="1"></flex-it>
@@ -322,7 +324,7 @@ export class ImageSelectorDialog extends LiteElement {
                 @click=${() => (this.#cameraFacingMode = 'environment')}
                 ?disabled=${this.rearCameraDisabled}
               >
-                <md-icon>photo_camera_back</md-icon>
+                <custom-icon>photo_camera_back</custom-icon>
               </md-standard-icon-button>
 
               <flex-it flex="2"></flex-it>
@@ -331,7 +333,7 @@ export class ImageSelectorDialog extends LiteElement {
 
           <section route="file">
             <md-filled-tonal-button @click=${this.#selectFile.bind(this)}>
-              <md-icon slot="icon">upload</md-icon>
+              <custom-icon slot="icon">upload</custom-icon>
               select
             </md-filled-tonal-button>
           </section>
