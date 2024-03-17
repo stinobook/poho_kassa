@@ -36,7 +36,8 @@ export class MembersView extends LiteElement {
         right: 24px;
         bottom: 24px;
       }
-      card-element flex-container,
+      card-element,
+      flex-container,
       md-icon-button,
       md-fab,
       md-list-item,
