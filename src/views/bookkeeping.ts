@@ -18,7 +18,7 @@ const formatDate = () => {
 
 @customElement('bookkeeping-view')
 export class BookkeepingView extends LiteElement {
-  @property() accessor books: { [key: string]: Sales[] } = {}
+  @property() accessor books: { [key: string]: Sales[] }
   static styles = [
     css`
       :host {
@@ -225,7 +225,6 @@ export class BookkeepingView extends LiteElement {
       )
     )
     this.books = filteredData
-    this.requestRender()
   }
 
   renderBooks() {
