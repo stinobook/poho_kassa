@@ -11,6 +11,7 @@ import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
 import { scrollbar } from '../mixins/styles.js'
 
+import './../components/image-selector-dialog.js'
 @customElement('add-member-view')
 export class AddMemberView extends LiteElement {
   @property({ type: Object })
@@ -18,6 +19,9 @@ export class AddMemberView extends LiteElement {
 
   @query('md-outlined-select')
   accessor select
+
+  @query('image-selector-dialog')
+  accessor dialog
 
   editing
 
@@ -50,9 +54,16 @@ export class AddMemberView extends LiteElement {
   async updateView(value) {
     const member = await firebase.get(`members/${value.edit}`)
     for (const [key, value] of Object.entries(member)) {
-      const field = this.shadowRoot.querySelector(`[name=${key}]`) as MdFilledTextField | MdOutlinedSelect
+      const field = this.shadowRoot.querySelector(`[name=${key}]`) as
+        | MdFilledTextField
+        | MdOutlinedSelect
+        | HTMLImageElement
       if (!field) alert(`property declared but no field found for: ${key}`)
-      else field.value = value as string
+      else {
+        if (field.tagName === 'IMG') {
+          field.src = value
+        } else field.value = value as string
+      }
     }
     this.requestRender()
   }
@@ -151,6 +162,7 @@ export class AddMemberView extends LiteElement {
 
   render() {
     return html`
+      <image-selector-dialog></image-selector-dialog>
       <flex-container>
         <flex-wrap-between>
           <span>Foto persoon</span><input type="file" name="user" /> <span>Foto hond</span
@@ -161,6 +173,8 @@ export class AddMemberView extends LiteElement {
           <md-outlined-text-field label="Naam" name="lastname" required></md-outlined-text-field>
         </flex-wrap-between>
         <flex-wrap-between>
+          <img name="userphotoURL" @click=${() => this.dialog.addImage('userphotoURL')} />
+          <img name="userphotobgURL" @click=${() => this.dialog.addImage('userphotobgURL')} />
           <md-outlined-select label="Groep" name="group" required>
             <md-select-option value="Bestuur" headline="bestuur">Bestuur</md-select-option>
             <md-select-option value="Instructeurs" headline="instructeurs">Instructeurs</md-select-option>

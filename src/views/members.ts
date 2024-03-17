@@ -36,15 +36,11 @@ export class MembersView extends LiteElement {
         right: 24px;
         bottom: 24px;
       }
-      .card,
-      flex-container,
+      card-element flex-container,
       md-icon-button,
       md-fab,
       md-list-item,
       md-outlined-button {
-        pointer-events: auto;
-      }
-      card-element {
         pointer-events: auto;
       }
 
@@ -81,11 +77,11 @@ export class MembersView extends LiteElement {
     return value
   }
   connectedCallback() {
-    this.shadowRoot.addEventListener('click', this.#clickHandler)
+    this.shadowRoot.addEventListener('click', this.#clickHandler.bind(this))
   }
 
   disconnectedCallback() {
-    this.shadowRoot.removeEventListener('click', this.#clickHandler)
+    this.shadowRoot.removeEventListener('click', this.#clickHandler.bind(this))
   }
 
   #clickHandler = (event) => {
