@@ -134,7 +134,11 @@ const initWatcher = () => {
         // if (connection && connection.connected) {
         connection && connection.send('reload')
         // }
-      }, 200)
+      }, 100)
+    })
+
+    watcher.on('error', (error) => {
+      console.log(error)
     })
   } catch (error) {
     initWatcher()
