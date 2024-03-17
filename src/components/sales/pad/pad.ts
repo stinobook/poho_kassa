@@ -69,6 +69,9 @@ export class SalesPad extends LiteElement {
   @query('sales-receipt')
   accessor receipt
 
+  @property()
+  accessor qrcode
+
   addProduct(product) {
     let amount = this.receipt.items[product] ? this.receipt.items[product].amount + 1 : 1
     this.currentSelectedProduct = product
@@ -81,7 +84,7 @@ export class SalesPad extends LiteElement {
     this.currentSelectedProduct = detail
   }
 
-  inputTap({ detail }: CustomEvent) {
+  async inputTap({ detail }: CustomEvent) {
     if (this.receipt.items[this.currentSelectedProduct]?.description || detail === 'cash' || detail === 'payconiq') {
       switch (detail) {
         case 'cash':
@@ -99,6 +102,25 @@ export class SalesPad extends LiteElement {
             break
           } else {
             let dialogPayconiq = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
+            const amount = Object.values(this.receipt.items).reduce(
+              (total: number, cur: ReceiptItem) => total + cur.amount * cur.price,
+              0
+            )
+
+            const description = `payment`
+
+            const body = JSON.stringify({
+              amount,
+              description
+            })
+
+            const response = await fetch('https://us-central1-poho-app.cloudfunctions.net/createPayment', {
+              method: 'POST',
+              body
+            })
+
+            this.qrcode = (await response.json()).qrcode.href
+
             dialogPayconiq.open = true
             break
           }
@@ -233,10 +255,7 @@ export class SalesPad extends LiteElement {
         <custom-dialog class="dialogPayconiq" has-actions="" has-header="">
           <span slot="title">Payconiq Ontvangst</span>
           <flex-row slot="actions" direction="row">
-            <img
-              action="accepted"
-              src="https://portal.payconiq.com/qrcode?c=https://payconiq.com/pay/1/5c1b589a296e9a3330aebbe0&s=L&f=PNG"
-            />
+            <img action="accepted" src=${this.qrcode} />
           </flex-row>
         </custom-dialog>
         <flex-container> </flex-container
