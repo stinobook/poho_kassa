@@ -2,6 +2,7 @@ node_modules
 
 .temp
 env
+.env
 .DS_Store
 www/**/*.js
 www/**/*.js.map
