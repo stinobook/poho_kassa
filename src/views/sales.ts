@@ -8,7 +8,7 @@ import '../components/sales/grid/grid.js'
 
 @customElement('sales-view')
 export class SalesView extends LiteElement {
-  fabIcon = "shopping_cart_checkout"
+  fabIcon = 'shopping_cart_checkout'
   static styles = [
     css`
       :host {
@@ -84,13 +84,13 @@ export class SalesView extends LiteElement {
     let fab = this.shadowRoot.querySelector('md-fab')
     if (this.pad.classList.contains('shown')) {
       this.pad.classList.remove('shown')
-      customIcon.icon = "shopping_cart_checkout"
+      customIcon.icon = 'shopping_cart_checkout'
       fab.style.setProperty('left', '')
-    } else { 
+    } else {
       this.pad.classList.add('shown')
-      customIcon.icon = "arrow_back"
+      customIcon.icon = 'arrow_back'
       fab.style.setProperty('left', '24px')
-  }
+    }
   }
 
   addProductToReceipt = (event) => {
@@ -104,7 +104,7 @@ export class SalesView extends LiteElement {
 
       <md-fab @click=${() => this.togglePad()}>
         <custom-icon icon="shopping_cart_checkout" class="fabicon" slot="icon"></custom-icon>
-      </md-fab>      
+      </md-fab>
     `
   }
 }

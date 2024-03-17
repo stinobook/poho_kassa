@@ -54,6 +54,9 @@ export class PoHoShell extends LiteElement {
   @property({ provider: true })
   accessor attendance = []
 
+  @property()
+  accessor attendanceDate = new Date().toISOString().slice(0, 10)
+
   @query('custom-drawer-layout')
   accessor drawerLayout: CustomDrawerLayout
 
@@ -67,10 +70,8 @@ export class PoHoShell extends LiteElement {
   }
   setupAttendanceListener() {
     this.#listeners.push('attendance')
-    firebase.onChildAdded('attendance', async (snap) => {
+    firebase.onChildAdded(`attendance/${this.attendanceDate}`, async (snap) => {
       const val = await snap.val()
-      const key = snap.key
-      val.key = key
       if (!this.attendance) {
         this.attendance = [val]
       } else if (!this.attendance.includes(val)) {
@@ -78,29 +79,24 @@ export class PoHoShell extends LiteElement {
       }
       this.attendance = [...this.attendance]
     })
-    firebase.onChildChanged('attendance', async (snap) => {
+    firebase.onChildChanged(`attendance/${this.attendanceDate}`, async (snap) => {
       const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      let i = -1
 
-      for (const event of this.attendance) {
-        i += 1
-        if (event.key === val.key) break
+      if (!this.attendance.includes(val)) {
+        this.attendance.push(val)
+      } else {
+        const i = this.attendance.indexOf(val)
+        this.attendance.splice(i, val)
       }
-      this.attendance.splice(i, val)
+
       this.attendance = [...this.attendance]
     })
-    firebase.onChildRemoved('attendance', async (snap) => {
+    firebase.onChildRemoved(`attendance/${this.attendanceDate}`, async (snap) => {
       const val = await snap.val()
-      val.key = snap.key
-      let i = -1
-
-      for (const event of this.attendance) {
-        i += 1
-        if (event.key === val.key) break
+      if (this.attendance.includes(val)) {
+        const i = this.attendance.indexOf(val)
+        this.attendance.splice(i, val)
       }
-      this.attendance.splice(i)
       this.attendance = [...this.attendance]
     })
   }
@@ -327,7 +323,7 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
       if (!this.#listeners.includes('products')) this.setupProductsListener()
     } else if (selected === 'checkout') {
-      if (!this.#listeners.includes('transactions')) this.setupTransactionsListener() 
+      if (!this.#listeners.includes('transactions')) this.setupTransactionsListener()
     } else if (selected === 'attendance') {
       if (!this.#listeners.includes('attendance')) this.setupAttendanceListener()
       if (!this.#listeners.includes('members')) this.setupMembersListener()

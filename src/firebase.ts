@@ -6,6 +6,7 @@ import {
   push as _push,
   set as _set,
   remove as _remove,
+  update as _update,
   getDatabase,
   ref,
   onChildAdded as _onChildAdded,
@@ -49,6 +50,8 @@ const set = async (path: string, value: FirebaseDatabaseFormat) => _set(ref(data
 
 const remove = async (path: string): Promise<void> => _remove(ref(database, path))
 
+const update = async (path: string, value: any): Promise<void> => _update(ref(database, path), value)
+
 const login = async () => {}
 
 const logout = async () => {}
@@ -83,6 +86,7 @@ const _firebase = {
   push,
   set,
   remove,
+  update,
   auth,
   login,
   logout,
