@@ -1,23 +1,11 @@
-import { html, css, LiteElement, customElement, property } from '@vandeurenglenn/lite'
-import '@material/web/list/list.js'
-import '@material/web/list/list-item.js'
-import '@material/web/button/filled-button.js'
-import '@material/web/button/outlined-button.js'
-import '@material/web/textfield/filled-text-field.js'
+import { html, css, LiteElement, customElement, property, query } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
-import '@vandeurenglenn/lite-elements/tabs.js'
-import '@vandeurenglenn/lite-elements/tab.js'
-import '@vandeurenglenn/lite-elements/divider.js'
-import '@vandeurenglenn/lite-elements/icon-button.js'
 import '@vandeurenglenn/lite-elements/button.js'
-import '@vandeurenglenn/lite-elements/card.js'
 import '@vandeurenglenn/lite-elements/dialog.js'
-import '@vandeurenglenn/lite-elements/button.js'
+import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 import './receipt.js'
 import './input.js'
-import '@vandeurenglenn/flex-elements/wrap-evenly.js'
-import { query } from '@vandeurenglenn/lite'
 import { Transaction, ReceiptItem } from '../../../types.js'
 
 @customElement('sales-pad')
@@ -41,7 +29,8 @@ export class SalesPad extends LiteElement {
       sales-receipt {
         margin-bottom: 24px;
       }
-      .payment-modal {
+
+      custom-dialog {
         z-index: 1000;
       }
       .dialogCash flex-row {
@@ -228,34 +217,35 @@ export class SalesPad extends LiteElement {
 
   render() {
     return html`
+      <custom-dialog class="dialogCash">
+        <span slot="title">Cash Ontvangst</span>
+
+        <flex-wrap-evenly>
+          <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
+          <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
+          <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>
+          <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
+          <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
+          <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
+          <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
+          <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
+        </flex-wrap-evenly>
+
+        <flex-row slot="actions">
+          <custom-button label="Annuleer" action="cancel" has-label="">Annuleer</custom-button>
+        </flex-row>
+      </custom-dialog>
+
+      <custom-dialog class="dialogPayconiq">
+        <span slot="title">Payconiq Ontvangst</span>
+        <flex-row slot="actions" direction="row">
+          <img action="accepted" src=${this.qrcode} />
+        </flex-row>
+      </custom-dialog>
+
       <sales-receipt @selection=${(event) => this.onReceiptSelection(event)}></sales-receipt>
       <flex-it></flex-it>
       <sales-input @input-click=${(event) => this.inputTap(event)}></sales-input>
-      <flex-container class="payment-modal">
-        <custom-dialog class="dialogCash" has-actions="" has-header="">
-          <span slot="title">Cash Ontvangst</span>
-          <flex-row slot="actions" direction="row">
-            <flex-wrap-evenly>
-              <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
-              <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
-              <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>
-              <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
-              <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
-              <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
-              <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
-              <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
-            </flex-wrap-evenly>
-            <custom-button label="Annuleer" action="cancel" has-label="">Annuleer</custom-button>
-          </flex-row>
-        </custom-dialog>
-        <custom-dialog class="dialogPayconiq" has-actions="" has-header="">
-          <span slot="title">Payconiq Ontvangst</span>
-          <flex-row slot="actions" direction="row">
-            <img action="accepted" src=${this.qrcode} />
-          </flex-row>
-        </custom-dialog>
-        <flex-container> </flex-container
-      ></flex-container>
     `
   }
 }
