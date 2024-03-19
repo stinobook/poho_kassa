@@ -3,7 +3,7 @@ import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/lite-elements/button.js'
 import '@vandeurenglenn/lite-elements/dialog.js'
-import '@vandeurenglenn/flex-elements/wrap-evenly.js'
+import '@vandeurenglenn/flex-elements/wrap-between.js'
 import './receipt.js'
 import './input.js'
 import { Transaction, ReceiptItem } from '../../../types.js'
@@ -21,9 +21,7 @@ export class SalesPad extends LiteElement {
         height: 100%;
         flex-direction: column;
         max-width: 240px;
-        padding-right: 12px;
-        box-sizing: border-box;
-        position: relative;
+        margin-right: 12px;
       }
 
       sales-receipt {
@@ -40,15 +38,17 @@ export class SalesPad extends LiteElement {
       custom-button {
         background-color: var(--md-sys-color-primary);
         color: var(--md-sys-color-on-primary);
-        margin: 6px;
         height: 50px;
+        width: 98px;
       }
-      flex-wrap-evenly {
+      flex-wrap-between {
+        max-width: 320px;
         background-color: var(--md-sys-color-surface-container-high);
         border-radius: var(--md-sys-shape-corner-extra-large);
         padding: 6px 0;
-        margin-bottom: 12px;
-        position: relative;
+        box-sizing: border-box;
+        gap: 12px;
+        margin-bottom: 16px;
       }
     `
   ]
@@ -220,7 +220,7 @@ export class SalesPad extends LiteElement {
       <custom-dialog class="dialogCash">
         <span slot="title">Cash Ontvangst</span>
 
-        <flex-wrap-evenly>
+        <flex-wrap-between>
           <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
           <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
           <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>
@@ -229,7 +229,7 @@ export class SalesPad extends LiteElement {
           <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
           <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
           <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
-        </flex-wrap-evenly>
+        </flex-wrap-between>
 
         <flex-row slot="actions">
           <custom-button label="Annuleer" action="cancel" has-label="">Annuleer</custom-button>
