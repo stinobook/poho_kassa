@@ -18,8 +18,7 @@ import './receipt.js'
 import './input.js'
 import '@vandeurenglenn/flex-elements/wrap-evenly.js'
 import { query } from '@vandeurenglenn/lite'
-import { get, ref, push, getDatabase, child, onChildAdded, onChildRemoved, set } from 'firebase/database'
-import { Transactions, Transaction, ReceiptItem } from '../../../types.js'
+import { Transaction, ReceiptItem } from '../../../types.js'
 
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
@@ -195,7 +194,6 @@ export class SalesPad extends LiteElement {
       return
     }
     if (event.detail === 'accepted') {
-      const transactionsDB = ref(getDatabase(), 'transactions')
       let total = this.receipt.total
       this.receipt.textTotalorChange = 'Geslaagd'
       let transaction: Transaction = {
@@ -203,10 +201,9 @@ export class SalesPad extends LiteElement {
         paymentAmount: total,
         transactionItems: this.receipt.items
       }
-      push(transactionsDB, transaction)
+      firebase.push('transactions', transaction)
       this.receipt.items = {}
     } else {
-      const transactionsDB = ref(getDatabase(), 'transactions')
       let cashChange = event.detail
       let total = this.receipt.total
       if (cashChange === 'exact') {
@@ -223,7 +220,7 @@ export class SalesPad extends LiteElement {
           paymentAmount: total,
           transactionItems: this.receipt.items
         }
-        push(transactionsDB, transaction)
+        firebase.push('transactions', transaction)
         this.receipt.items = {}
       }
     }
