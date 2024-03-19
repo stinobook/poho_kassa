@@ -230,10 +230,6 @@ export class SalesPad extends LiteElement {
           <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
           <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
         </flex-wrap-between>
-
-        <flex-row slot="actions">
-          <custom-button label="Annuleer" action="cancel" has-label="">Annuleer</custom-button>
-        </flex-row>
       </custom-dialog>
 
       <custom-dialog class="dialogPayconiq">
