@@ -1,5 +1,4 @@
-import { html, css, LiteElement } from '@vandeurenglenn/lite'
-import { customElement, property } from 'lit/decorators.js'
+import { html, css, LiteElement, customElement, property } from '@vandeurenglenn/lite'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import '@material/web/button/filled-button.js'
