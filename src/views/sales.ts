@@ -80,15 +80,13 @@ export class SalesView extends LiteElement {
   accessor grid
 
   togglePad = () => {
-    let customIcon = this.shadowRoot.querySelector('.fabicon')
+    let customIcon = this.shadowRoot.querySelector('.fabicon') as HTMLElement
     let fab = this.shadowRoot.querySelector('md-fab')
     if (this.pad.classList.contains('shown')) {
       this.pad.classList.remove('shown')
-      customIcon.icon = 'shopping_cart_checkout'
       fab.style.setProperty('left', '')
     } else {
       this.pad.classList.add('shown')
-      customIcon.icon = 'arrow_back'
       fab.style.setProperty('left', '24px')
     }
   }
