@@ -48,13 +48,13 @@ export class SalesGrid extends LiteElement {
       md-filled-button {
         pointer-events: auto;
         height: 86.33px;
-        margin: 4px;
-        min-width: min-content;
+        min-width: 86.33px;
       }
       flex-wrap-between {
         width: 100%;
         height: fit-content;
         justify-content: flex-start;
+        gap: 16px 8px;
       }
 
       flex-container {
