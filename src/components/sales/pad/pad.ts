@@ -46,10 +46,9 @@ export class SalesPad extends LiteElement {
         max-width: 320px;
         background-color: var(--md-sys-color-surface-container-high);
         border-radius: var(--md-sys-shape-corner-extra-large);
-        padding: 6px 0;
-        box-sizing: border-box;
+
+        margin-top: 24px;
         gap: 12px;
-        margin-bottom: 16px;
       }
     `
   ]
@@ -231,10 +230,6 @@ export class SalesPad extends LiteElement {
           <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
           <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
         </flex-wrap-between>
-
-        <flex-row slot="actions">
-          <custom-button label="Annuleer" action="cancel" has-label="">Annuleer</custom-button>
-        </flex-row>
       </custom-dialog>
 
       <custom-dialog class="dialogPayconiq">
