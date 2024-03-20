@@ -45,10 +45,9 @@ export class SalesPad extends LiteElement {
         max-width: 320px;
         background-color: var(--md-sys-color-surface-container-high);
         border-radius: var(--md-sys-shape-corner-extra-large);
-        padding: 6px 0;
-        box-sizing: border-box;
+
+        margin-top: 24px;
         gap: 12px;
-        margin-bottom: 16px;
       }
     `
   ]
