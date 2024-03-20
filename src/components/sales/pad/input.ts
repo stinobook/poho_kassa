@@ -43,6 +43,7 @@ export class SalesInput extends LiteElement {
       flex-wrap-evenly {
         background-color: var(--md-sys-color-surface-container-high);
         border-radius: var(--md-sys-shape-corner-extra-large);
+        box-sizing: border-box;
         padding: 6px 0;
         margin-bottom: 12px;
         position: relative;
@@ -53,7 +54,6 @@ export class SalesInput extends LiteElement {
         width: 100%;
         box-sizing: border-box;
         padding: 12px;
-        box-sizing: border-box;
         position: relative;
         border-radius: var(--md-sys-shape-corner-extra-large);
       }

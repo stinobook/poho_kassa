@@ -35,6 +35,10 @@ export class SalesView extends LiteElement {
           pointer-events: none;
           opacity: 0;
           padding-right: 0;
+          inset: 0;
+        }
+
+        .shown {
           padding-bottom: 12px;
         }
 

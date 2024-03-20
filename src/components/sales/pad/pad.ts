@@ -21,7 +21,8 @@ export class SalesPad extends LiteElement {
         height: 100%;
         flex-direction: column;
         max-width: 240px;
-        margin-right: 12px;
+        padding-right: 12px;
+        box-sizing: border-box;
       }
 
       sales-receipt {
