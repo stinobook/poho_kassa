@@ -40,6 +40,7 @@ export class AttendanceView extends LiteElement {
         display: flex;
         flex-direction: column;
         align-items: center;
+        pointer-events: auto;
       }
 
       ${scrollbar}
