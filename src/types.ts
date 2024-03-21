@@ -62,7 +62,9 @@ export type Evenement = {
 }
 
 export enum Group {
-  bestuur, instructeurs, leden
+  bestuur,
+  instructeurs,
+  leden
 }
 
 export type Member = {
@@ -93,3 +95,38 @@ export type Attendee = {
 }
 
 export type Attendance = Attendee[]
+
+export type PayconiqPaymentLink = {
+  href: string
+}
+export type PayconiqPayment = {
+  amount: number
+  createdAt: string
+  creditor: { profileId: string; merchantId: string; name: string; iban: string }
+  currency: string
+  description: string
+  expiresAt: string
+  paymentId: string
+  status:
+    | 'PENDING'
+    | 'IDENTIFIED'
+    | 'CANCELLED'
+    | 'AUTHORIZED'
+    | 'AUTHORIZATION_FAILED'
+    | 'EXPIRED'
+    | 'FAILED'
+    | 'SUCCEEDED'
+  _links: {
+    cancel: PayconiqPaymentLink
+    deeplink: PayconiqPaymentLink
+    qrcode: PayconiqPaymentLink
+    self: PayconiqPaymentLink
+  }
+}
+
+export type Notification = {
+  title: string
+  description: string
+  image?: string
+  actions?: any[]
+}

@@ -16,8 +16,6 @@ const apiURL = `https://api.payconiq.com/v3/payments`
 
 export const createPayment = onRequest({ cors: 'https://pohoapp.web.app' }, async (request, response) => {
   const headers = new Headers()
-  console.log(PAYCONIQ_API_KEY)
-
   headers.set('Authorization', `Bearer ${PAYCONIQ_API_KEY}`)
   headers.set('Cache-Control', 'no-cache')
   headers.set('Content-Type', 'application/json')
@@ -26,12 +24,17 @@ export const createPayment = onRequest({ cors: 'https://pohoapp.web.app' }, asyn
   const body = JSON.stringify({
     amount,
     currency: 'EUR',
-    description
+    description,
+    callbackUrl: 'https://us-central1-poho-app.cloudfunctions.net/payconiqCallbackUrl'
   })
   const _response = await fetch(apiURL, { headers, body, method: 'POST' })
   const payment = await _response.json()
   response.send(payment)
   return payment
+})
+
+export const payconiqCallbackUrl = onRequest({ cors: 'https://api.payconiq.com' }, async (request, response) => {
+  console.log(request)
 })
 // export const helloWorld = onRequest((request, response) => {
 //   logger.info("Hello logs!", {structuredData: true});

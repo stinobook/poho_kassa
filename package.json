@@ -6,6 +6,9 @@
   "scripts": {
     "watch": "cross-env NODE_ENV=development rollup -c -w",
     "build": "cross-env NODE_ENV=production rollup -c",
+    "deploy": "npm run build && firebase deploy --only hosting",
+    "deploy-functions": "npm run build && firebase deploy --only functions",
+    "deploy-all": "npm run build && firebase deploy",
     "serve": "node server.js"
   },
   "devDependencies": {
@@ -29,7 +32,6 @@
     "@vandeurenglenn/lite": "^0.2.32",
     "@vandeurenglenn/lite-elements": "^0.3.19",
     "firebase": "^10.8.1",
-    "lit": "^3.1.2",
     "rollup-plugin-copy": "^3.5.0"
   }
 }

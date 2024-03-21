@@ -1,5 +1,6 @@
 import { html, LiteElement, query, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
+import '@vandeurenglenn/lite-elements/notifications.js'
 import '@vandeurenglenn/lite-elements/drawer-layout.js'
 import '@vandeurenglenn/lite-elements/icon-set.js'
 import '@vandeurenglenn/lite-elements/theme.js'
@@ -53,6 +54,9 @@ export class PoHoShell extends LiteElement {
 
   @property({ provider: true })
   accessor attendance = []
+
+  @property({ provider: true })
+  accessor payconiqTransactions = []
 
   @property()
   accessor attendanceDate = new Date().toISOString().slice(0, 10)
@@ -246,6 +250,45 @@ export class PoHoShell extends LiteElement {
     })
   }
 
+  setupPayconiqTransactionsListener() {
+    this.#listeners.push('payconiqTransactions')
+    firebase.onChildAdded('payconiqTransactions', async (snap) => {
+      const val = await snap.val()
+
+      if (!this.payconiqTransactions) {
+        this.payconiqTransactions = [val]
+      } else if (!this.payconiqTransactions.includes(val)) {
+        this.payconiqTransactions.push(val)
+      }
+      this.payconiqTransactions = [...this.payconiqTransactions]
+    })
+    firebase.onChildChanged('payconiqTransactions', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      let i = -1
+
+      for (const event of this.payconiqTransactions) {
+        i += 1
+        if (event.key === val.key) break
+      }
+      this.payconiqTransactions.splice(i, val)
+      this.payconiqTransactions = [...this.payconiqTransactions]
+    })
+    firebase.onChildRemoved('payconiqTransactions', async (snap) => {
+      const val = await snap.val()
+      val.key = snap.key
+      let i = -1
+
+      for (const event of this.payconiqTransactions) {
+        i += 1
+        if (event.key === val.key) break
+      }
+      this.payconiqTransactions.splice(i)
+      this.payconiqTransactions = [...this.payconiqTransactions]
+    })
+  }
+
   setupEventsListener() {
     this.#listeners.push('events')
     firebase.onChildAdded('events', async (snap) => {
@@ -322,6 +365,7 @@ export class PoHoShell extends LiteElement {
     if (selected === 'products' || selected === 'sales') {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
       if (!this.#listeners.includes('products')) this.setupProductsListener()
+      if (!this.#listeners.includes('payconiqtransactions')) this.setupPayconiqtransactions()
     } else if (selected === 'checkout') {
       if (!this.#listeners.includes('transactions')) this.setupTransactionsListener()
     } else if (selected === 'attendance') {
@@ -417,6 +461,9 @@ export class PoHoShell extends LiteElement {
           background: var(--md-sys-color-on-error-container);
           color: var(--md-sys-color-on-error);
           width: auto;
+        }
+        [slot='top-app-bar-end'] {
+          padding-right: 32px;
         }
       </style>
       <!-- just cleaner -->

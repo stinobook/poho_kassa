@@ -6,13 +6,50 @@ import '@vandeurenglenn/lite-elements/dialog.js'
 import '@vandeurenglenn/flex-elements/wrap-between.js'
 import './receipt.js'
 import './input.js'
-import { Transaction, ReceiptItem } from '../../../types.js'
+import { Transaction, ReceiptItem, PayconiqPayment } from '../../../types.js'
+import { CustomDialog } from '@vandeurenglenn/lite-elements/dialog.js'
+import { CustomNotifications } from '@vandeurenglenn/lite-elements/notifications'
 
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
   transaction: { [key: string]: Transaction[] } = {}
   currentSelectedProduct: string
   currentProductAmount: string = ''
+
+  #currentPayconiqTransaction
+
+  @property()
+  accessor cancelPayment
+
+  @property({ consumes: 'payconiqTransactions' })
+  accessor payconiqTransactions
+
+  @query('.dialogPayconiq')
+  accessor payconiqDialog: CustomDialog
+
+  get notifications(): CustomNotifications {
+    return document.querySelector('custom-notifications')
+  }
+
+  async willChange(propertyKey: string, value: any) {
+    if (propertyKey === 'payconiqTransactions') {
+      value = value.filter(
+        (transaction) =>
+          transaction.status !== 'SUCCEEDED' &&
+          transaction.paymentMethod === 'payconiq' &&
+          this.#currentPayconiqTransaction.paymentId === transaction.paymentId
+      )
+      if (value[0]) {
+        this.notifications.createNotification({
+          title: 'Poho',
+          message: `${this.#currentPayconiqTransaction.paymentId} completed!`
+        })
+        this.payconiqDialog.open = false
+      }
+    }
+    return value
+  }
+
   static styles = [
     css`
       :host {
@@ -96,17 +133,18 @@ export class SalesPad extends LiteElement {
 
             const description = `payment`
 
-            const body = JSON.stringify({
-              amount,
-              description
-            })
+            const response = await fetch(
+              `https://us-central1-poho-app.cloudfunctions.net/createPayment?amount=${amount}&description=${description}`,
+              {
+                method: 'POST'
+              }
+            )
 
-            const response = await fetch('https://us-central1-poho-app.cloudfunctions.net/createPayment', {
-              method: 'POST',
-              body
-            })
-
-            this.qrcode = (await response.json()).qrcode.href
+            const payment = (await response.json()) as PayconiqPayment
+            await firebase.set(`payconiqTransactions/${payment.paymentId}`, payment)
+            this.#currentPayconiqTransaction = payment
+            this.qrcode = payment._links.qrcode.href
+            this.cancelPayment = payment._links.cancel.href
 
             dialogPayconiq.open = true
             break
