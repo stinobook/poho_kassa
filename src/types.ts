@@ -37,7 +37,7 @@ export interface Cashtotal {
 }
 export interface Sales extends Transaction {
   key?: string
-  date: EpochTimeStamp
+  date: string
   cashDifferenceCheckout: number
   cashStartCheckout: number
   cashTransferCheckout: number
@@ -47,7 +47,7 @@ export interface Sales extends Transaction {
   payconiqKantine: number
   payconiqWinkel: number
   payconiqLidgeld: number
-  transactions: Transactions[]
+  transactions: Transaction[]
 }
 
 export type Evenement = {

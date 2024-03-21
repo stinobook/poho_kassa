@@ -169,11 +169,11 @@ export class CheckoutView extends LiteElement {
       let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
       this.inputCash(inputValue, target)
     })
-    this.shadowRoot.addEventListener('click', ({ target }: CustomEvent) => {
-      // @ts-ignore
-      let checkout = new CustomEvent('checkoutTap', { detail: target.getAttribute('checkout-tap') })
-      this.checkoutTap(checkout)
-    })
+    this.shadowRoot.addEventListener('click', this.#clickHandler)
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot.removeEventListener('click', this.#clickHandler)
   }
 
   async onChange(propertyKey: any, value: any) {
@@ -207,48 +207,55 @@ export class CheckoutView extends LiteElement {
     }
   }
 
-  async checkoutTap({ detail }: CustomEvent) {
-    if (detail === 'checkout') {
-      if (confirm('Are you sure?') === true) {
-        const salesDB = ref(getDatabase(), 'sales')
-        const transactionsDB = ref(getDatabase(), 'transactions')
-        let cashKantine = 0
-        let cashWinkel = 0
-        let cashLidgeld = 0
-        let payconiqKantine = 0
-        let payconiqWinkel = 0
-        let payconiqLidgeld = 0
-        Object.entries(this.transactionsByCategory).map(([key, value]) => {
-          if (key === 'Winkel') {
-            this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
-            this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-          } else if (key === 'Lidgeld') {
-            this.cashLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.cash
-            this.payconiqLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-          } else {
-            this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
-            this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-          }
-        })
 
-        let sales: Sales = {
-          date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0,5),
-          cashDifferenceCheckout: this.cashDifference,
-          cashStartCheckout: this.cashStart,
-          cashTransferCheckout: this.cashTransfer,
-          cashKantine: this.cashKantine,
-          cashWinkel: this.cashWinkel,
-          cashLidgeld: this.cashLidgeld,
-          payconiqKantine: this.payconiqKantine,
-          payconiqWinkel: this.payconiqWinkel,
-          payconiqLidgeld: this.payconiqLidgeld,
-          transactions: this.transactions
+  #clickHandler = (event) => {
+    const key = event.target.getAttribute('key')
+    const action = event.target.getAttribute('action')
+    if (!action) return
+    if (action === 'checkout') this.checkoutTap()
+    if (action === 'delete') this.Removetransaction(key)
+  }
+
+  async checkoutTap() {
+    if (confirm('Are you sure?') === true) {
+      const salesDB = ref(getDatabase(), 'sales')
+      const transactionsDB = ref(getDatabase(), 'transactions')
+      this.cashKantine = 0
+      this.cashWinkel = 0
+      this.cashLidgeld = 0
+      this.payconiqKantine = 0
+      this.payconiqWinkel = 0
+      this.payconiqLidgeld = 0
+      Object.entries(this.transactionsByCategory).map(([key, value]) => {
+        if (key === 'Winkel') {
+          this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
+          this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+        } else if (key === 'Lidgeld') {
+          this.cashLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.cash
+          this.payconiqLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+        } else {
+          this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
+          this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
         }
-        await push(salesDB, sales)
-        await set(transactionsDB, null)
-        this.transactionsByCategory = {}
-        this.cashExpected = this.cashStart
+      })
+
+      let sales: Sales = {
+        date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0,5),
+        cashDifferenceCheckout: this.cashDifference,
+        cashStartCheckout: this.cashStart,
+        cashTransferCheckout: this.cashTransfer,
+        cashKantine: this.cashKantine,
+        cashWinkel: this.cashWinkel,
+        cashLidgeld: this.cashLidgeld,
+        payconiqKantine: this.payconiqKantine,
+        payconiqWinkel: this.payconiqWinkel,
+        payconiqLidgeld: this.payconiqLidgeld,
+        transactions: this.transactions
       }
+      await push(salesDB, sales)
+      await set(transactionsDB, null)
+      this.transactionsByCategory = {}
+      this.cashExpected = this.cashStart
     }
   }
 
@@ -315,8 +322,9 @@ export class CheckoutView extends LiteElement {
             <flex-it></flex-it>
             &euro;${this.cashStart}
           </flex-row>
-          <md-filled-button @checkout-click=${(event) => this.checkoutTap(event)} checkout-tap="checkout"
-            >Bevestig Afsluit</md-filled-button
+          <md-filled-button action="checkout">
+            Bevestig Afsluit
+          </md-filled-button
           >
         </flex-column>
         <flex-container class="variasales" direction="column">
@@ -326,7 +334,7 @@ export class CheckoutView extends LiteElement {
                   <md-list>
                     <details>
                       <summary>
-                        <span>Transactie van:</span>
+                        <span>${transaction.paymentMethod[0].toUpperCase() + transaction.paymentMethod.slice(1)} transactie van:</span>
                         <span>${transaction.paymentAmount.toLocaleString(navigator.language, {
                           style: 'currency',
                           currency: 'EUR'
@@ -345,6 +353,9 @@ export class CheckoutView extends LiteElement {
                             </md-list-item>
                           `
                       )}
+                      ${(transaction.paymentMethod === 'cash') ? 
+                      html`<md-filled-button action="delete" key=${transaction.key}>Verwijder</md-filled-button>` 
+                      : ''}
                     </details>
                   </md-list>
                 `
