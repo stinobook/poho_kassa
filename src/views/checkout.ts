@@ -1,6 +1,5 @@
 import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
-import { map } from 'lit/directives/map.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import '@material/web/textfield/filled-text-field.js'
@@ -8,6 +7,7 @@ import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
+import '@material/web/button/outlined-button.js'
 import type { Cashtotal, Transaction, Sales } from '../types.js'
 import { ref, push, getDatabase, set } from 'firebase/database'
 
@@ -213,7 +213,13 @@ export class CheckoutView extends LiteElement {
     const action = event.target.getAttribute('action')
     if (!action) return
     if (action === 'checkout') this.checkoutTap()
-    if (action === 'delete') this.Removetransaction(key)
+    if (action === 'delete') this.removeTransaction(key)
+  }
+
+  async removeTransaction(key) {
+    if (confirm('Are you sure?') === true) {
+      await firebase.remove(`transactions/${key}`)
+    }
   }
 
   async checkoutTap() {

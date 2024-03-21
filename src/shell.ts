@@ -245,7 +245,6 @@ export class PoHoShell extends LiteElement {
       this.transactions.splice(i)
       this.transactions = [...this.transactions]
     })
-    console.log(this.transactions)
   }
 
   setupEventsListener() {
