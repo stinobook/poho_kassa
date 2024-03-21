@@ -320,51 +320,33 @@ export class CheckoutView extends LiteElement {
           >
         </flex-column>
         <flex-container class="variasales" direction="column">
-          ${this.transactionsByCategory
-            ? Object.entries(this.transactionsByCategory).map(
-                ([key, value]) => html`
+          ${this.transactions
+            ? this.transactions.map(
+                (transaction) => html`
                   <md-list>
                     <details>
-                      <summary>${key}</summary>
-                      ${map(
-                        value.transactionItems,
-                        (item) =>
+                      <summary>
+                        <span>Transactie van:</span>
+                        <span>${transaction.paymentAmount.toLocaleString(navigator.language, {
+                          style: 'currency',
+                          currency: 'EUR'
+                        })}</span>
+                      </summary>
+                      ${Object.entries(transaction.transactionItems).map(
+                        ([key, transactionItem]) =>
                           html`
                             <md-list-item>
-                              <span slot="start"
-                                >${item.description ? item.name : item.name + ' x ' + item.amount}</span
-                              >
-                              <span slot="supporting-text">${item.description ? item.description : ''}</span>
+                              <span slot="headline">${transactionItem.description}</span>
+                              <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
                               <span slot="end"
-                                >${(item.amount * item.price).toLocaleString(navigator.language, {
-                                  style: 'currency',
-                                  currency: 'EUR'
-                                })}</span
+                                >Eenheid: &euro;${transactionItem.price} / Totaal:
+                                &euro;${Number(transactionItem.price) * Number(transactionItem.amount)}</span
                               >
-                              <span slot="trailing-supporting-text">${item.paymentMethod}</span>
                             </md-list-item>
                           `
                       )}
                     </details>
                   </md-list>
-                  <flex-row center class="total">
-                    <strong>Totaal:</strong>
-                    <flex-it></flex-it>
-                    <span style="margin-right: 14px"
-                      >Cash:
-                      ${this.transactionsByCategory?.[key]?.paymentAmount.cash.toLocaleString(navigator.language, {
-                        style: 'currency',
-                        currency: 'EUR'
-                      })}</span
-                    >
-                    <span
-                      >Payconiq:
-                      ${this.transactionsByCategory?.[key]?.paymentAmount.payconiq.toLocaleString(navigator.language, {
-                        style: 'currency',
-                        currency: 'EUR'
-                      })}</span
-                    >
-                  </flex-row>
                 `
               )
             : ''}

@@ -211,7 +211,8 @@ export class PoHoShell extends LiteElement {
     this.#listeners.push('transactions')
     firebase.onChildAdded('transactions', async (snap) => {
       const val = await snap.val()
-
+      const key = snap.key
+      val.key = key
       if (!this.transactions) {
         this.transactions = [val]
       } else if (!this.transactions.includes(val)) {
@@ -244,6 +245,7 @@ export class PoHoShell extends LiteElement {
       this.transactions.splice(i)
       this.transactions = [...this.transactions]
     })
+    console.log(this.transactions)
   }
 
   setupEventsListener() {
@@ -335,7 +337,6 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('events')) this.setupEventsListener()
     }
     this.drawerLayout.drawerOpen = false
-    console.log(this.#listeners)
   }
 
   didStart({ startDate, startTime }) {
