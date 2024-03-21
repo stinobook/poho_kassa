@@ -6,6 +6,7 @@ import '@material/web/list/list-item.js'
 import '@material/web/iconbutton/icon-button.js'
 import '@material/web/button/outlined-button.js'
 import '@material/web/textfield/outlined-text-field.js'
+import '@vandeurenglenn/flex-elements/it.js'
 import Router from '../routing.js'
 import type { Product } from '../types.js'
 import { scrollbar } from './../mixins/styles.js'
@@ -71,23 +72,24 @@ export class ProductsView extends LiteElement {
 
   #clickHandler = (event) => {
     const key = event.target.getAttribute('key')
+    const name = event.target.getAttribute('name')
     const action = event.target.getAttribute('action')
     if (!action) return
-    this[`_${action}`](key)
+    this[`_${action}`](key, name)
   }
 
   _add() {
     location.hash = Router.bang('add-product')
   }
 
-  _delete = (target) => {
+  _delete = (target, name) => {
     const dialog = document.querySelector('po-ho-shell').shadowRoot.querySelector('md-dialog')
     dialog.innerHTML = `
     <div slot="headline">
       Deleting Product
     </div>
     <form slot="content" id="delete-form" method="dialog">
-      Are you sure you want to delete ${target.name}?
+      Are you sure you want to delete ${name}?
     </form>
     <div slot="actions">
       <md-outlined-button form="delete-form" value="cancel">Cancel</md-outlined-button>
@@ -118,8 +120,8 @@ export class ProductsView extends LiteElement {
                 (item) => html`
                   <md-list-item action="edit" key=${item.key}>
                     <span slot="headline">${item.name}</span>
-                    <span slot="supporting-text">${item.vat}</span>
-                    <md-icon-button slot="end" action="delete" key=${item.key}>
+                    <span slot="supporting-text" style="width:50%">Prijs: &euro;${item.price} - BTW: ${item.vat}%</span>
+                    <md-icon-button slot="end" action="delete" key=${item.key} name=${item.name}>
                       <custom-icon icon="delete"></custom-icon>
                     </md-icon-button>
                   </md-list-item>

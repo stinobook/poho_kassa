@@ -7,7 +7,6 @@ import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
-import '@material/web/button/outlined-button.js'
 import type { Cashtotal, Transaction, Sales } from '../types.js'
 import { ref, push, getDatabase, set } from 'firebase/database'
 
