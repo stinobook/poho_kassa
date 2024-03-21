@@ -69,7 +69,11 @@ export class PoHoShell extends LiteElement {
       this.logout()
     } else {
       this.drawerLayout.drawerOpen = false
+      if (firebase.auth.currentUser) {
       location.hash = Router.bang(detail)
+      } else {
+      location.hash = Router.bang('login')
+      }
     }
   }
   setupAttendanceListener() {
@@ -215,7 +219,8 @@ export class PoHoShell extends LiteElement {
     this.#listeners.push('transactions')
     firebase.onChildAdded('transactions', async (snap) => {
       const val = await snap.val()
-
+      const key = snap.key
+      val.key = key
       if (!this.transactions) {
         this.transactions = [val]
       } else if (!this.transactions.includes(val)) {
@@ -379,7 +384,6 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('events')) this.setupEventsListener()
     }
     this.drawerLayout.drawerOpen = false
-    console.log(this.#listeners)
   }
 
   didStart({ startDate, startTime }) {

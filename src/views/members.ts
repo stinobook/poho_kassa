@@ -101,7 +101,8 @@ export class MembersView extends LiteElement {
   renderMembers() {
     return Object.entries(this.members).map(
       ([group, members]) =>
-        html`
+      members?.length > 0
+        ? html`
           <custom-typography>${group}</custom-typography>
           <flex-wrap-center>
             ${members.map(
@@ -126,6 +127,7 @@ export class MembersView extends LiteElement {
             )}
           </flex-wrap-center>
         `
+        : ''
     )
   }
   render() {

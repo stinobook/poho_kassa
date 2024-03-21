@@ -258,7 +258,7 @@ export class SalesPad extends LiteElement {
       <custom-dialog class="dialogCash">
         <span slot="title">Cash Ontvangst</span>
 
-        <flex-wrap-between>
+        <flex-wrap-between slot="actions">
           <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
           <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
           <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>

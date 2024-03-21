@@ -1,6 +1,5 @@
 import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
-import { map } from 'lit/directives/map.js'
 import '@material/web/list/list.js'
 import '@material/web/list/list-item.js'
 import '@material/web/textfield/filled-text-field.js'
@@ -169,11 +168,11 @@ export class CheckoutView extends LiteElement {
       let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
       this.inputCash(inputValue, target)
     })
-    this.shadowRoot.addEventListener('click', ({ target }: CustomEvent) => {
-      // @ts-ignore
-      let checkout = new CustomEvent('checkoutTap', { detail: target.getAttribute('checkout-tap') })
-      this.checkoutTap(checkout)
-    })
+    this.shadowRoot.addEventListener('click', this.#clickHandler)
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot.removeEventListener('click', this.#clickHandler)
   }
 
   async onChange(propertyKey: any, value: any) {
@@ -207,48 +206,61 @@ export class CheckoutView extends LiteElement {
     }
   }
 
-  async checkoutTap({ detail }: CustomEvent) {
-    if (detail === 'checkout') {
-      if (confirm('Are you sure?') === true) {
-        const salesDB = ref(getDatabase(), 'sales')
-        const transactionsDB = ref(getDatabase(), 'transactions')
-        let cashKantine = 0
-        let cashWinkel = 0
-        let cashLidgeld = 0
-        let payconiqKantine = 0
-        let payconiqWinkel = 0
-        let payconiqLidgeld = 0
-        Object.entries(this.transactionsByCategory).map(([key, value]) => {
-          if (key === 'Winkel') {
-            this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
-            this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-          } else if (key === 'Lidgeld') {
-            this.cashLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.cash
-            this.payconiqLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-          } else {
-            this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
-            this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-          }
-        })
 
-        let sales: Sales = {
-          date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0,5),
-          cashDifferenceCheckout: this.cashDifference,
-          cashStartCheckout: this.cashStart,
-          cashTransferCheckout: this.cashTransfer,
-          cashKantine: this.cashKantine,
-          cashWinkel: this.cashWinkel,
-          cashLidgeld: this.cashLidgeld,
-          payconiqKantine: this.payconiqKantine,
-          payconiqWinkel: this.payconiqWinkel,
-          payconiqLidgeld: this.payconiqLidgeld,
-          transactions: this.transactions
+  #clickHandler = (event) => {
+    const key = event.target.getAttribute('key')
+    const action = event.target.getAttribute('action')
+    if (!action) return
+    if (action === 'checkout') this.checkoutTap()
+    if (action === 'delete') this.removeTransaction(key)
+  }
+
+  async removeTransaction(key) {
+    if (confirm('Are you sure?') === true) {
+      await firebase.remove(`transactions/${key}`)
+    }
+  }
+
+  async checkoutTap() {
+    if (confirm('Are you sure?') === true) {
+      const salesDB = ref(getDatabase(), 'sales')
+      const transactionsDB = ref(getDatabase(), 'transactions')
+      this.cashKantine = 0
+      this.cashWinkel = 0
+      this.cashLidgeld = 0
+      this.payconiqKantine = 0
+      this.payconiqWinkel = 0
+      this.payconiqLidgeld = 0
+      Object.entries(this.transactionsByCategory).map(([key, value]) => {
+        if (key === 'Winkel') {
+          this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
+          this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+        } else if (key === 'Lidgeld') {
+          this.cashLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.cash
+          this.payconiqLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+        } else {
+          this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
+          this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
         }
-        await push(salesDB, sales)
-        await set(transactionsDB, null)
-        this.transactionsByCategory = {}
-        this.cashExpected = this.cashStart
+      })
+
+      let sales: Sales = {
+        date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0,5),
+        cashDifferenceCheckout: this.cashDifference,
+        cashStartCheckout: this.cashStart,
+        cashTransferCheckout: this.cashTransfer,
+        cashKantine: this.cashKantine,
+        cashWinkel: this.cashWinkel,
+        cashLidgeld: this.cashLidgeld,
+        payconiqKantine: this.payconiqKantine,
+        payconiqWinkel: this.payconiqWinkel,
+        payconiqLidgeld: this.payconiqLidgeld,
+        transactions: this.transactions
       }
+      await push(salesDB, sales)
+      await set(transactionsDB, null)
+      this.transactionsByCategory = {}
+      this.cashExpected = this.cashStart
     }
   }
 
@@ -315,56 +327,42 @@ export class CheckoutView extends LiteElement {
             <flex-it></flex-it>
             &euro;${this.cashStart}
           </flex-row>
-          <md-filled-button @checkout-click=${(event) => this.checkoutTap(event)} checkout-tap="checkout"
-            >Bevestig Afsluit</md-filled-button
+          <md-filled-button action="checkout">
+            Bevestig Afsluit
+          </md-filled-button
           >
         </flex-column>
         <flex-container class="variasales" direction="column">
-          ${this.transactionsByCategory
-            ? Object.entries(this.transactionsByCategory).map(
-                ([key, value]) => html`
+          ${this.transactions
+            ? this.transactions.map(
+                (transaction) => html`
                   <md-list>
                     <details>
-                      <summary>${key}</summary>
-                      ${map(
-                        value.transactionItems,
-                        (item) =>
+                      <summary>
+                        <span>${transaction.paymentMethod[0].toUpperCase() + transaction.paymentMethod.slice(1)} transactie van:</span>
+                        <span>${transaction.paymentAmount.toLocaleString(navigator.language, {
+                          style: 'currency',
+                          currency: 'EUR'
+                        })}</span>
+                      </summary>
+                      ${Object.entries(transaction.transactionItems).map(
+                        ([key, transactionItem]) =>
                           html`
                             <md-list-item>
-                              <span slot="start"
-                                >${item.description ? item.name : item.name + ' x ' + item.amount}</span
-                              >
-                              <span slot="supporting-text">${item.description ? item.description : ''}</span>
+                              <span slot="headline">${transactionItem.description}</span>
+                              <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
                               <span slot="end"
-                                >${(item.amount * item.price).toLocaleString(navigator.language, {
-                                  style: 'currency',
-                                  currency: 'EUR'
-                                })}</span
+                                >Eenheid: &euro;${transactionItem.price} / Totaal:
+                                &euro;${Number(transactionItem.price) * Number(transactionItem.amount)}</span
                               >
-                              <span slot="trailing-supporting-text">${item.paymentMethod}</span>
                             </md-list-item>
                           `
                       )}
+                      ${(transaction.paymentMethod === 'cash') ? 
+                      html`<md-filled-button action="delete" key=${transaction.key}>Verwijder</md-filled-button>` 
+                      : ''}
                     </details>
                   </md-list>
-                  <flex-row center class="total">
-                    <strong>Totaal:</strong>
-                    <flex-it></flex-it>
-                    <span style="margin-right: 14px"
-                      >Cash:
-                      ${this.transactionsByCategory?.[key]?.paymentAmount.cash.toLocaleString(navigator.language, {
-                        style: 'currency',
-                        currency: 'EUR'
-                      })}</span
-                    >
-                    <span
-                      >Payconiq:
-                      ${this.transactionsByCategory?.[key]?.paymentAmount.payconiq.toLocaleString(navigator.language, {
-                        style: 'currency',
-                        currency: 'EUR'
-                      })}</span
-                    >
-                  </flex-row>
                 `
               )
             : ''}

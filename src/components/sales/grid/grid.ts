@@ -49,12 +49,17 @@ export class SalesGrid extends LiteElement {
         pointer-events: auto;
         height: 86.33px;
         min-width: 86.33px;
+        font-size: 1.5em;
+        text-wrap: wrap;
+        line-height: normal;
       }
       flex-wrap-between {
-        width: 100%;
-        height: fit-content;
-        justify-content: flex-start;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-auto-rows: min-content;
+        height: auto;
         gap: 16px 8px;
+        width: 100%;
       }
 
       flex-container {
@@ -65,15 +70,15 @@ export class SalesGrid extends LiteElement {
         margin-top: 0;
       }
 
-      @media (min-width: 1200px) {
-        md-filled-button {
-          width: calc(100% / 5 - 8px);
-        }
-      }
-
       @media (max-width: 689px) {
         :host {
           padding: 0 12px;
+        }
+        md-filled-button {
+          font-size: 1em;
+        }
+        flex-wrap-between {
+          grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
         }
       }
     `

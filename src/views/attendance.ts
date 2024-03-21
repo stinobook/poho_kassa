@@ -40,6 +40,7 @@ export class AttendanceView extends LiteElement {
         display: flex;
         flex-direction: column;
         align-items: center;
+        pointer-events: auto;
       }
 
       ${scrollbar}
@@ -65,12 +66,15 @@ export class AttendanceView extends LiteElement {
       custom-typography {
         text-transform: capitalize;
       }
-
+      flex-container {
+        min-width: 100%;
+      }
       custom-selector {
-        flex-flow: wrap row;
-        height: auto;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-auto-rows: min-content;
         gap: 12px;
+        height: auto;
       }
 
       custom-selector :not(.custom-selected):not([non-interactive]):hover {
