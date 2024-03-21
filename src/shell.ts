@@ -65,7 +65,11 @@ export class PoHoShell extends LiteElement {
       this.logout()
     } else {
       this.drawerLayout.drawerOpen = false
+      if (firebase.auth.currentUser) {
       location.hash = Router.bang(detail)
+      } else {
+      location.hash = Router.bang('login')
+      }
     }
   }
   setupAttendanceListener() {
