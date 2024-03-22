@@ -70,9 +70,9 @@ export class PoHoShell extends LiteElement {
     } else {
       this.drawerLayout.drawerOpen = false
       if (firebase.auth.currentUser) {
-      location.hash = Router.bang(detail)
+        location.hash = Router.bang(detail)
       } else {
-      location.hash = Router.bang('login')
+        location.hash = Router.bang('login')
       }
     }
   }
@@ -259,6 +259,7 @@ export class PoHoShell extends LiteElement {
     this.#listeners.push('payconiqTransactions')
     firebase.onChildAdded('payconiqTransactions', async (snap) => {
       const val = await snap.val()
+      val.key = snap.key
 
       if (!this.payconiqTransactions) {
         this.payconiqTransactions = [val]
@@ -370,7 +371,7 @@ export class PoHoShell extends LiteElement {
     if (selected === 'products' || selected === 'sales') {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
       if (!this.#listeners.includes('products')) this.setupProductsListener()
-      if (!this.#listeners.includes('payconiqtransactions')) this.setupPayconiqtransactions()
+      if (!this.#listeners.includes('payconiqTransactions')) this.setupPayconiqTransactionsListener()
     } else if (selected === 'checkout') {
       if (!this.#listeners.includes('transactions')) this.setupTransactionsListener()
     } else if (selected === 'attendance') {
