@@ -19,6 +19,7 @@ export interface Transaction {
   key?: string
   paymentMethod: 'cash' | 'payconiq'
   paymentAmount: number
+  payment?: PayconiqPayment
   transactionItems: ReceiptItem[]
 }
 

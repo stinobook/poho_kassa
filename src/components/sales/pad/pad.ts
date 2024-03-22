@@ -59,7 +59,7 @@ export class SalesPad extends LiteElement {
     return value
   }
 
-  payconiqPaymentChange(payment) {
+  async payconiqPaymentChange(payment: PayconiqPayment) {
     if (this.#currentPayconiqTransaction?.paymentId === payment.paymentId) {
       if (payment.status === 'PENDING' || payment.status === 'AUTHORIZED' || payment.status === 'IDENTIFIED') return
 
@@ -67,6 +67,10 @@ export class SalesPad extends LiteElement {
         title: 'Poho',
         message: `${this.#currentPayconiqTransaction.paymentId} ${payment.status}!`
       })
+
+      if (payment.status === 'SUCCEEDED') {
+        await this.writeTransaction({ event: { detail: 'accepted' } })
+      }
 
       this.payconiqDialog.open = false
       this.cancelPayment = undefined
@@ -156,13 +160,13 @@ export class SalesPad extends LiteElement {
             break
           } else {
             let dialogPayconiq = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
+            dialogPayconiq.open = true
             const amount = Object.values(this.receipt.items).reduce(
               (total: number, cur: ReceiptItem) => total + cur.amount * cur.price,
               0
             )
 
             const description = `payment`
-            dialogPayconiq.open = true
 
             const response = await fetch(
               `https://us-central1-poho-app.cloudfunctions.net/createPayment?amount=${amount}&description=${description}`,
@@ -262,7 +266,7 @@ export class SalesPad extends LiteElement {
     })
   }
 
-  writeTransaction({ event }, payconiq?) {
+  async writeTransaction({ event }, payconiq?) {
     if (event.detail === 'cancel' || event.detail === 'close') {
       if (payconiq) {
         this.cancelPayment?.()
@@ -275,9 +279,10 @@ export class SalesPad extends LiteElement {
       let transaction: Transaction = {
         paymentMethod: 'payconiq',
         paymentAmount: total,
+        payment: this.#currentPayconiqTransaction,
         transactionItems: this.receipt.items
       }
-      firebase.push('transactions', transaction)
+      await firebase.push('transactions', transaction)
       this.receipt.items = {}
     } else {
       let cashChange = event.detail
@@ -296,7 +301,7 @@ export class SalesPad extends LiteElement {
           paymentAmount: total,
           transactionItems: this.receipt.items
         }
-        firebase.push('transactions', transaction)
+        await firebase.push('transactions', transaction)
         this.receipt.items = {}
       }
     }
