@@ -40,6 +40,7 @@ export class SalesPad extends LiteElement {
       value = value.filter(
         (transaction: PayconiqPayment) => this.#currentPayconiqTransaction?.paymentId === transaction.paymentId
       )
+
       if (value[0]) {
         if (value[0].status === 'PENDING' || value[0].status === 'AUTHORIZED' || value[0].status === 'IDENTIFIED')
           return
@@ -56,6 +57,22 @@ export class SalesPad extends LiteElement {
       }
     }
     return value
+  }
+
+  payconiqPaymentChange(payment) {
+    if (this.#currentPayconiqTransaction?.paymentId === payment.paymentId) {
+      if (payment.status === 'PENDING' || payment.status === 'AUTHORIZED' || payment.status === 'IDENTIFIED') return
+
+      this.notifications.createNotification({
+        title: 'Poho',
+        message: `${this.#currentPayconiqTransaction.paymentId} ${payment.status}!`
+      })
+
+      this.payconiqDialog.open = false
+      this.cancelPayment = undefined
+      this.#currentPayconiqTransaction = undefined
+      this.qrcode = undefined
+    }
   }
 
   static styles = [
@@ -117,7 +134,12 @@ export class SalesPad extends LiteElement {
   }
 
   async inputTap({ detail }: CustomEvent) {
-    if (this.receipt.items[this.currentSelectedProduct]?.description || detail === 'cash' || detail === 'payconiq' || detail === 'promo') {
+    if (
+      this.receipt.items[this.currentSelectedProduct]?.description ||
+      detail === 'cash' ||
+      detail === 'payconiq' ||
+      detail === 'promo'
+    ) {
       switch (detail) {
         case 'cash':
           if (Object.keys(this.receipt.items).length === 0) {
@@ -157,9 +179,6 @@ export class SalesPad extends LiteElement {
               await fetch(
                 `https://us-central1-poho-app.cloudfunctions.net/cancelPayment?payment=${payment._links.cancel.href}`
               )
-              this.qrcode = undefined
-              this.cancelPayment = undefined
-              this.#currentPayconiqTransaction = undefined
             }
 
             break
@@ -171,8 +190,7 @@ export class SalesPad extends LiteElement {
           } else if (Object.keys(this.receipt.items).length > 1 || Object.values(this.receipt.items)[0].amount > 1) {
             alert('Max 1 item!')
             break
-          }
-          else {
+          } else {
             let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPromo') as HTMLDialogElement
             dialogPromo.open = true
             break
@@ -284,8 +302,7 @@ export class SalesPad extends LiteElement {
     }
   }
 
-  renderPromo() {
-  }
+  renderPromo() {}
 
   render() {
     return html`
@@ -315,9 +332,7 @@ export class SalesPad extends LiteElement {
 
       <custom-dialog class="dialogPromo">
         <span slot="title">Promo Ontvangst</span>
-        <flex-row slot="actions" direction="row">
-        ${this.promo ? this.renderPromo() : ''}
-        </flex-row>
+        <flex-row slot="actions" direction="row"> ${this.promo ? this.renderPromo() : ''} </flex-row>
       </custom-dialog>
 
       <sales-receipt @selection=${(event) => this.onReceiptSelection(event)}></sales-receipt>

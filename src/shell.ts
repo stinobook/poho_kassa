@@ -31,6 +31,9 @@ export class PoHoShell extends LiteElement {
   @query('custom-pages')
   accessor pages: CustomPages
 
+  @query('sales-view')
+  accessor salesView
+
   @property({ provider: true, batches: true, batchDelay: 50 })
   accessor products = []
 
@@ -86,7 +89,7 @@ export class PoHoShell extends LiteElement {
       const val = await snap.val()
       if (!this.promo) {
         this.promo[key] = val
-      } else if (!(this.promo[key])) {
+      } else if (!this.promo[key]) {
         this.promo[key] = val
       }
     })
@@ -286,37 +289,41 @@ export class PoHoShell extends LiteElement {
     this.#listeners.push('payconiqTransactions')
     firebase.onChildAdded('payconiqTransactions', async (snap) => {
       const val = await snap.val()
-      val.key = snap.key
 
       if (!this.payconiqTransactions) {
         this.payconiqTransactions = [val]
-      } else if (!this.payconiqTransactions.includes(val)) {
-        this.payconiqTransactions.push(val)
+      } else {
+        let i = -1
+
+        for (const event of this.payconiqTransactions) {
+          i += 1
+          if (event.paymentId === val.paymentId) break
+        }
+        if (i === -1) this.payconiqTransactions.push(val)
+        else this.payconiqTransactions.splice(i, val)
       }
       this.payconiqTransactions = [...this.payconiqTransactions]
     })
     firebase.onChildChanged('payconiqTransactions', async (snap) => {
       const val = await snap.val()
-      const key = snap.key
-      val.key = key
       let i = -1
 
-      for (const event of this.payconiqTransactions) {
+      for (const tx of this.payconiqTransactions) {
         i += 1
-        if (event.key === val.key) break
+        if (tx.paymentId === val.paymentId) break
       }
       this.payconiqTransactions.splice(i, val)
       this.payconiqTransactions = [...this.payconiqTransactions]
     })
     firebase.onChildRemoved('payconiqTransactions', async (snap) => {
       const val = await snap.val()
-      val.key = snap.key
       let i = -1
 
       for (const event of this.payconiqTransactions) {
         i += 1
-        if (event.key === val.key) break
+        if (event.paymentId === val.paymentId) break
       }
+      this.salesView.payconiqPaymentChange(val)
       this.payconiqTransactions.splice(i)
       this.payconiqTransactions = [...this.payconiqTransactions]
     })

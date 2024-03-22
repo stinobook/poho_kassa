@@ -9,6 +9,13 @@ import '../components/sales/grid/grid.js'
 @customElement('sales-view')
 export class SalesView extends LiteElement {
   fabIcon = 'shopping_cart_checkout'
+
+  @query('sales-pad')
+  accessor salesPad
+
+  payconiqPaymentChange(payment) {
+    this.salesPad.payconiqPaymentChange(payment)
+  }
   static styles = [
     css`
       :host {
