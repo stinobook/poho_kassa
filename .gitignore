@@ -9,3 +9,4 @@ www/**/*.js.map
 www/**/*.html
 www/**/*.css
 firebase-debug.log
+.firebase/hosting.d3d3.cache
