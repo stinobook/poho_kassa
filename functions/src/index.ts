@@ -14,7 +14,9 @@ const { PAYCONIQ_API_KEY } = process.env
 // remove ext when production
 const apiURL = `https://api.payconiq.com/v3/payments`
 
-export const createPayment = onRequest({ cors: 'https://pohoapp.web.app' }, async (request, response) => {
+const cors = ['https://pohoapp.web.app']
+
+export const createPayment = onRequest({ cors }, async (request, response) => {
   const headers = new Headers()
   headers.set('Authorization', `Bearer ${PAYCONIQ_API_KEY}`)
   headers.set('Cache-Control', 'no-cache')
