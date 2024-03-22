@@ -91,6 +91,17 @@ export type Members = Member[]
 export type PayconiqPaymentLink = {
   href: string
 }
+
+export type PayConiqPaymentStatus =
+  | 'PENDING'
+  | 'IDENTIFIED'
+  | 'CANCELLED'
+  | 'AUTHORIZED'
+  | 'AUTHORIZATION_FAILED'
+  | 'EXPIRED'
+  | 'FAILED'
+  | 'SUCCEEDED'
+
 export type PayconiqPayment = {
   amount: number
   createdAt: string
@@ -99,15 +110,7 @@ export type PayconiqPayment = {
   description: string
   expiresAt: string
   paymentId: string
-  status:
-    | 'PENDING'
-    | 'IDENTIFIED'
-    | 'CANCELLED'
-    | 'AUTHORIZED'
-    | 'AUTHORIZATION_FAILED'
-    | 'EXPIRED'
-    | 'FAILED'
-    | 'SUCCEEDED'
+  status: PayConiqPaymentStatus
   _links: {
     cancel: PayconiqPaymentLink
     deeplink: PayconiqPaymentLink

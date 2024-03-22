@@ -1,49 +1,12 @@
 {
   "rules": {
-    ".read": false,
-    ".write": false,
-    "products": {
-      ".write": "root.child('admins').child(auth.uid).exists() === true",
-      ".read": "root.child('admins').child(auth.uid).exists() === true"
-    },
-    "transactions": {
-      ".write": "root.child('admins').child(auth.uid).exists() === true",
-      ".read": "root.child('admins').child(auth.uid).exists() === true"
-    },
-    "events": {
-      ".write": "root.child('admins').child(auth.uid).exists() === true",
-      ".read": "root.child('admins').child(auth.uid).exists() === true"
-    },
-    "sales": {
-      ".write": "root.child('admins').child(auth.uid).exists() === true",
-      ".read": "root.child('admins').child(auth.uid).exists() === true"
-    },
-    "categories": {
-      ".write": "root.child('admins').child(auth.uid).exists() === true",
-      ".read": "root.child('admins').child(auth.uid).exists() === true"
-    },
-    "members": {
-      ".write": "root.child('admins').child(auth.uid).exists() === true",
-      ".read": "root.child('admins').child(auth.uid).exists() === true"
-    },
-    "attendance": {
-      ".write": "root.child('admins').child(auth.uid).exists() === true",
-      ".read": "root.child('admins').child(auth.uid).exists() === true"
-    },
-    "promo": {
-      ".write": "root.child('admins').child(auth.uid).exists() === true",
-      ".read": "root.child('admins').child(auth.uid).exists() === true"
-    },
-    "admins": {
-      "$userId": {
-        ".write": "$userId === auth.uid",
-        ".read": "$userId === auth.uid"
-      }
-    },
+    ".write": "root.child('admins').child(auth.uid).exists() === true",
+    ".read": "root.child('admins').child(auth.uid).exists() === true",
+
     "users": {
       "$userId": {
-        ".write": "$userId === auth.uid",
-        ".read": true
+        ".write": "$userId === auth.uid || root.child('admins').child(auth.uid).exists() === true",
+        ".read": "$userId === auth.uid || root.child('admins').child(auth.uid).exists() === true"
       }
     }
   }

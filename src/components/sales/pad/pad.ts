@@ -35,20 +35,24 @@ export class SalesPad extends LiteElement {
     return document.querySelector('custom-notifications')
   }
 
-  async willChange(propertyKey: string, value: any) {
+  async willChange(propertyKey: string, value: PayconiqPayment[]) {
     if (propertyKey === 'payconiqTransactions') {
       value = value.filter(
-        (transaction) =>
-          transaction.status !== 'SUCCEEDED' &&
-          transaction.paymentMethod === 'payconiq' &&
-          this.#currentPayconiqTransaction.paymentId === transaction.paymentId
+        (transaction: PayconiqPayment) => this.#currentPayconiqTransaction?.paymentId === transaction.paymentId
       )
       if (value[0]) {
+        if (value[0].status === 'PENDING' || value[0].status === 'AUTHORIZED' || value[0].status === 'IDENTIFIED')
+          return
+
         this.notifications.createNotification({
           title: 'Poho',
-          message: `${this.#currentPayconiqTransaction.paymentId} completed!`
+          message: `${this.#currentPayconiqTransaction.paymentId} ${value[0].status}!`
         })
+
         this.payconiqDialog.open = false
+        this.cancelPayment = undefined
+        this.#currentPayconiqTransaction = undefined
+        this.qrcode = undefined
       }
     }
     return value
@@ -136,6 +140,7 @@ export class SalesPad extends LiteElement {
             )
 
             const description = `payment`
+            dialogPayconiq.open = true
 
             const response = await fetch(
               `https://us-central1-poho-app.cloudfunctions.net/createPayment?amount=${amount}&description=${description}`,
@@ -148,9 +153,15 @@ export class SalesPad extends LiteElement {
             await firebase.set(`payconiqTransactions/${payment.paymentId}`, payment)
             this.#currentPayconiqTransaction = payment
             this.qrcode = `${payment._links.qrcode.href}&f=svg`
-            this.cancelPayment = payment._links.cancel.href
+            this.cancelPayment = async () => {
+              await fetch(
+                `https://us-central1-poho-app.cloudfunctions.net/cancelPayment?payment=${payment._links.cancel.href}`
+              )
+              this.qrcode = undefined
+              this.cancelPayment = undefined
+              this.#currentPayconiqTransaction = undefined
+            }
 
-            dialogPayconiq.open = true
             break
           }
         case 'promo':
@@ -229,12 +240,15 @@ export class SalesPad extends LiteElement {
     })
     let dialogPayconiq = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
     dialogPayconiq.addEventListener('close', (event) => {
-      this.writeTransaction({ event })
+      this.writeTransaction({ event }, true)
     })
   }
 
-  writeTransaction({ event }) {
+  writeTransaction({ event }, payconiq?) {
     if (event.detail === 'cancel' || event.detail === 'close') {
+      if (payconiq) {
+        this.cancelPayment?.()
+      }
       return
     }
     if (event.detail === 'accepted') {
@@ -292,9 +306,11 @@ export class SalesPad extends LiteElement {
 
       <custom-dialog class="dialogPayconiq">
         <span slot="title">Payconiq Ontvangst</span>
-        <flex-row slot="actions" direction="row">
-          <img action="accepted" src=${this.qrcode} />
-        </flex-row>
+        ${this.qrcode
+          ? html`<flex-row slot="actions" direction="row">
+              <img action="accepted" src=${this.qrcode} />
+            </flex-row>`
+          : html` <loading-view></loading-view>`}
       </custom-dialog>
 
       <custom-dialog class="dialogPromo">
