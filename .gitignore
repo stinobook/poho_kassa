@@ -8,3 +8,4 @@ www/**/*.js
 www/**/*.js.map
 www/**/*.html
 www/**/*.css
+firebase-debug.log
