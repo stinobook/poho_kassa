@@ -143,7 +143,7 @@ export class SalesPad extends LiteElement {
             const payment = (await response.json()) as PayconiqPayment
             await firebase.set(`payconiqTransactions/${payment.paymentId}`, payment)
             this.#currentPayconiqTransaction = payment
-            this.qrcode = payment._links.qrcode.href
+            this.qrcode = `${payment._links.qrcode.href}&f=svg`
             this.cancelPayment = payment._links.cancel.href
 
             dialogPayconiq.open = true
