@@ -48,15 +48,6 @@ export class SalesInput extends LiteElement {
         margin-bottom: 12px;
         position: relative;
       }
-      flex-row {
-        background: var(--md-sys-color-surface-container-high);
-        height: 58px;
-        width: 100%;
-        box-sizing: border-box;
-        padding: 12px;
-        position: relative;
-        border-radius: var(--md-sys-shape-corner-extra-large);
-      }
 
       md-outlined-button,
       custom-button {
@@ -91,13 +82,6 @@ export class SalesInput extends LiteElement {
 
         <md-outlined-button input-tap="R">R</md-outlined-button>
       </flex-wrap-evenly>
-      <flex-row center>
-        <custom-elevation level="2"></custom-elevation>
-        <md-filled-button input-tap="cash">Cash</md-filled-button>
-        <flex-it></flex-it>
-        <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
-        <md-filled-button input-tap="promo">Promo</md-filled-button>
-      </flex-row>
     `
   }
 }

@@ -54,7 +54,7 @@ export const createPayment = onRequest({ cors }, async (request, response) => {
   if (!amount || !description) response.send('invalid request')
   else {
     const body = JSON.stringify({
-      amount,
+      amount: Number(amount) * 100,
       currency: 'EUR',
       description,
       callbackUrl: 'https://payconiqcallbackurl-3nwzkpsnfa-uc.a.run.app'

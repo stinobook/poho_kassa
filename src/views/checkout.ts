@@ -12,10 +12,12 @@ import { ref, push, getDatabase, set } from 'firebase/database'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
+  @property({ type: Number }) accessor cashStart: number = 100
+  @property({ type: Number }) accessor cashExpected: number = 0
   @property({ type: Array, consumer: true, renders: false }) accessor transactions: Transaction[]
   @property({ type: Array }) accessor cashTotals: Cashtotal[] = []
   @property({ type: Number }) accessor cashTotal: number = 0
-  @property({ type: Number }) accessor cashExpected: number = 0
+
   @property({ type: Number }) accessor cashDifference: number = 0
   @property({ type: Number }) accessor cashTransfer: number = 0
   @property({ type: Number }) accessor cashKantine: number = 0
@@ -24,7 +26,6 @@ export class CheckoutView extends LiteElement {
   @property({ type: Number }) accessor payconiqKantine: number = 0
   @property({ type: Number }) accessor payconiqWinkel: number = 0
   @property({ type: Number }) accessor payconiqLidgeld: number = 0
-  @property({ type: Number }) accessor cashStart: number = 100
   @property() accessor transactionsByCategory: { [category: string]: Transaction[] }
 
   static styles = [
@@ -206,7 +207,6 @@ export class CheckoutView extends LiteElement {
     }
   }
 
-
   #clickHandler = (event) => {
     const key = event.target.getAttribute('key')
     const action = event.target.getAttribute('action')
@@ -245,7 +245,7 @@ export class CheckoutView extends LiteElement {
       })
 
       let sales: Sales = {
-        date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0,5),
+        date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
         cashDifferenceCheckout: this.cashDifference,
         cashStartCheckout: this.cashStart,
         cashTransferCheckout: this.cashTransfer,
@@ -327,10 +327,7 @@ export class CheckoutView extends LiteElement {
             <flex-it></flex-it>
             &euro;${this.cashStart}
           </flex-row>
-          <md-filled-button action="checkout">
-            Bevestig Afsluit
-          </md-filled-button
-          >
+          <md-filled-button action="checkout"> Bevestig Afsluit </md-filled-button>
         </flex-column>
         <flex-container class="variasales" direction="column">
           ${this.transactions
@@ -339,11 +336,16 @@ export class CheckoutView extends LiteElement {
                   <md-list>
                     <details>
                       <summary>
-                        <span>${transaction.paymentMethod[0].toUpperCase() + transaction.paymentMethod.slice(1)} transactie van:</span>
-                        <span>${transaction.paymentAmount.toLocaleString(navigator.language, {
-                          style: 'currency',
-                          currency: 'EUR'
-                        })}</span>
+                        <span
+                          >${transaction.paymentMethod[0].toUpperCase() + transaction.paymentMethod.slice(1)} transactie
+                          van:</span
+                        >
+                        <span
+                          >${transaction.paymentAmount.toLocaleString(navigator.language, {
+                            style: 'currency',
+                            currency: 'EUR'
+                          })}</span
+                        >
                       </summary>
                       ${Object.entries(transaction.transactionItems).map(
                         ([key, transactionItem]) =>
@@ -358,9 +360,9 @@ export class CheckoutView extends LiteElement {
                             </md-list-item>
                           `
                       )}
-                      ${(transaction.paymentMethod === 'cash') ? 
-                      html`<md-filled-button action="delete" key=${transaction.key}>Verwijder</md-filled-button>` 
-                      : ''}
+                      ${transaction.paymentMethod === 'cash'
+                        ? html`<md-filled-button action="delete" key=${transaction.key}>Verwijder</md-filled-button>`
+                        : ''}
                     </details>
                   </md-list>
                 `

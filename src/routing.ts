@@ -47,6 +47,7 @@ export default class Router {
     this.host.select(route)
     if (!customElements.get(`./${route}.js`)) await import(`./${route}.js`)
     const selected = this.host.pages.querySelector('.custom-selected')
+    this.host.selected = selected
     if (Object.keys(params).length > 0) selected.params = params
   }
 }

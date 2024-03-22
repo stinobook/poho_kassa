@@ -13,6 +13,12 @@ export class SalesView extends LiteElement {
   @query('sales-pad')
   accessor salesPad
 
+  inputTap(event) {
+    console.log(event)
+
+    this.salesPad.inputTap(event)
+  }
+
   payconiqPaymentChange(payment) {
     this.salesPad.payconiqPaymentChange(payment)
   }

@@ -34,6 +34,9 @@ export class PoHoShell extends LiteElement {
   @query('sales-view')
   accessor salesView
 
+  @property()
+  accessor selected
+
   @property({ provider: true, batches: true, batchDelay: 50 })
   accessor products = []
 
@@ -84,7 +87,7 @@ export class PoHoShell extends LiteElement {
   }
   setupPromoListener() {
     this.#listeners.push('promo')
-    firebase.onChildAdded(`promo/`, async (snap) => {
+    firebase.onChildAdded(`promo`, async (snap) => {
       const key = await snap.key
       const val = await snap.val()
       if (!this.promo) {
@@ -93,14 +96,14 @@ export class PoHoShell extends LiteElement {
         this.promo[key] = val
       }
     })
-    firebase.onChildChanged(`promo/`, async (snap) => {
+    firebase.onChildChanged(`promo`, async (snap) => {
       const key = await snap.key
       const val = await snap.val()
       if (this.promo[key]) {
         this.promo[key] = val
       }
     })
-    firebase.onChildRemoved(`promo/`, async (snap) => {
+    firebase.onChildRemoved(`promo`, async (snap) => {
       const key = await snap.key
       if (this.promo[key]) {
         delete this.promo[key]
@@ -440,6 +443,12 @@ export class PoHoShell extends LiteElement {
       await import('./firebase.js')
     }
 
+    this.shadowRoot.addEventListener('click', (event) => {
+      if (event.target.hasAttribute('input-tap')) {
+        this.salesView.inputTap({ detail: event.target.getAttribute('input-tap') })
+      }
+    })
+
     this.drawerLayout.drawerOpen = false
     document.addEventListener('search', this.#onSearch)
     this.router = new Router(this)
@@ -481,6 +490,25 @@ export class PoHoShell extends LiteElement {
     }
   }
 
+  paymentInput(event) {
+    this.salesView.inputTap(event)
+  }
+
+  renderPayBar() {
+    switch (this.pages?.selected) {
+      case 'sales':
+        return html`<flex-row center class="pay-bar">
+          <custom-elevation level="2"></custom-elevation>
+          <md-filled-button input-tap="cash">Cash</md-filled-button>
+          <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
+          <md-filled-button input-tap="promo">Promo</md-filled-button>
+        </flex-row>`
+
+      default:
+        return ''
+    }
+  }
+
   render() {
     return html`
       <style>
@@ -506,6 +534,26 @@ export class PoHoShell extends LiteElement {
         [slot='top-app-bar-end'] {
           padding-right: 32px;
         }
+
+        .pay-bar {
+          z-index: 1;
+          position: absolute;
+          transform: translateX(-50%);
+          left: 50%;
+          top: 12px;
+
+          background: var(--md-sys-color-surface-container-high);
+          height: 58px;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 12px;
+          max-width: fit-content;
+          border-radius: var(--md-sys-shape-corner-extra-large);
+          gap: 6px;
+        }
+        .pay-bar custom-elevation {
+          border-radius: var(--md-sys-shape-corner-extra-large);
+        }
       </style>
       <!-- just cleaner -->
       ${icons}
@@ -513,6 +561,9 @@ export class PoHoShell extends LiteElement {
       <md-dialog></md-dialog>
       <custom-theme loadFont="false"></custom-theme>
       <!-- see https://vandeurenglenn.github.io/custom-elements/ -->
+
+      ${this.renderPayBar()}
+
       <custom-drawer-layout appBarType="small">
         <span slot="top-app-bar-title">Poho</span>
 
