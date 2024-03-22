@@ -89,7 +89,6 @@ export class PoHoShell extends LiteElement {
       } else if (!(this.promo[key])) {
         this.promo[key] = val
       }
-      console.log(this.promo)
     })
     firebase.onChildChanged(`promo/`, async (snap) => {
       const key = await snap.key
@@ -97,14 +96,12 @@ export class PoHoShell extends LiteElement {
       if (this.promo[key]) {
         this.promo[key] = val
       }
-      console.log(this.promo)
     })
     firebase.onChildRemoved(`promo/`, async (snap) => {
       const key = await snap.key
       if (this.promo[key]) {
         delete this.promo[key]
       }
-      console.log(this.promo)
     })
   }
   setupAttendanceListener() {
