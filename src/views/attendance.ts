@@ -12,6 +12,9 @@ export class AttendanceView extends LiteElement {
   @property({ consumer: true, renders: false })
   accessor attendance: []
 
+  @property({ consumer: true, renders: false })
+  accessor promo: { [key: string]: Boolean }
+
   @queryAll('.custom-selected')
   accessor currentAttendance
 
@@ -113,6 +116,15 @@ export class AttendanceView extends LiteElement {
       `attendance/${this.attendanceDate}`,
       this.currentAttendance.map((el) => el.getAttribute('key'))
     )
+    let attendanceKeys = this.currentAttendance.map((el) => el.getAttribute('key'))
+
+    for (const key of attendanceKeys) {
+      if (!(Object.keys(this.promo)).includes(key)) this.promo[key] = true
+    }
+    for (const [key, value] of Object.entries(this.promo)) {
+      if (value && !(attendanceKeys.includes(key))) delete this.promo[key]
+    }
+    await firebase.set('promo/',this.promo)
   }
 
   renderMembers() {

@@ -120,7 +120,7 @@ export class ProductsView extends LiteElement {
                 (item) => html`
                   <md-list-item action="edit" key=${item.key}>
                     <span slot="headline">${item.name}</span>
-                    <span slot="supporting-text" style="width:50%">Prijs: &euro;${item.price} - BTW: ${item.vat}%</span>
+                    <span slot="supporting-text">Prijs: &euro;${item.price} - BTW: ${item.vat}%</span>
                     <md-icon-button slot="end" action="delete" key=${item.key} name=${item.name}>
                       <custom-icon icon="delete"></custom-icon>
                     </md-icon-button>

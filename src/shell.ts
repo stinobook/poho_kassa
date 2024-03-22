@@ -56,6 +56,9 @@ export class PoHoShell extends LiteElement {
   accessor attendance = []
 
   @property({ provider: true })
+  accessor promo = []
+
+  @property({ provider: true })
   accessor payconiqTransactions = []
 
   @property()
@@ -75,6 +78,34 @@ export class PoHoShell extends LiteElement {
         location.hash = Router.bang('login')
       }
     }
+  }
+  setupPromoListener() {
+    this.#listeners.push('promo')
+    firebase.onChildAdded(`promo/`, async (snap) => {
+      const key = await snap.key
+      const val = await snap.val()
+      if (!this.promo) {
+        this.promo[key] = val
+      } else if (!(this.promo[key])) {
+        this.promo[key] = val
+      }
+      console.log(this.promo)
+    })
+    firebase.onChildChanged(`promo/`, async (snap) => {
+      const key = await snap.key
+      const val = await snap.val()
+      if (this.promo[key]) {
+        this.promo[key] = val
+      }
+      console.log(this.promo)
+    })
+    firebase.onChildRemoved(`promo/`, async (snap) => {
+      const key = await snap.key
+      if (this.promo[key]) {
+        delete this.promo[key]
+      }
+      console.log(this.promo)
+    })
   }
   setupAttendanceListener() {
     this.#listeners.push('attendance')
@@ -96,7 +127,6 @@ export class PoHoShell extends LiteElement {
         const i = this.attendance.indexOf(val)
         this.attendance.splice(i, val)
       }
-
       this.attendance = [...this.attendance]
     })
     firebase.onChildRemoved(`attendance/${this.attendanceDate}`, async (snap) => {
@@ -372,11 +402,13 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
       if (!this.#listeners.includes('products')) this.setupProductsListener()
       if (!this.#listeners.includes('payconiqTransactions')) this.setupPayconiqTransactionsListener()
+      if (!this.#listeners.includes('promo')) this.setupPromoListener()
     } else if (selected === 'checkout') {
       if (!this.#listeners.includes('transactions')) this.setupTransactionsListener()
     } else if (selected === 'attendance') {
       if (!this.#listeners.includes('attendance')) this.setupAttendanceListener()
       if (!this.#listeners.includes('members')) this.setupMembersListener()
+      if (!this.#listeners.includes('promo')) this.setupPromoListener()
     } else if (selected === 'categories' || selected === 'add-product' || selected === 'add-event') {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
     } else if (selected === 'members' || selected === 'add-member') {

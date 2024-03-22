@@ -88,14 +88,6 @@ export type Member = {
 }
 export type Members = Member[]
 
-export type Attendee = {
-  key?: string
-  promo: boolean
-  attended: [string]
-}
-
-export type Attendance = Attendee[]
-
 export type PayconiqPaymentLink = {
   href: string
 }
