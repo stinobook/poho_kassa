@@ -13,6 +13,10 @@ import { CustomNotifications } from '@vandeurenglenn/lite-elements/notifications
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
   transaction: { [key: string]: Transaction[] } = {}
+  @property({ consumer: true, renders: false })
+  accessor promo: { [key: string]: Boolean }
+  @property({ type: Array, consumer: true })
+  accessor members: {}
   currentSelectedProduct: string
   currentProductAmount: string = ''
 
@@ -109,7 +113,7 @@ export class SalesPad extends LiteElement {
   }
 
   async inputTap({ detail }: CustomEvent) {
-    if (this.receipt.items[this.currentSelectedProduct]?.description || detail === 'cash' || detail === 'payconiq') {
+    if (this.receipt.items[this.currentSelectedProduct]?.description || detail === 'cash' || detail === 'payconiq' || detail === 'promo') {
       switch (detail) {
         case 'cash':
           if (Object.keys(this.receipt.items).length === 0) {
@@ -147,6 +151,19 @@ export class SalesPad extends LiteElement {
             this.cancelPayment = payment._links.cancel.href
 
             dialogPayconiq.open = true
+            break
+          }
+        case 'promo':
+          if (Object.keys(this.receipt.items).length === 0) {
+            alert('Nothing to sell')
+            break
+          } else if (Object.keys(this.receipt.items).length > 1 || Object.values(this.receipt.items)[0].amount > 1) {
+            alert('Max 1 item!')
+            break
+          }
+          else {
+            let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPromo') as HTMLDialogElement
+            dialogPromo.open = true
             break
           }
         default:
@@ -253,6 +270,9 @@ export class SalesPad extends LiteElement {
     }
   }
 
+  renderPromo() {
+  }
+
   render() {
     return html`
       <custom-dialog class="dialogCash">
@@ -274,6 +294,13 @@ export class SalesPad extends LiteElement {
         <span slot="title">Payconiq Ontvangst</span>
         <flex-row slot="actions" direction="row">
           <img action="accepted" src=${this.qrcode} />
+        </flex-row>
+      </custom-dialog>
+
+      <custom-dialog class="dialogPromo">
+        <span slot="title">Promo Ontvangst</span>
+        <flex-row slot="actions" direction="row">
+        ${this.promo ? this.renderPromo() : ''}
         </flex-row>
       </custom-dialog>
 

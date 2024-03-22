@@ -96,6 +96,7 @@ export class SalesInput extends LiteElement {
         <md-filled-button input-tap="cash">Cash</md-filled-button>
         <flex-it></flex-it>
         <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
+        <md-filled-button input-tap="promo">Promo</md-filled-button>
       </flex-row>
     `
   }
