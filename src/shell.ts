@@ -534,14 +534,12 @@ export class PoHoShell extends LiteElement {
         [slot='top-app-bar-end'] {
           padding-right: 32px;
         }
-
         .pay-bar {
           z-index: 1;
           position: absolute;
           transform: translateX(-50%);
           left: 50%;
           top: 12px;
-
           background: var(--md-sys-color-surface-container-high);
           height: 58px;
           width: 100%;
@@ -554,6 +552,11 @@ export class PoHoShell extends LiteElement {
         .pay-bar custom-elevation {
           border-radius: var(--md-sys-shape-corner-extra-large);
         }
+        @media (max-width: 689px) {
+        .pay-bar {
+          top: 55px;
+        }
+      }
       </style>
       <!-- just cleaner -->
       ${icons}
@@ -561,12 +564,9 @@ export class PoHoShell extends LiteElement {
       <md-dialog></md-dialog>
       <custom-theme loadFont="false"></custom-theme>
       <!-- see https://vandeurenglenn.github.io/custom-elements/ -->
-
       ${this.renderPayBar()}
-
       <custom-drawer-layout appBarType="small">
         <span slot="top-app-bar-title">Poho</span>
-
         <span slot="top-app-bar-end">${this.renderSearch()}</span>
         <span slot="drawer-headline"> menu </span>
         <custom-selector attr-for-selected="route" slot="drawer-content" @selected=${this.selectorSelected.bind(this)}>

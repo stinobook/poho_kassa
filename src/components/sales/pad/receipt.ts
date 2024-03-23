@@ -35,7 +35,7 @@ export class SalesReceipt extends LiteElement {
         max-width: 255px;
         width: 100%;
         height: 100%;
-        max-height: calc(100% - 354px);
+        max-height: calc(100% - 272px);
         position: relative;
         border-radius: var(--md-sys-shape-corner-extra-large);
       }
@@ -60,6 +60,9 @@ export class SalesReceipt extends LiteElement {
       flex-row,
       flex-column {
         width: 100%;
+      }
+      flex-row {
+        font-size: 1.2em;
       }
 
       button {

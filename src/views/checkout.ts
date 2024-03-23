@@ -222,7 +222,7 @@ export class CheckoutView extends LiteElement {
   }
 
   async removeTransaction(key) {
-    if (confirm('Are you sure?') === true) {
+    if (confirm('Transactie verwijderen?') === true) {
       await firebase.remove(`transactions/${key}`)
     }
   }

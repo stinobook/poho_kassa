@@ -49,7 +49,7 @@ export class SalesGrid extends LiteElement {
         pointer-events: auto;
         height: 86.33px;
         min-width: 86.33px;
-        font-size: 1.5em;
+        font-size: 1.3em;
         text-wrap: wrap;
         line-height: normal;
       }
