@@ -44,8 +44,6 @@ export class AddMemberView extends LiteElement {
         label.value = label.placeholder
       }
     }
-    this.shadowRoot.querySelector('input[name=userphotoURL]').value = []
-    this.shadowRoot.querySelector('input[name=userphotobgURL]').value = []
   }
 
   back() {

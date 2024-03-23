@@ -5,10 +5,12 @@ import '@material/web/list/list-item.js'
 import '@material/web/textfield/filled-text-field.js'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
+import '@vandeurenglenn/lite-elements/typography.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import type { Cashtotal, Transaction, Sales } from '../types.js'
 import { ref, push, getDatabase, set } from 'firebase/database'
+import Router from '../routing.js'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
@@ -17,7 +19,6 @@ export class CheckoutView extends LiteElement {
   @property({ type: Array, consumer: true, renders: false }) accessor transactions: Transaction[]
   @property({ type: Array }) accessor cashTotals: Cashtotal[] = []
   @property({ type: Number }) accessor cashTotal: number = 0
-
   @property({ type: Number }) accessor cashDifference: number = 0
   @property({ type: Number }) accessor cashTransfer: number = 0
   @property({ type: Number }) accessor cashKantine: number = 0
@@ -146,6 +147,11 @@ export class CheckoutView extends LiteElement {
       .cashtelling md-filled-button {
         margin: 24px auto;
       }
+      custom-typography {
+        width: 100%;
+        display: block;
+        text-align: center;
+      }
     `
   ]
 
@@ -222,154 +228,164 @@ export class CheckoutView extends LiteElement {
   }
 
   async checkoutTap() {
-    if (confirm('Are you sure?') === true) {
-      const salesDB = ref(getDatabase(), 'sales')
-      const transactionsDB = ref(getDatabase(), 'transactions')
-      this.cashKantine = 0
-      this.cashWinkel = 0
-      this.cashLidgeld = 0
-      this.payconiqKantine = 0
-      this.payconiqWinkel = 0
-      this.payconiqLidgeld = 0
-      Object.entries(this.transactionsByCategory).map(([key, value]) => {
-        if (key === 'Winkel') {
-          this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
-          this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-        } else if (key === 'Lidgeld') {
-          this.cashLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.cash
-          this.payconiqLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-        } else {
-          this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
-          this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-        }
-      })
+    if (this.transactions.length === 0) {
+      alert('Niets om af te boeken')
+    } else {
+      if (confirm('Geen verschil?') === true) {
+        const salesDB = ref(getDatabase(), 'sales')
+        const transactionsDB = ref(getDatabase(), 'transactions')
+        this.cashKantine = 0
+        this.cashWinkel = 0
+        this.cashLidgeld = 0
+        this.payconiqKantine = 0
+        this.payconiqWinkel = 0
+        this.payconiqLidgeld = 0
+        Object.entries(this.transactionsByCategory).map(([key, value]) => {
+          if (key === 'Winkel') {
+            this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
+            this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+          } else if (key === 'Lidgeld') {
+            this.cashLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.cash
+            this.payconiqLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+          } else {
+            this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
+            this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+          }
+        })
 
-      let sales: Sales = {
-        date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
-        cashDifferenceCheckout: this.cashDifference,
-        cashStartCheckout: this.cashStart,
-        cashTransferCheckout: this.cashTransfer,
-        cashKantine: this.cashKantine,
-        cashWinkel: this.cashWinkel,
-        cashLidgeld: this.cashLidgeld,
-        payconiqKantine: this.payconiqKantine,
-        payconiqWinkel: this.payconiqWinkel,
-        payconiqLidgeld: this.payconiqLidgeld,
-        transactions: this.transactions
+        let sales: Sales = {
+          date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
+          cashDifferenceCheckout: this.cashDifference,
+          cashStartCheckout: this.cashStart,
+          cashTransferCheckout: this.cashTransfer,
+          cashKantine: this.cashKantine,
+          cashWinkel: this.cashWinkel,
+          cashLidgeld: this.cashLidgeld,
+          payconiqKantine: this.payconiqKantine,
+          payconiqWinkel: this.payconiqWinkel,
+          payconiqLidgeld: this.payconiqLidgeld,
+          transactions: this.transactions
+        }
+        await push(salesDB, sales)
+        await set(transactionsDB, null)
+        this.transactionsByCategory = {}
+        this.cashExpected = this.cashStart;
+        this.shadowRoot.querySelectorAll('input').forEach(input => input.value = '')
+        location.hash = Router.bang('bookkeeping')
       }
-      await push(salesDB, sales)
-      await set(transactionsDB, null)
-      this.transactionsByCategory = {}
-      this.cashExpected = this.cashStart
     }
   }
 
   render() {
-    return html`
-      <flex-container direction="row">
-        <flex-column class="cashtelling">
-          <custom-elevation level="1"></custom-elevation>
-          <span
-            ><label>&euro;100<input class="cashInputfield" type="text" input-cash="100" /></label
-          ></span>
-          <span
-            ><label>&euro;50<input class="cashInputfield" type="text" input-cash="50" /></label
-          ></span>
-          <span
-            ><label>&euro;20<input class="cashInputfield" type="text" input-cash="20" /></label
-          ></span>
-          <span
-            ><label>&euro;10<input class="cashInputfield" type="text" input-cash="10" /></label
-          ></span>
-          <span
-            ><label>&euro;5<input class="cashInputfield" type="text" input-cash="5" /></label
-          ></span>
-          <span
-            ><label>&euro;2<input class="cashInputfield" type="text" input-cash="2" /></label
-          ></span>
-          <span
-            ><label>&euro;1<input class="cashInputfield" type="text" input-cash="1" /></label
-          ></span>
-          <span
-            ><label>&euro;0.50<input class="cashInputfield" type="text" input-cash="0.50" /></label
-          ></span>
-          <span
-            ><label>&euro;0.20<input class="cashInputfield" type="text" input-cash="0.20" /></label
-          ></span>
-          <span
-            ><label>&euro;0.10<input class="cashInputfield" type="text" input-cash="0.10" /></label
-          ></span>
-          <span
-            ><label>&euro;0.05<input class="cashInputfield" type="text" input-cash="0.05" /></label
-          ></span>
-          <flex-row center class="total">
-            <strong>Totaal:</strong>
-            <flex-it></flex-it>
-            &euro;${this.cashTotal}
-          </flex-row>
-          <flex-row center class="total">
-            <strong>Verwacht:</strong>
-            <flex-it></flex-it>
-            &euro;${this.cashExpected}
-          </flex-row>
-          <flex-row center class="total">
-            <strong>Verschil:</strong>
-            <flex-it></flex-it>
-            &euro;${this.cashDifference}
-          </flex-row>
-          <flex-row center class="total">
-            <strong>Overdracht:</strong>
-            <flex-it></flex-it>
-            &euro;${this.cashTransfer}
-          </flex-row>
-          <flex-row center class="total">
-            <strong>Startgeld:</strong>
-            <flex-it></flex-it>
-            &euro;${this.cashStart}
-          </flex-row>
-          <md-filled-button action="checkout"> Bevestig Afsluit </md-filled-button>
-        </flex-column>
-        <flex-container class="variasales" direction="column">
-          ${this.transactions
-            ? this.transactions.map(
-                (transaction) => html`
-                  <md-list>
-                    <details>
-                      <summary>
-                        <span
-                          >${transaction.paymentMethod[0].toUpperCase() + transaction.paymentMethod.slice(1)} transactie
-                          van:</span
-                        >
-                        <span
-                          >${transaction.paymentAmount.toLocaleString(navigator.language, {
-                            style: 'currency',
-                            currency: 'EUR'
-                          })}</span
-                        >
-                      </summary>
-                      ${Object.entries(transaction.transactionItems).map(
-                        ([key, transactionItem]) =>
-                          html`
-                            <md-list-item>
-                              <span slot="headline">${transactionItem.description}</span>
-                              <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
-                              <span slot="end"
-                                >Eenheid: &euro;${transactionItem.price} / Totaal:
-                                &euro;${Number(transactionItem.price) * Number(transactionItem.amount)}</span
-                              >
-                            </md-list-item>
-                          `
-                      )}
-                      ${transaction.paymentMethod === 'cash'
-                        ? html`<md-filled-button action="delete" key=${transaction.key}>Verwijder</md-filled-button>`
-                        : ''}
-                    </details>
-                  </md-list>
-                `
-              )
-            : ''}
+    if (this.transactions.length === 0) {
+      return html`<flex-container><custom-typography><h1>Niets om af te boeken</h1></custom-typography></flex-container>`
+      } else {
+      return html`
+        <flex-container direction="row">
+          <flex-column class="cashtelling">
+            <custom-elevation level="1"></custom-elevation>
+            <span
+              ><label>&euro;100<input class="cashInputfield" type="text" input-cash="100" /></label
+            ></span>
+            <span
+              ><label>&euro;50<input class="cashInputfield" type="text" input-cash="50" /></label
+            ></span>
+            <span
+              ><label>&euro;20<input class="cashInputfield" type="text" input-cash="20" /></label
+            ></span>
+            <span
+              ><label>&euro;10<input class="cashInputfield" type="text" input-cash="10" /></label
+            ></span>
+            <span
+              ><label>&euro;5<input class="cashInputfield" type="text" input-cash="5" /></label
+            ></span>
+            <span
+              ><label>&euro;2<input class="cashInputfield" type="text" input-cash="2" /></label
+            ></span>
+            <span
+              ><label>&euro;1<input class="cashInputfield" type="text" input-cash="1" /></label
+            ></span>
+            <span
+              ><label>&euro;0.50<input class="cashInputfield" type="text" input-cash="0.50" /></label
+            ></span>
+            <span
+              ><label>&euro;0.20<input class="cashInputfield" type="text" input-cash="0.20" /></label
+            ></span>
+            <span
+              ><label>&euro;0.10<input class="cashInputfield" type="text" input-cash="0.10" /></label
+            ></span>
+            <span
+              ><label>&euro;0.05<input class="cashInputfield" type="text" input-cash="0.05" /></label
+            ></span>
+            <flex-row center class="total">
+              <strong>Totaal:</strong>
+              <flex-it></flex-it>
+              &euro;${this.cashTotal}
+            </flex-row>
+            <flex-row center class="total">
+              <strong>Verwacht:</strong>
+              <flex-it></flex-it>
+              &euro;${this.cashExpected}
+            </flex-row>
+            <flex-row center class="total">
+              <strong>Verschil:</strong>
+              <flex-it></flex-it>
+              &euro;${this.cashDifference}
+            </flex-row>
+            <flex-row center class="total">
+              <strong>Overdracht:</strong>
+              <flex-it></flex-it>
+              &euro;${this.cashTransfer}
+            </flex-row>
+            <flex-row center class="total">
+              <strong>Startgeld:</strong>
+              <flex-it></flex-it>
+              &euro;${this.cashStart}
+            </flex-row>
+            <md-filled-button action="checkout"> Bevestig Afsluit </md-filled-button>
+          </flex-column>
+          <flex-container class="variasales" direction="column">
+            ${this.transactions
+              ? this.transactions.map(
+                  (transaction) => html`
+                    <md-list>
+                      <details>
+                        <summary>
+                          <span
+                            >${transaction.paymentMethod[0].toUpperCase() + transaction.paymentMethod.slice(1)} transactie
+                            van:</span
+                          >
+                          <span
+                            >${transaction.paymentAmount.toLocaleString(navigator.language, {
+                              style: 'currency',
+                              currency: 'EUR'
+                            })}</span
+                          >
+                        </summary>
+                        ${Object.entries(transaction.transactionItems).map(
+                          ([key, transactionItem]) =>
+                            html`
+                              <md-list-item>
+                                <span slot="headline">${transactionItem.description}</span>
+                                <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
+                                <span slot="end"
+                                  >Eenheid: &euro;${transactionItem.price} / Totaal:
+                                  &euro;${Number(transactionItem.price) * Number(transactionItem.amount)}</span
+                                >
+                              </md-list-item>
+                            `
+                        )}
+                        ${transaction.paymentMethod === 'cash'
+                          ? html`<md-filled-button action="delete" key=${transaction.key}>Verwijder</md-filled-button>`
+                          : ''}
+                      </details>
+                    </md-list>
+                  `
+                )
+              : ''}
+          </flex-container>
         </flex-container>
-      </flex-container>
-    `
+      `
+    }
   }
 }
