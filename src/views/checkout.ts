@@ -277,7 +277,7 @@ export class CheckoutView extends LiteElement {
   }
 
   render() {
-    if (this.transactions.length === 0) {
+    if (this.transactions.length === 1) {
       return html`<flex-container><custom-typography><h1>Niets om af te boeken</h1></custom-typography></flex-container>`
       } else {
       return html`

@@ -6,17 +6,17 @@ import '@vandeurenglenn/lite-elements/dialog.js'
 import '@vandeurenglenn/flex-elements/wrap-between.js'
 import './receipt.js'
 import './input.js'
-import { Transaction, ReceiptItem, PayconiqPayment } from '../../../types.js'
+import { Transaction, ReceiptItem, PayconiqPayment, Member } from '../../../types.js'
 import { CustomDialog } from '@vandeurenglenn/lite-elements/dialog.js'
 import { CustomNotifications } from '@vandeurenglenn/lite-elements/notifications'
 
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
   transaction: { [key: string]: Transaction[] } = {}
+  @property({ type: Array, consumer: true })
+  accessor members: {Type: Member}
   @property({ consumer: true, renders: false })
   accessor promo: { [key: string]: Boolean }
-  @property({ type: Array, consumer: true })
-  accessor members: {}
   currentSelectedProduct: string
   currentProductAmount: string = ''
 
@@ -99,6 +99,10 @@ export class SalesPad extends LiteElement {
         z-index: 1000;
       }
       .dialogCash flex-row {
+        flex-wrap: wrap;
+        --custom-elevation: 1;
+      }
+      .dialogPromo flex-row {
         flex-wrap: wrap;
         --custom-elevation: 1;
       }
@@ -197,6 +201,8 @@ export class SalesPad extends LiteElement {
           } else {
             let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPromo') as HTMLDialogElement
             dialogPromo.open = true
+            console.log(this.promo)
+            console.log(this.members)
             break
           }
         default:
@@ -264,6 +270,10 @@ export class SalesPad extends LiteElement {
     dialogPayconiq.addEventListener('close', (event) => {
       this.writeTransaction({ event }, true)
     })
+    let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
+    dialogPromo.addEventListener('close', (event) => {
+      console.log(event)
+    })
   }
 
   async writeTransaction({ event }, payconiq?) {
@@ -307,7 +317,13 @@ export class SalesPad extends LiteElement {
     }
   }
 
-  renderPromo() {}
+  renderPromo() {
+    return Object.values(this.members).filter(promoMember => Object.keys(this.promo).includes(promoMember.key) && this.promo[promoMember.key]).map(promoMember =>
+      html `
+      <custom-button key=${promoMember.key} action="promo">${promoMember.name + ' ' + promoMember.lastname}</custom-button>
+      `
+      )
+  }
 
   render() {
     return html`
@@ -336,7 +352,9 @@ export class SalesPad extends LiteElement {
 
       <custom-dialog class="dialogPromo">
         <span slot="title">Promo Ontvangst</span>
-        <flex-row slot="actions" direction="row"> ${this.promo ? this.renderPromo() : ''} </flex-row>
+        <flex-wrap-between slot="actions"> 
+          ${this.promo ? this.renderPromo() : ''} 
+        </flex-wrap-between>
       </custom-dialog>
 
       <sales-receipt @selection=${(event) => this.onReceiptSelection(event)}></sales-receipt>
