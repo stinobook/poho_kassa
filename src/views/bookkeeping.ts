@@ -193,7 +193,7 @@ export class BookkeepingView extends LiteElement {
         display: inline-flex;
         align-items: center;
       }
-      .card-sub-wide:not(.card-sub-details:has(details)) {
+      #card-sub-wide:not(:has(details)), #card-sub-wide:not(:has(md-list))  {
         display: none;
       }
     `
