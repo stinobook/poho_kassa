@@ -8,7 +8,7 @@ import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/lite-elements/typography.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
-import type { Cashtotal, Transaction, Sales } from '../types.js'
+import type { Cashtotal, Transaction, Sales, Member } from '../types.js'
 import { ref, push, getDatabase, set } from 'firebase/database'
 import Router from '../routing.js'
 
@@ -28,6 +28,7 @@ export class CheckoutView extends LiteElement {
   @property({ type: Number }) accessor payconiqWinkel: number = 0
   @property({ type: Number }) accessor payconiqLidgeld: number = 0
   @property() accessor transactionsByCategory: { [category: string]: Transaction[] }
+  @property({ type: Array, consumer: true }) accessor members: {Type: Member}
 
   static styles = [
     css`
@@ -367,6 +368,13 @@ export class CheckoutView extends LiteElement {
                           ([key, transactionItem]) =>
                             html`
                               <md-list-item>
+                              ${transaction.paymentMethod === 'promo'
+                              ? html`
+                                      <span slot="headline">${
+                                        Object.values(this.members).filter((member) => member.key === transaction.member).map((member) => member.name + ' ' + member.lastname)
+                                      }</span>
+                              `
+                              : ''}
                                 <span slot="headline">${transactionItem.description}</span>
                                 <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
                                 <span slot="end"

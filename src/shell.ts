@@ -413,6 +413,7 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('members')) this.setupMembersListener()
     } else if (selected === 'checkout') {
       if (!this.#listeners.includes('transactions')) this.setupTransactionsListener()
+      if (!this.#listeners.includes('members')) this.setupMembersListener()
     } else if (selected === 'attendance') {
       if (!this.#listeners.includes('attendance')) this.setupAttendanceListener()
       if (!this.#listeners.includes('members')) this.setupMembersListener()
