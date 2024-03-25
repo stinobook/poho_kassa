@@ -268,6 +268,7 @@ export class CheckoutView extends LiteElement {
         }
         await push(salesDB, sales)
         await set(transactionsDB, null)
+        await firebase.set('promo', null)
         this.transactionsByCategory = {}
         this.cashExpected = this.cashStart;
         this.shadowRoot.querySelectorAll('input').forEach(input => input.value = '')

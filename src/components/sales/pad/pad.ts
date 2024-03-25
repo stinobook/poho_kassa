@@ -308,7 +308,7 @@ export class SalesPad extends LiteElement {
       await firebase.push('transactions', transaction)
       const update = {}
       update[event.detail] = false
-      await firebase.update('promo/', update)
+      await firebase.update('promo', update)
       this.receipt.items = {}
     } else {
       let cashChange = event.detail

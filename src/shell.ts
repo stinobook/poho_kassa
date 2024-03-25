@@ -502,7 +502,7 @@ export class PoHoShell extends LiteElement {
           <custom-elevation level="2"></custom-elevation>
           <md-filled-button input-tap="cash">Cash</md-filled-button>
           <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
-          <md-filled-button input-tap="promo">Promo</md-filled-button>
+          ${(Object.values(this.promo).includes(true)) ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>` : ''}
         </flex-row>`
 
       default:

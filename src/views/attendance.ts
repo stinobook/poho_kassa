@@ -125,7 +125,7 @@ export class AttendanceView extends LiteElement {
     for (const [key, value] of Object.entries(this.promo)) {
       if (value && !(attendanceKeys.includes(key))) delete this.promo[key]
     }
-    await firebase.set('promo/',this.promo)
+    await firebase.set('promo',this.promo)
   }
 
   renderMembers() {
