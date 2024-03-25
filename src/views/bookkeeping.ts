@@ -7,7 +7,7 @@ import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import { get, ref, getDatabase } from 'firebase/database'
-import { Sales } from '../types.js'
+import { Sales, Member } from '../types.js'
 
 const formatDate = () => {
   const date = new Date().toLocaleDateString('fr-CA').split('-')
@@ -18,6 +18,7 @@ const formatDate = () => {
 
 @customElement('bookkeeping-view')
 export class BookkeepingView extends LiteElement {
+  @property({ type: Array, consumer: true }) accessor members: {Type: Member}
   @property() accessor books: { [key: string]: Sales[] }
   static styles = [
     css`
@@ -192,6 +193,9 @@ export class BookkeepingView extends LiteElement {
         display: inline-flex;
         align-items: center;
       }
+      .card-sub-wide:not(.card-sub-details:has(details)) {
+        display: none;
+      }
     `
   ]
 
@@ -322,7 +326,29 @@ export class BookkeepingView extends LiteElement {
                   })}
                 </div>
               </div>
-            </div>
+              <div id="card-sub-wide">
+                <details>
+                  <summary>
+                    <span>Details Promotransacties</span>
+                  </summary>
+                  ${value.transactions.map((transaction) => {
+                    if (transaction.paymentMethod === 'promo') {
+                      let name = Object.values(this.members).filter((member) => member.key === transaction.member).map((member) => member.name + ' ' + member.lastname)
+                      let item = Object.entries(transaction.transactionItems).map(
+                        ([key, transactionItem]) => transactionItem.name)
+                      let summary = html`
+                        <md-list>
+                          <md-list-item>
+                          <span slot="start">${name}</span>
+                          <span slot="end">${item}</span>
+                          </md-list-item>
+                        </md-list>
+                        `
+                      return [summary]
+                    }
+                  })}
+                </details>
+              </div>
           `
         : ''
     )

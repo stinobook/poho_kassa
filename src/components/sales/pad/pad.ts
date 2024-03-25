@@ -102,9 +102,8 @@ export class SalesPad extends LiteElement {
         flex-wrap: wrap;
         --custom-elevation: 1;
       }
-      .dialogPromo flex-row {
-        flex-wrap: wrap;
-        --custom-elevation: 1;
+      .dialogPromo custom-button {
+        height: 75px;
       }
       .dialogPayconiq img {
         max-width: 100%;
@@ -336,7 +335,7 @@ export class SalesPad extends LiteElement {
   renderPromo() {
     return Object.values(this.members).filter(promoMember => Object.keys(this.promo).includes(promoMember.key) && this.promo[promoMember.key]).map(promoMember =>
       html `
-      <custom-button action=${promoMember.key} label=${promoMember.name + ' ' + promoMember.lastname}>${promoMember.name + ' ' + promoMember.lastname}</custom-button>
+      <custom-button action=${promoMember.key} .label=${promoMember.name + ' ' + promoMember.lastname}>${promoMember.name + ' ' + promoMember.lastname}</custom-button>
       `
       )
   }
