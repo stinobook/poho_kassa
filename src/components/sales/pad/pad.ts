@@ -202,10 +202,10 @@ export class SalesPad extends LiteElement {
             alert('Max 1 item!')
             break
           } else {
+            this.renderPromo()
+            this.requestRender()
             let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPromo') as HTMLDialogElement
             dialogPromo.open = true
-            console.log(this.promo)
-            console.log(this.members)
             break
           }
         default:
@@ -273,13 +273,13 @@ export class SalesPad extends LiteElement {
     dialogPayconiq.addEventListener('close', (event) => {
       this.writeTransaction({ event }, true)
     })
-    let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
+    let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPromo') as HTMLDialogElement
     dialogPromo.addEventListener('close', (event) => {
-      console.log(event)
+      this.writeTransaction({ event },'', true)
     })
   }
 
-  async writeTransaction({ event }, payconiq?) {
+  async writeTransaction({ event }, payconiq?, promo?) {
     if (event.detail === 'cancel' || event.detail === 'close') {
       if (payconiq) {
         this.cancelPayment?.()
@@ -296,6 +296,19 @@ export class SalesPad extends LiteElement {
         transactionItems: this.receipt.items
       }
       await firebase.push('transactions', transaction)
+      this.receipt.items = {}
+    } else if (promo) {
+      this.receipt.textTotalorChange = 'Promo'
+      let transaction: Transaction = {
+        paymentMethod: 'promo',
+        paymentAmount: 0,
+        member: event.detail,
+        transactionItems: this.receipt.items
+      }
+      await firebase.push('transactions', transaction)
+      const update = {}
+      update[event.detail] = false
+      await firebase.update('promo/', update)
       this.receipt.items = {}
     } else {
       let cashChange = event.detail
@@ -317,13 +330,13 @@ export class SalesPad extends LiteElement {
         await firebase.push('transactions', transaction)
         this.receipt.items = {}
       }
-    }
+    } 
   }
 
   renderPromo() {
     return Object.values(this.members).filter(promoMember => Object.keys(this.promo).includes(promoMember.key) && this.promo[promoMember.key]).map(promoMember =>
       html `
-      <custom-button key=${promoMember.key} action="promo">${promoMember.name + ' ' + promoMember.lastname}</custom-button>
+      <custom-button action=${promoMember.key} label=${promoMember.name + ' ' + promoMember.lastname}>${promoMember.name + ' ' + promoMember.lastname}</custom-button>
       `
       )
   }

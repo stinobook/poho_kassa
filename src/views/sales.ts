@@ -14,8 +14,6 @@ export class SalesView extends LiteElement {
   accessor salesPad
 
   inputTap(event) {
-    console.log(event)
-
     this.salesPad.inputTap(event)
   }
 
@@ -99,11 +97,14 @@ export class SalesView extends LiteElement {
   togglePad = () => {
     let customIcon = this.shadowRoot.querySelector('.fabicon') as HTMLElement
     let fab = this.shadowRoot.querySelector('md-fab')
+    let paybar = document.querySelector("body > po-ho-shell").shadowRoot.querySelector(".pay-bar") as HTMLElement
     if (this.pad.classList.contains('shown')) {
       this.pad.classList.remove('shown')
+      paybar.style.setProperty('display', 'none')
       fab.style.setProperty('left', '')
     } else {
       this.pad.classList.add('shown')
+      paybar.style.setProperty('display', 'flex')
       fab.style.setProperty('left', '24px')
     }
   }

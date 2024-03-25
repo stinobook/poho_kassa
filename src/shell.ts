@@ -62,7 +62,7 @@ export class PoHoShell extends LiteElement {
   accessor attendance = []
 
   @property({ provider: true })
-  accessor promo = []
+  accessor promo = {}
 
   @property({ provider: true })
   accessor payconiqTransactions = []
@@ -556,6 +556,7 @@ export class PoHoShell extends LiteElement {
         @media (max-width: 689px) {
         .pay-bar {
           top: 55px;
+          display: none;
         }
         sales-view {
           margin-top: 50px;

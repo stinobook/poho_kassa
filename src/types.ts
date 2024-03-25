@@ -17,9 +17,10 @@ export type Transactions = Transaction[]
 
 export interface Transaction {
   key?: string
-  paymentMethod: 'cash' | 'payconiq'
+  paymentMethod: 'cash' | 'payconiq' | 'promo'
   paymentAmount: number
   payment?: PayconiqPayment
+  member?: string
   transactionItems: ReceiptItem[]
 }
 
