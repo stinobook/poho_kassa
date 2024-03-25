@@ -557,6 +557,9 @@ export class PoHoShell extends LiteElement {
         .pay-bar {
           top: 55px;
         }
+        sales-view {
+          margin-top: 50px;
+        }
       }
       </style>
       <!-- just cleaner -->

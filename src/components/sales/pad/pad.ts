@@ -106,6 +106,10 @@ export class SalesPad extends LiteElement {
         flex-wrap: wrap;
         --custom-elevation: 1;
       }
+      .dialogPayconiq img {
+        max-width: 100%;
+        margin: 0 auto;
+      }
       custom-button {
         background-color: var(--md-sys-color-primary);
         color: var(--md-sys-color-on-primary);
@@ -188,7 +192,6 @@ export class SalesPad extends LiteElement {
                 `https://us-central1-poho-app.cloudfunctions.net/cancelPayment?payment=${payment._links.cancel.href}`
               )
             }
-
             break
           }
         case 'promo':
@@ -345,7 +348,7 @@ export class SalesPad extends LiteElement {
         <span slot="title">Payconiq Ontvangst</span>
         ${this.qrcode
           ? html`<flex-row slot="actions" direction="row">
-              <img action="accepted" src=${this.qrcode} />
+              <img src=${this.qrcode} />
             </flex-row>`
           : html` <loading-view></loading-view>`}
       </custom-dialog>

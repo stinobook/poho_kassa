@@ -78,6 +78,7 @@ export class AttendanceView extends LiteElement {
         grid-auto-rows: min-content;
         gap: 12px;
         height: auto;
+        padding-bottom: 12px;
       }
 
       custom-selector :not(.custom-selected):not([non-interactive]):hover {
