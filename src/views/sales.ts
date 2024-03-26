@@ -1,14 +1,18 @@
-import { html, css, LiteElement, query } from '@vandeurenglenn/lite'
+import { html, css, LiteElement, property, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@material/web/fab/fab.js'
 import '../components/sales/pad/pad.js'
 import '../components/sales/grid/grid.js'
 import '../components/sales/tabs/tabs.js'
+import '@vandeurenglenn/lite-elements/button.js'
 import type { Tab } from '../types.js'
 
 @customElement('sales-view')
 export class SalesView extends LiteElement {
   fabIcon = 'shopping_cart_checkout'
+
+  @property({ type: Array, consumer: true }) 
+  accessor tabs: Tab[]
 
   @query('sales-pad')
   accessor salesPad
@@ -17,7 +21,7 @@ export class SalesView extends LiteElement {
   accessor grid
 
   @query('tabs-grid')
-  accessor tabs
+  accessor tabsGrid
 
 
   inputTap(event) {
@@ -61,6 +65,20 @@ export class SalesView extends LiteElement {
         opacity: 0;
         left: 240px;
         position: absolute;
+      }
+      custom-button {
+        background-color: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        height: 50px;
+        width: 98px;
+      }
+      flex-wrap-between {
+        max-width: 320px;
+        background-color: var(--md-sys-color-surface-container-high);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+
+        margin-top: 24px;
+        gap: 12px;
       }
       @media (max-width: 689px) {
         :host {
@@ -146,9 +164,16 @@ export class SalesView extends LiteElement {
   }
 
 
+  connectedCallback() {
+    let dialogTabs = this.shadowRoot.querySelector('custom-dialog.dialogTabs') as HTMLDialogElement
+    dialogTabs.addEventListener('close', (event) => {
+      this.addItems({ event })
+    })
+  }
+
   dialogInput(): Promise<string> {
     return new Promise((resolve) => {
-      const dialog = this.shadowRoot.querySelector('custom-dialog') as HTMLDialogElement
+      const dialog = this.shadowRoot.querySelector('custom-dialog.dialogInput') as HTMLDialogElement
       const closeAction = () => {
         let inputValue = (this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value') as HTMLInputElement)
           .value
@@ -166,10 +191,18 @@ export class SalesView extends LiteElement {
     })
   }
 
+  addItems({event}) {
+    console.log(event.detail)
+    if (event.detail === 'cancel' || event.detail === 'close') {
+      return
+    }
+    
+  }
+
   handleTabs = async (event) => {
-    switch (event.detail[0]) {
+    switch (event.detail) {
       case 'tabNew':
-        if (!this.salesPad.receipt.items) {
+        if (Object.keys(this.salesPad.receipt.items).length === 0) {
           alert('Geen items om op een rekening te plaatsen')
           break
         }
@@ -183,12 +216,27 @@ export class SalesView extends LiteElement {
         this.salesPad.textTotalorChange
         break
       case 'tabAdd':
-        console.log('add')
+        if (Object.keys(this.salesPad.receipt.items).length === 0) {
+          alert('Geen items om op een rekening te plaatsen')
+          break
+        }
+        let dialog = this.shadowRoot.querySelector('custom-dialog.dialogTabs') as HTMLDialogElement
+        dialog.open = true
         break
       case 'tabPay':
         console.log('pay')
         break
+      default:
+        console.log(event.detail)
     }
+  }
+
+  renderTabs() {
+    return this.tabs.map(tab =>
+        html `
+          <custom-button action=${tab.key} .label=${tab.name}>${tab.name}</custom-button>
+        `
+      )
   }
 
   render() {
@@ -205,6 +253,12 @@ export class SalesView extends LiteElement {
         <flex-row slot="actions" direction="row">
           <custom-button label="send" action="send" has-label="">Accepteer</custom-button>
         </flex-row>
+      </custom-dialog>
+      <custom-dialog class="dialogTabs" has-actions="" has-header="">
+        <span slot="title">Selecteer een rekening</span>
+        <flex-wrap-between slot="actions" direction="row">
+          ${this.tabs ? this.renderTabs() : ''}
+        </flex-wrap-between>
       </custom-dialog>
     `
   }

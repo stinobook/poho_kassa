@@ -52,6 +52,7 @@ export class TabsGrid extends LiteElement {
       md-list {
         background: unset;
         padding: 0;
+        pointer-events: none;
       }
       details[open] summary ~ * {
         animation: open 0.3s ease-in-out;
@@ -99,10 +100,9 @@ export class TabsGrid extends LiteElement {
   connectedCallback() {
     this.addEventListener('click', (event) => {
       const paths = event.composedPath() as HTMLElement[]
-      const key = paths[2]?.hasAttribute ? paths[2].getAttribute('key') : paths[3].getAttribute('key')
       const action = paths[2]?.hasAttribute ? paths[2].getAttribute('action') : paths[3].getAttribute('action')
       if (action != null) {
-        this.dispatchEvent(new CustomEvent('tabs-click', { detail: [action, key] }))
+        this.dispatchEvent(new CustomEvent('tabs-click', { detail: action }))
       }
     })
   }
