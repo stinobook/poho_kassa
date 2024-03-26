@@ -277,7 +277,7 @@ export class BookkeepingView extends LiteElement {
                               <span slot="headline">${transactionItem.description}</span>
                               <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
                               <span slot="end"
-                                >Eenheid: &euro;${transactionItem.price} / Totaal:
+                                >Eenheid: &euro;${transactionItem.price} / Subtotaal:
                                 &euro;${Number(transactionItem.price) * Number(transactionItem.amount)}</span
                               >
                             </md-list-item>

@@ -65,6 +65,9 @@ export class PoHoShell extends LiteElement {
   accessor promo = {}
 
   @property({ provider: true })
+  accessor tabs = []
+
+  @property({ provider: true })
   accessor payconiqTransactions = []
 
   @property()
@@ -84,6 +87,45 @@ export class PoHoShell extends LiteElement {
         location.hash = Router.bang('login')
       }
     }
+  }
+  setupTabsListener() {
+    this.#listeners.push('tabs')
+    firebase.onChildAdded('tabs', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      if (!this.tabs) {
+        this.tabs = [val]
+      } else if (!this.tabs.includes(val)) {
+        this.tabs.push(val)
+      }
+      this.tabs = [...this.tabs]
+    })
+    firebase.onChildChanged('tabs', async (snap) => {
+      const val = await snap.val()
+      const key = snap.key
+      val.key = key
+      let i = -1
+
+      for (const event of this.tabs) {
+        i += 1
+        if (event.key === val.key) break
+      }
+      this.tabs.splice(i, val)
+      this.tabs = [...this.tabs]
+    })
+    firebase.onChildRemoved('tabs', async (snap) => {
+      const val = await snap.val()
+      val.key = snap.key
+      let i = -1
+
+      for (const event of this.tabs) {
+        i += 1
+        if (event.key === val.key) break
+      }
+      this.tabs.splice(i)
+      this.tabs = [...this.tabs]
+    })
   }
   setupPromoListener() {
     this.#listeners.push('promo')
@@ -411,6 +453,7 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('payconiqTransactions')) this.setupPayconiqTransactionsListener()
       if (!this.#listeners.includes('promo')) this.setupPromoListener()
       if (!this.#listeners.includes('members')) this.setupMembersListener()
+      if (!this.#listeners.includes('tabs')) this.setupTabsListener()
     } else if (selected === 'checkout') {
       if (!this.#listeners.includes('transactions')) this.setupTransactionsListener()
       if (!this.#listeners.includes('members')) this.setupMembersListener()
@@ -503,6 +546,7 @@ export class PoHoShell extends LiteElement {
           <custom-elevation level="2"></custom-elevation>
           <md-filled-button input-tap="cash">Cash</md-filled-button>
           <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
+          <md-filled-button input-tap="tabs">Rekeningen</md-filled-button>
           ${(Object.values(this.promo).includes(true)) ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>` : ''}
         </flex-row>`
 

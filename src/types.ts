@@ -24,6 +24,14 @@ export interface Transaction {
   transactionItems: ReceiptItem[]
 }
 
+export type Tabs = Tab[]
+
+export interface Tab {
+  key?: string
+  name?: string
+  transactionItems: ReceiptItem[]
+}
+
 export interface Cashtotal {
   '100'?: number
   '50'?: number
