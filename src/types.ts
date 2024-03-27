@@ -28,7 +28,7 @@ export type Tabs = Tab[]
 
 export interface Tab {
   key?: string
-  name?: string
+  name: string
   transactionItems: ReceiptItem[]
 }
 

@@ -5,7 +5,8 @@ import '../components/sales/pad/pad.js'
 import '../components/sales/grid/grid.js'
 import '../components/sales/tabs/tabs.js'
 import '@vandeurenglenn/lite-elements/button.js'
-import type { Tab } from '../types.js'
+import type { ReceiptItem, Tab } from '../types.js'
+import { Transaction } from 'firebase/firestore'
 
 @customElement('sales-view')
 export class SalesView extends LiteElement {
@@ -191,12 +192,22 @@ export class SalesView extends LiteElement {
     })
   }
 
-  addItems({event}) {
-    console.log(event.detail)
+  async addItems({event}) {
     if (event.detail === 'cancel' || event.detail === 'close') {
       return
     }
-    
+    let tabAdd: Tab
+    tabAdd = Object.values(this.tabs).filter((tab) => tab.key === event.detail)[0]
+    for (const [key, item] of Object.entries(this.salesPad.receipt.items)) {
+      if (Object.keys(tabAdd.transactionItems).includes(key)) {
+        tabAdd.transactionItems[key].amount += item.amount
+      } else {
+        tabAdd.transactionItems[key] = item
+      }
+    }
+    await firebase.update('tabs/' + event.detail, tabAdd)
+    this.salesPad.receipt.items = {}
+    this.salesPad.textTotalorChange = 'Toegevoegd'
   }
 
   handleTabs = async (event) => {
@@ -213,7 +224,7 @@ export class SalesView extends LiteElement {
         }
         await firebase.push('tabs',tab)
         this.salesPad.receipt.items = {}
-        this.salesPad.textTotalorChange
+        this.salesPad.textTotalorChange = 'Rekening'
         break
       case 'tabAdd':
         if (Object.keys(this.salesPad.receipt.items).length === 0) {
