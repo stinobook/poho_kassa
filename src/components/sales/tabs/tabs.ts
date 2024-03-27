@@ -107,17 +107,8 @@ export class TabsGrid extends LiteElement {
     })
   }
 
-  async onChange(propertyKey: any, value: any) {
-    console.log({ propertyKey, value })
-
-    if (propertyKey === 'tabs') {
-      console.log(this.tabs)
-    }
-  }
-
   calcTotal(items: ReceiptItem[]) {
     let total = 0
-    console.log(Object.values(items))
     for (const item of Object.values(items)) {
       total += Number(item.price) * Number(item.amount)
     }
