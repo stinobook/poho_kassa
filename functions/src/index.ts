@@ -82,7 +82,9 @@ export const payconiqCallbackUrl = onRequest({ cors: 'https://api.payconiq.com' 
   const payment = request.body as PayconiqCallbackUrlBody
   if (payment.status !== 'PENDING' && payment.status !== 'AUTHORIZED' && payment.status !== 'IDENTIFIED') {
     await payconiqTransactionsRef.child(payment.paymentId).update({ status: payment.status })
-    await payconiqTransactionsRef.child(payment.paymentId).remove()
+    setTimeout(async () => {
+      await payconiqTransactionsRef.child(payment.paymentId).remove()
+    }, 5000)
   } else {
     await payconiqTransactionsRef.child(payment.paymentId).update({ status: payment.status })
   }
