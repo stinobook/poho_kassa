@@ -14,7 +14,7 @@ import { CustomNotifications } from '@vandeurenglenn/lite-elements/notifications
 export class SalesPad extends LiteElement {
   transaction: { [key: string]: Transaction[] } = {}
   @property({ type: Array, consumer: true })
-  accessor members: {Type: Member}
+  accessor members: { Type: Member }
   @property({ consumer: true, renders: false })
   accessor promo: { [key: string]: Boolean }
   currentSelectedProduct: string
@@ -67,6 +67,9 @@ export class SalesPad extends LiteElement {
         title: 'Poho',
         message: `${this.#currentPayconiqTransaction.paymentId} ${payment.status}!`
       })
+
+      // replace whole current with update payment
+      this.#currentPayconiqTransaction = payment
 
       if (payment.status === 'SUCCEEDED') {
         await this.writeTransaction({ event: { detail: 'accepted' } })
@@ -274,7 +277,7 @@ export class SalesPad extends LiteElement {
     })
     let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPromo') as HTMLDialogElement
     dialogPromo.addEventListener('close', (event) => {
-      this.writeTransaction({ event },'', true)
+      this.writeTransaction({ event }, '', true)
     })
   }
 
@@ -329,14 +332,19 @@ export class SalesPad extends LiteElement {
         await firebase.push('transactions', transaction)
         this.receipt.items = {}
       }
-    } 
+    }
   }
 
   renderPromo() {
-    return Object.values(this.members).filter(promoMember => Object.keys(this.promo).includes(promoMember.key) && this.promo[promoMember.key]).map(promoMember =>
-      html `
-      <custom-button action=${promoMember.key} .label=${promoMember.name + ' ' + promoMember.lastname}>${promoMember.name + ' ' + promoMember.lastname}</custom-button>
-      `
+    return Object.values(this.members)
+      .filter((promoMember) => Object.keys(this.promo).includes(promoMember.key) && this.promo[promoMember.key])
+      .map(
+        (promoMember) =>
+          html`
+            <custom-button action=${promoMember.key} .label=${promoMember.name + ' ' + promoMember.lastname}
+              >${promoMember.name + ' ' + promoMember.lastname}</custom-button
+            >
+          `
       )
   }
 
@@ -367,9 +375,7 @@ export class SalesPad extends LiteElement {
 
       <custom-dialog class="dialogPromo">
         <span slot="title">Promo Ontvangst</span>
-        <flex-wrap-between slot="actions"> 
-          ${this.promo ? this.renderPromo() : ''} 
-        </flex-wrap-between>
+        <flex-wrap-between slot="actions"> ${this.promo ? this.renderPromo() : ''} </flex-wrap-between>
       </custom-dialog>
 
       <sales-receipt @selection=${(event) => this.onReceiptSelection(event)}></sales-receipt>
