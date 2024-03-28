@@ -1,0 +1,165 @@
+import { css } from '@vandeurenglenn/lite'
+
+export default css`
+  * {
+    user-select: none;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    background-color: var(--md-sys-color-surface-container-highest);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--md-sys-color-on-surface-container-highest);
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.5) inset;
+  }
+  :host {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    overflow-y: auto;
+  }
+
+  label {
+    margin-right: 12px;
+  }
+  #card-main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface-container-high);
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    gap: 12px;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-top: 12px;
+  }
+  #card-main .date {
+    width: 100%;
+    margin: 12px;
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+  #card-sub {
+    font-size: 1em;
+    font-weight: normal;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    color: var(--md-sys-color-on-primary-container);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 12px 24px;
+    gap: 12px;
+  }
+  #card-sub-wide {
+    font-size: 1em;
+    font-weight: normal;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    color: var(--md-sys-color-on-primary-container);
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    width: 100%;
+    padding: 12px;
+    gap: 12px;
+  }
+  #card-sub-sub {
+    font-size: 0.8em;
+    font-weight: normal;
+    position: relative;
+  }
+  #card-sub-sub span {
+    float: left;
+    clear: both;
+  }
+  #card-sub-details {
+    font-weight: normal;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  md-list {
+    background: unset;
+    padding: 0;
+  }
+  details {
+    background-color: var(--md-sys-color-surface-container-high);
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    color: var(--md-sys-color-on-surface-container-high);
+    padding: 12px;
+  }
+
+  details[open] summary ~ * {
+    animation: open 0.3s ease-in-out;
+  }
+
+  @keyframes open {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details summary {
+    position: relative;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  details summary:after {
+    content: '+';
+    height: 0px;
+    position: absolute;
+    font-size: 1.75rem;
+    line-height: 0;
+    top: 8px;
+    right: 0;
+    font-weight: 200;
+    transform-origin: center;
+    transition: 200ms linear;
+  }
+  details[open] summary:after {
+    transform: rotate(45deg);
+    font-size: 2rem;
+  }
+  details summary {
+    outline: 0;
+  }
+  .card-input {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    background-color: var(--md-sys-color-surface-container-high);
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    color: var(--md-sys-color-on-surface-container-high);
+    box-sizing: border-box;
+    padding: 12px;
+  }
+  .card-input input {
+    padding: 10px 15px;
+    font-size: 1rem;
+    color: var(--md-sys-color-on-primary);
+    background: var(--md-sys-color-secondary);
+    border: 0;
+    border-radius: var(--md-sys-shape-corner-full);
+    outline: 0;
+  }
+
+  #card-sub-wide:not(:has(details)),
+  #card-sub-wide:not(:has(md-list)) {
+    display: none;
+  }
+`
