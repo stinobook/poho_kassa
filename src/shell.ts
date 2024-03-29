@@ -494,12 +494,17 @@ export class PoHoShell extends LiteElement {
         this.salesView.inputTap({ detail: event.target.getAttribute('input-tap') })
       }
     })
-
     this.drawerLayout.drawerOpen = false
     document.addEventListener('search', this.#onSearch)
     this.router = new Router(this)
     this.setupEventsListener()
     this.eventsinterval()
+  }
+
+  stylePaybar() {
+    let paybarheight = (document.querySelector('.pay-bar') as HTMLElement).clientHeight + 'px'
+    let salesview = document.querySelector('sales-view') as HTMLElement
+    salesview.style.setProperty('--paybarheight', paybarheight)
   }
 
   eventsinterval() {
@@ -565,6 +570,7 @@ export class PoHoShell extends LiteElement {
           position: relative;
           height: 100%;
           width: 100%;
+          --paybarheight: 75px;
         }
         custom-pages {
           width: 100%;
@@ -601,11 +607,15 @@ export class PoHoShell extends LiteElement {
         }
         @media (max-width: 689px) {
         .pay-bar {
-          top: 55px;
-          display: none;
+          position: absolute;
+          bottom: 12px;
+          top: unset;
+          flex-wrap: wrap;
+          height: min-content;
+          max-width: max-content;
         }
         sales-view {
-          margin-top: 50px;
+          margin-bottom: var(--paybarheight);
         }
       }
       </style>

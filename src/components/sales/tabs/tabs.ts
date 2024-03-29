@@ -35,7 +35,6 @@ export class TabsGrid extends LiteElement {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-auto-rows: min-content;
-        height: 50px;
         gap: 16px 8px;
         width: 100%;
       }

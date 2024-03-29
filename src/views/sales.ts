@@ -136,14 +136,11 @@ export class SalesView extends LiteElement {
   togglePad = () => {
     let customIcon = this.shadowRoot.querySelector('.fabicon') as HTMLElement
     let fab = this.shadowRoot.querySelector('md-fab')
-    let paybar = document.querySelector("body > po-ho-shell").shadowRoot.querySelector(".pay-bar") as HTMLElement
     if (this.salesPad.classList.contains('shown')) {
       this.salesPad.classList.remove('shown')
-      paybar.style.setProperty('display', 'none')
       fab.style.setProperty('left', '')
     } else {
       this.salesPad.classList.add('shown')
-      paybar.style.setProperty('display', 'flex')
       fab.style.setProperty('left', '24px')
     }
   }
