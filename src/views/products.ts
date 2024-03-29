@@ -30,7 +30,6 @@ export class ProductsView extends LiteElement {
 
       md-list-item {
         background: var(--md-sys-color-surface-container-high);
-        border: 1px solid rgba(0, 0, 0, 0.34);
         border-radius: 48px;
         margin-top: 8px;
         width: 100%;
