@@ -14,8 +14,8 @@ import Router from '../routing.js'
 
 @customElement('checkout-view')
 export class CheckoutView extends LiteElement {
-  @property({ type: Number }) accessor cashStart: number = 100
   @property({ type: Number }) accessor cashExpected: number = 0
+  @property({ type: Number }) accessor cashStart: number = 100
   @property({ type: Array, consumer: true, renders: false }) accessor transactions: Transaction[]
   @property({ type: Array }) accessor cashTotals: Cashtotal[] = []
   @property({ type: Number }) accessor cashTotal: number = 0
@@ -28,7 +28,7 @@ export class CheckoutView extends LiteElement {
   @property({ type: Number }) accessor payconiqWinkel: number = 0
   @property({ type: Number }) accessor payconiqLidgeld: number = 0
   @property() accessor transactionsByCategory: { [category: string]: Transaction[] }
-  @property({ type: Array, consumer: true }) accessor members: {Type: Member}
+  @property({ type: Array, consumer: true }) accessor members: { Type: Member }
 
   static styles = [
     css`
@@ -186,31 +186,38 @@ export class CheckoutView extends LiteElement {
   async onChange(propertyKey: any, value: any) {
     console.log({ propertyKey, value })
 
-    if (propertyKey === 'transactions') {
-      const transactionsByCategory = {}
-      this.cashExpected = this.cashStart
-      for (const transaction of value) {
-        if (transaction.paymentMethod === 'cash') {
-          this.cashExpected += transaction.paymentAmount
-        }
-        for (const [key, transactionItem] of Object.entries(transaction.transactionItems)) {
-          if (!transactionsByCategory[transactionItem.category]) {
-            transactionsByCategory[transactionItem.category] = {
-              paymentAmount: { cash: 0, payconiq: 0 },
-              transactionItems: [{ paymentMethod: transaction.paymentMethod, ...transactionItem }]
-            }
-          } else {
-            transactionsByCategory[transactionItem.category].transactionItems.push({
-              paymentMethod: transaction.paymentMethod,
-              ...transactionItem
-            })
+    if (propertyKey === 'transactions' || propertyKey === 'cashStart') {
+      if (
+        this.transactions !== undefined &&
+        this.transactions.length > 0 &&
+        this.cashExpected !== undefined &&
+        this.cashStart !== undefined
+      ) {
+        const transactionsByCategory = {}
+        this.cashExpected = this.cashStart
+        for (const transaction of this.transactions) {
+          if (transaction.paymentMethod === 'cash') {
+            this.cashExpected += transaction.paymentAmount
           }
-          transactionsByCategory[transactionItem.category].paymentAmount[transaction.paymentMethod] +=
-            transactionItem.amount * transactionItem.price
+          for (const [key, transactionItem] of Object.entries(transaction.transactionItems)) {
+            if (!transactionsByCategory[transactionItem.category]) {
+              transactionsByCategory[transactionItem.category] = {
+                paymentAmount: { cash: 0, payconiq: 0 },
+                transactionItems: [{ paymentMethod: transaction.paymentMethod, ...transactionItem }]
+              }
+            } else {
+              transactionsByCategory[transactionItem.category].transactionItems.push({
+                paymentMethod: transaction.paymentMethod,
+                ...transactionItem
+              })
+            }
+            transactionsByCategory[transactionItem.category].paymentAmount[transaction.paymentMethod] +=
+              transactionItem.amount * transactionItem.price
+          }
         }
-      }
 
-      this.transactionsByCategory = transactionsByCategory
+        this.transactionsByCategory = transactionsByCategory
+      }
     }
   }
 
@@ -271,8 +278,8 @@ export class CheckoutView extends LiteElement {
         await set(transactionsDB, null)
         await firebase.set('promo', null)
         this.transactionsByCategory = {}
-        this.cashExpected = this.cashStart;
-        this.shadowRoot.querySelectorAll('input').forEach(input => input.value = '')
+        this.cashExpected = this.cashStart
+        this.shadowRoot.querySelectorAll('input').forEach((input) => (input.value = ''))
         location.hash = Router.bang('bookkeeping')
       }
     }
@@ -280,8 +287,10 @@ export class CheckoutView extends LiteElement {
 
   render() {
     if (this.transactions.length === 0) {
-      return html`<flex-container><custom-typography><h1>Niets om af te boeken</h1></custom-typography></flex-container>`
-      } else {
+      return html`<flex-container
+        ><custom-typography><h1>Niets om af te boeken</h1></custom-typography></flex-container
+      >`
+    } else {
       return html`
         <flex-container direction="row">
           <flex-column class="cashtelling">
@@ -354,8 +363,8 @@ export class CheckoutView extends LiteElement {
                       <details>
                         <summary>
                           <span
-                            >${transaction.paymentMethod[0].toUpperCase() + transaction.paymentMethod.slice(1)} transactie
-                            van:</span
+                            >${transaction.paymentMethod[0].toUpperCase() + transaction.paymentMethod.slice(1)}
+                            transactie van:</span
                           >
                           <span
                             >${transaction.paymentAmount.toLocaleString(navigator.language, {
@@ -368,13 +377,15 @@ export class CheckoutView extends LiteElement {
                           ([key, transactionItem]) =>
                             html`
                               <md-list-item>
-                              ${transaction.paymentMethod === 'promo'
-                              ? html`
-                                      <span slot="headline">${
-                                        Object.values(this.members).filter((member) => member.key === transaction.member).map((member) => member.name + ' ' + member.lastname)
-                                      }</span>
-                              `
-                              : ''}
+                                ${transaction.paymentMethod === 'promo'
+                                  ? html`
+                                      <span slot="headline"
+                                        >${Object.values(this.members)
+                                          .filter((member) => member.key === transaction.member)
+                                          .map((member) => member.name + ' ' + member.lastname)}</span
+                                      >
+                                    `
+                                  : ''}
                                 <span slot="headline">${transactionItem.description}</span>
                                 <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
                                 <span slot="end"

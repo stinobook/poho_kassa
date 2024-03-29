@@ -37,37 +37,37 @@ export class PoHoShell extends LiteElement {
   @property()
   accessor selected
 
-  @property({ provider: true, batches: true, batchDelay: 50 })
+  @property({ provider: true, batches: true, batchDelay: 70 })
   accessor products = []
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor categories = []
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor eventMode = false
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor currentEvent: Evenement
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor events = []
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor transactions = []
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor members = []
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor attendance = []
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor promo = {}
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor tabs = []
 
-  @property({ provider: true })
+  @property({ provider: true, batchDelay: 70 })
   accessor payconiqTransactions = []
 
   @property()
@@ -553,7 +553,9 @@ export class PoHoShell extends LiteElement {
           <md-filled-button input-tap="cash">Cash</md-filled-button>
           <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
           <md-filled-button input-tap="tabs">Rekeningen</md-filled-button>
-          ${(Object.values(this.promo).includes(true)) ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>` : ''}
+          ${Object.values(this.promo).includes(true)
+            ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>`
+            : ''}
         </flex-row>`
 
       default:
@@ -606,18 +608,18 @@ export class PoHoShell extends LiteElement {
           border-radius: var(--md-sys-shape-corner-extra-large);
         }
         @media (max-width: 689px) {
-        .pay-bar {
-          position: absolute;
-          bottom: 12px;
-          top: unset;
-          flex-wrap: wrap;
-          height: min-content;
-          max-width: max-content;
+          .pay-bar {
+            position: absolute;
+            bottom: 12px;
+            top: unset;
+            flex-wrap: wrap;
+            height: min-content;
+            max-width: max-content;
+          }
+          sales-view {
+            margin-bottom: var(--paybarheight);
+          }
         }
-        sales-view {
-          margin-bottom: var(--paybarheight);
-        }
-      }
       </style>
       <!-- just cleaner -->
       ${icons}
