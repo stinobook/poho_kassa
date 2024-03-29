@@ -487,6 +487,7 @@ export class PoHoShell extends LiteElement {
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
+    await firebase.set('tabPay', null)
 
     this.shadowRoot.addEventListener('click', (event) => {
       if (event.target.hasAttribute('input-tap')) {
