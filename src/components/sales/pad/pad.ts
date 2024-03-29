@@ -6,7 +6,7 @@ import '@vandeurenglenn/lite-elements/dialog.js'
 import '@vandeurenglenn/flex-elements/wrap-between.js'
 import './receipt.js'
 import './input.js'
-import { Transaction, ReceiptItem, PayconiqPayment, Member } from '../../../types.js'
+import { Transaction, ReceiptItem, PayconiqPayment, Member, Tab } from '../../../types.js'
 import { CustomDialog } from '@vandeurenglenn/lite-elements/dialog.js'
 import { CustomNotifications } from '@vandeurenglenn/lite-elements/notifications'
 
@@ -17,6 +17,8 @@ export class SalesPad extends LiteElement {
   accessor members: { Type: Member }
   @property({ consumer: true, renders: false })
   accessor promo: { [key: string]: Boolean }
+  @property({ type: Array, consumer: true }) 
+  accessor tabs: Tab[]
   currentSelectedProduct: string
   currentProductAmount: string = ''
 
@@ -148,6 +150,15 @@ export class SalesPad extends LiteElement {
   }
 
   async inputTap({ detail }: CustomEvent) {
+    let tabPay = await firebase.get('tabPay')
+    if (tabPay) {
+      this.receipt.items = Object.values(this.tabs).filter((tab) => tab.key === tabPay)[0].transactionItems
+      let total = 0
+      for (const item of Object.values(this.receipt.items) as ReceiptItem[]) {
+        total += Number(item.price) * Number(item.amount)
+      }
+      this.receipt.total = total
+    }
     if (
       this.receipt.items[this.currentSelectedProduct]?.description ||
       detail === 'cash' ||
@@ -282,10 +293,17 @@ export class SalesPad extends LiteElement {
   }
 
   async writeTransaction({ event }, payconiq?, promo?) {
+    let tabPay = await firebase.get('tabPay')
     if (event.detail === 'cancel' || event.detail === 'close') {
       if (payconiq) {
         this.cancelPayment?.()
       }
+      if (tabPay) {
+        await firebase.set('tabPay', null)
+        this.receipt.items = {}
+        this.receipt.total = 0
+      }
+      this.receipt.textTotalorChange = 'Geannuleerd'
       return
     }
     if (event.detail === 'accepted') {
@@ -298,6 +316,8 @@ export class SalesPad extends LiteElement {
         transactionItems: this.receipt.items
       }
       await firebase.push('transactions', transaction)
+      await firebase.remove('tabs/' + tabPay)
+      await firebase.set('tabPay', null)
       this.receipt.items = {}
     } else if (promo) {
       this.receipt.textTotalorChange = 'Promo'
@@ -330,6 +350,8 @@ export class SalesPad extends LiteElement {
           transactionItems: this.receipt.items
         }
         await firebase.push('transactions', transaction)
+        await firebase.remove('tabs/' + tabPay)
+        await firebase.set('tabPay', null)
         this.receipt.items = {}
       }
     }

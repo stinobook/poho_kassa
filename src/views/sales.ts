@@ -256,8 +256,7 @@ export class SalesView extends LiteElement {
         if (tabPay === 'close' || tabPay === 'cancel' ) break
         let paymentMethod = await this.dialogPay()
         if (paymentMethod.detail === 'close' || paymentMethod.detail === 'cancel' ) break
-        this.salesPad.receipt.items = Object.values(this.tabs).filter((tab) => tab.key === tabPay)[0].transactionItems
-        this.salesPad.receipt.total = this.tabsGrid.calcTotal(Object.values(this.tabs).filter((tab) => tab.key === tabPay)[0].transactionItems)
+        firebase.set('tabPay', tabPay)
         this.salesPad.inputTap(paymentMethod)
         break
       default:
