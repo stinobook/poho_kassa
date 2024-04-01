@@ -58,6 +58,7 @@ export interface Sales extends Transaction {
   payconiqWinkel: number
   payconiqLidgeld: number
   cashVaultCheckout: Number
+  cashBank?: Number
   transactions: Transaction[]
 }
 

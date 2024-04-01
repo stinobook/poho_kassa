@@ -30,6 +30,7 @@ export class CheckoutView extends LiteElement {
   @property({ type: Number }) accessor payconiqKantine: number = 0
   @property({ type: Number }) accessor payconiqWinkel: number = 0
   @property({ type: Number }) accessor payconiqLidgeld: number = 0
+  @property({ type: Number }) accessor cashBank: number = 0
   @property() accessor transactionsByCategory: { [category: string]: Transaction[] }
   @property({ type: Array, consumer: true }) accessor members: { Type: Member }
 
@@ -75,10 +76,10 @@ export class CheckoutView extends LiteElement {
         max-width: 250px;
       }
       .cash {
-        min-width: calc(100% - 295px);
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
+        flex: 1;
       }
       .cashsub {
         background-color: var(--md-sys-color-surface-container-highest);
@@ -90,17 +91,36 @@ export class CheckoutView extends LiteElement {
         flex-direction: column;
         flex: 1;
       }
-      .cashsub span {
-        padding: 4px 0;
-        float: left;
-      }
       .cashsub label {
         text-align: end;
         font-size:1.1em;
         text-wrap: nowrap;
+        float: left;
       }
       .cashactions {
         min-width: calc(100% - 96px);
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        gap: 12px;
+      }
+      .cashactions * {
+        flex: 1;
+      }
+      .cashactions label {
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        background-color: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        padding: 10px 24px;
+        font-size: 1em;
+        display: none;
+        float: unset;
+      }
+      .cashactions input[type=checkbox]:checked + label {
+        background-color: lightgreen;
+      }
+      .cashactions input {
+          display: none;
       }
       details {
         background-color: var(--md-sys-color-surface-container-highest);
@@ -176,9 +196,6 @@ export class CheckoutView extends LiteElement {
         width: 100%;
         background-color: transparent;
       }
-      .cashtelling md-filled-button {
-        margin: 24px auto;
-      }
       custom-typography {
         width: 100%;
         display: block;
@@ -211,8 +228,10 @@ export class CheckoutView extends LiteElement {
   async connectedCallback(): Promise<void> {
     this.shadowRoot.addEventListener('input', ({ target }: CustomEvent) => {
       // @ts-ignore
+      if (target.id !== "banktransfer") {
       let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
       this.inputCash(inputValue, target)
+      }
     })
     this.shadowRoot.addEventListener('click', this.#clickHandler)
     const db = getDatabase()
@@ -221,6 +240,7 @@ export class CheckoutView extends LiteElement {
       let lastCheckout = snapshot.val() as Sales
       this.cashStart = Object.values(lastCheckout)[0].cashStartCheckout
       this.cashVault = Object.values(lastCheckout)[0].cashVault
+      if (!this.cashVault) this.cashVault = 0
       }, { onlyOnce: true })
   }
 
@@ -230,6 +250,15 @@ export class CheckoutView extends LiteElement {
 
   async onChange(propertyKey: any, value: any) {
     console.log({ propertyKey, value })
+
+    if (propertyKey === 'cashVaultNew') {
+      let transferCheck = this.shadowRoot.querySelector('[for=banktransfer]') as HTMLElement
+      if (this.cashVaultNew > 500) {
+        transferCheck.style.setProperty('display', 'flex')
+      } else {
+        transferCheck.style.setProperty('display', 'none')
+      }
+    }
 
     if (propertyKey === 'transactions' || propertyKey === 'cashStart') {
       if (
@@ -284,6 +313,9 @@ export class CheckoutView extends LiteElement {
     if (this.transactions.length === 0) {
       alert('Niets om af te boeken')
     } else {
+      if (this.cashVaultNew > 500 && !(this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
+        if (!confirm('Opgelet, bedrag in kluis te hoog, overdragen!\n Duw OK om toch af te sluiten ZONDER overdracht.')) return
+      }
       if (confirm('Geen verschil?') === true) {
         const salesDB = ref(getDatabase(), 'sales')
         const transactionsDB = ref(getDatabase(), 'transactions')
@@ -305,11 +337,15 @@ export class CheckoutView extends LiteElement {
             this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
           }
         })
+        if ((this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
+          this.cashBank = this.cashVaultNew
+          this.cashVaultNew = 0
+        }
 
         let sales: Sales = {
           date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
           cashDifferenceCheckout: this.cashDifference,
-          cashStartCheckout: this.cashStart,
+          cashStartCheckout: this.cashStartNew,
           cashTransferCheckout: this.cashTransfer,
           cashKantine: this.cashKantine,
           cashWinkel: this.cashWinkel,
@@ -318,13 +354,14 @@ export class CheckoutView extends LiteElement {
           payconiqWinkel: this.payconiqWinkel,
           payconiqLidgeld: this.payconiqLidgeld,
           cashVaultCheckout: this.cashVaultNew,
+          cashBank: this.cashBank,
           transactions: this.transactions
         }
         await push(salesDB, sales)
         await set(transactionsDB, null)
         await firebase.set('promo', null)
         this.transactionsByCategory = {}
-        this.cashExpected = this.cashStart
+        this.cashExpected = this.cashStartNew
         this.shadowRoot.querySelectorAll('input').forEach((input) => (input.value = ''))
         location.hash = Router.bang('bookkeeping')
       }
@@ -363,11 +400,13 @@ export class CheckoutView extends LiteElement {
               </div>
               <div class="cashsub">
               <custom-typography>Kluis</custom-typography>
-                <label><span>Overdracht van kassa:</span> &euro;${this.cashTransfer}</label>
-                <label><span>Totaal:</span> &euro;${this.cashVaultNew}</label>
-                <label><span>Nieuw startgeld:</span> &euro;${this.cashStartNew}</label>
+                <label><span>Kasoverdracht naar kluis:</span> &euro;${this.cashTransfer}</label>
+                <label><span>Totaal in kluis:</span> &euro;${this.cashVaultNew}</label>
+                <label><span>Nieuw startgeld kassa:</span> &euro;${this.cashStartNew}</label>
               </div>
               <div class="cashsub cashactions">
+                <input id="banktransfer" class="banktransfer" type="checkbox"/>
+                <label for="banktransfer">Bankoverdracht uitvoeren?</label>
                 <md-filled-button action="checkout"> Bevestig Afsluit </md-filled-button>
               </div>
             </div>
