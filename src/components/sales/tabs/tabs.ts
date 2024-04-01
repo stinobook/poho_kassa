@@ -115,29 +115,33 @@ export class TabsGrid extends LiteElement {
   }
 
   renderTabs() {
-    return this.tabs.map((tab) => html`
-      <details key=${tab.key}>
-        <summary>
-          <span>${tab.name}</span>
-          <span style="float: right; margin-right: 24px"> Totaal: &euro;${this.calcTotal(tab.transactionItems)}</span>
-        </summary>
-        <md-list>
-          ${
-            Object.entries(tab.transactionItems).map(([key, transactionItem]) => html`
-              <md-list-item>
-                <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
-                <span slot="end"
-                  >Eenheid: &euro;${transactionItem.price} / Subtotaal:
-                  &euro;${Number(transactionItem.price) * Number(transactionItem.amount)}</span
-                >
-              </md-list-item>
-            `
-            )
-          }
-        </md-list>
-      </details>
-    `  
-    )
+    if (this.tabs.length === 0) {
+      return html`<p>Geen openstaande rekeningen</p>`
+    } else {
+      return this.tabs.map((tab) => html`
+        <details key=${tab.key}>
+          <summary>
+            <span>${tab.name}</span>
+            <span style="float: right; margin-right: 24px"> Totaal: &euro;${this.calcTotal(tab.transactionItems)}</span>
+          </summary>
+          <md-list>
+            ${
+              Object.entries(tab.transactionItems).map(([key, transactionItem]) => html`
+                <md-list-item>
+                  <span slot="start">${transactionItem.amount} x ${transactionItem.name}</span>
+                  <span slot="end"
+                    >Eenheid: &euro;${transactionItem.price} / Subtotaal:
+                    &euro;${Number(transactionItem.price) * Number(transactionItem.amount)}</span
+                  >
+                </md-list-item>
+              `
+              )
+            }
+          </md-list>
+        </details>
+      `  
+      )
+    }
   }
 
   render() {
@@ -155,7 +159,7 @@ export class TabsGrid extends LiteElement {
         <custom-typography><h4>Rekeningen</h4></custom-typography> 
       </flex-row>
       <flex-wrap-between>
-        ${this.tabs ? this.renderTabs() : html`<p>Geen rekeningen</p>`}
+        ${this.tabs ? this.renderTabs() : ''}
       </flex-wrap-between>
     </flex-container>
     `

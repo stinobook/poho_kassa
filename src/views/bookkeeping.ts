@@ -63,10 +63,17 @@ export class BookkeepingView extends LiteElement {
             <div id="card-main">
               <span class="date">${value.date}</span>
               <div id="card-sub">
-                <span>Cashhandeling</span>
+                <span>Kassa</span>
                 <div id="card-sub-sub">
-                  <span>Overdracht: &euro;${value.cashTransferCheckout}</span>
                   <span>Verschil: &euro;${value.cashDifferenceCheckout}</span>
+                  <span>Naar kluis: &euro;${value.cashTransferCheckout}</span>
+                </div>
+              </div>
+              <div id="card-sub">
+                <span>Kluis & Bank</span>
+                <div id="card-sub-sub">
+                  <span>In kluis: &euro;${value.cashVaultCheckout}</span>
+                  <span>Naar bank: &euro;${value.cashBank}</span>
                 </div>
               </div>
               <div id="card-sub">
