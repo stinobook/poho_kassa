@@ -7,6 +7,7 @@ import '../components/sales/tabs/tabs.js'
 import '@vandeurenglenn/lite-elements/button.js'
 import type { ReceiptItem, Tab } from '../types.js'
 import { Transaction } from 'firebase/firestore'
+import { CustomIcon } from '@vandeurenglenn/lite-elements/icon'
 
 @customElement('sales-view')
 export class SalesView extends LiteElement {
@@ -134,13 +135,15 @@ export class SalesView extends LiteElement {
   ]
 
   togglePad = () => {
-    let customIcon = this.shadowRoot.querySelector('.fabicon') as HTMLElement
+    let customIcon = this.shadowRoot.querySelector('.fabicon') as CustomIcon
     let fab = this.shadowRoot.querySelector('md-fab')
     if (this.salesPad.classList.contains('shown')) {
       this.salesPad.classList.remove('shown')
+      customIcon.icon = 'shopping_cart_checkout'
       fab.style.setProperty('left', '')
     } else {
       this.salesPad.classList.add('shown')
+      customIcon.icon = 'arrow_back'
       fab.style.setProperty('left', '24px')
     }
   }
