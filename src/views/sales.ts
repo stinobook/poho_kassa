@@ -6,7 +6,6 @@ import '../components/sales/grid/grid.js'
 import '../components/sales/tabs/tabs.js'
 import '@vandeurenglenn/lite-elements/button.js'
 import type { ReceiptItem, Tab } from '../types.js'
-import { Transaction } from 'firebase/firestore'
 import { CustomIcon } from '@vandeurenglenn/lite-elements/icon'
 
 @customElement('sales-view')

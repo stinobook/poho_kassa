@@ -487,8 +487,9 @@ export class PoHoShell extends LiteElement {
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
-    await firebase.set('tabPay', null)
 
+    if (firebase.auth.currentUser) await firebase.set('tabPay', null)
+    
     this.shadowRoot.addEventListener('click', (event) => {
       if (event.target.hasAttribute('input-tap')) {
         this.salesView.inputTap({ detail: event.target.getAttribute('input-tap') })
@@ -643,6 +644,9 @@ export class PoHoShell extends LiteElement {
           <custom-drawer-item route="members"> Leden </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
+          <custom-divider middle-inset></custom-divider>
+          <custom-drawer-item route="calendar"> Kalender </custom-drawer-item>
+          <custom-drawer-item route="planning"> Planning </custom-drawer-item>
           <custom-drawer-item route="logout" class="logout"> Uitloggen </custom-drawer-item>
         </custom-selector>
 
@@ -658,6 +662,8 @@ export class PoHoShell extends LiteElement {
           <members-view route="members"> </members-view>
           <add-event-view route="add-event"> </add-event-view>
           <products-view route="products"> </products-view>
+          <products-view route="calendar"> </products-view>
+          <products-view route="planning"> </products-view>
           <add-product-view route="add-product"> </add-product-view>
           <add-member-view route="add-member"> </add-member-view>
         </custom-pages>
