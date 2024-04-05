@@ -32,7 +32,6 @@
     "@vandeurenglenn/lite": "^0.2.32",
     "@vandeurenglenn/lite-elements": "^0.3.19",
     "firebase": "^10.8.1",
-    "lit-flatpickr": "^0.4.0",
     "rollup-plugin-copy": "^3.5.0"
   }
 }
