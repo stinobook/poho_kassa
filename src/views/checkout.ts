@@ -239,9 +239,9 @@ export class CheckoutView extends LiteElement {
     onValue(dbQ, (snapshot) => {
       let lastCheckout = snapshot.val() as Sales
       this.cashStart = Object.values(lastCheckout)[0].cashStartCheckout
-      this.cashVault = Object.values(lastCheckout)[0].cashVault
+      this.cashVault = Object.values(lastCheckout)[0].cashVaultCheckout
       if (!this.cashVault) this.cashVault = 0
-      }, { onlyOnce: true })
+      }, { onlyOnce: false })
   }
 
   disconnectedCallback() {
