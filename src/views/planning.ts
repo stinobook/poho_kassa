@@ -28,7 +28,8 @@ export class PlanningView extends LiteElement {
 
   renderCalendar() {
     const selectMonth = this.shadowRoot.querySelector('#selectmonth') as HTMLSelectElement
-    let selectedYear = 2024
+    const selectYear = this.shadowRoot.querySelector('#selectyear') as HTMLSelectElement
+    let selectedYear = selectYear.selectedIndex
     let selectedMonth = selectMonth.selectedIndex
     let firstDay = (new Date(selectedYear, selectedMonth)).getDay()
     let amountDays = (new Date(selectedYear, selectedMonth + 1, 0)).getDate()
@@ -40,9 +41,9 @@ export class PlanningView extends LiteElement {
       var row =  calendarBody.insertRow()
       for (let cellIterated = 0; cellIterated < 7 && day <= amountDays; cellIterated++) {
         var cell = row.insertCell()
-        if (rowIterator !== 0 || cellIterated >= (firstDay -1)) {
-          value = day.toString();
-          day++;
+        if (rowIterator !== 0 || cellIterated >= firstDay) {
+          value = day.toString()
+          day++
         }
         const cellText = document.createTextNode(value)
         cell.appendChild(cellText)
@@ -66,6 +67,10 @@ export class PlanningView extends LiteElement {
       <option name="Oktober" value="9">Oktober</option>
       <option name="November" value="10">November</option>
       <option name="December" value="12">December</option>
+    </select>
+    <select id="selectyear" placeholder="${new Date().getFullYear()}">
+      <option value="2024">2024</option>
+      <option value="2025">2025</option>
     </select>
     <table id="calendar">
       <thead>
