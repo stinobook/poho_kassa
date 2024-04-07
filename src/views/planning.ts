@@ -29,8 +29,9 @@ export class PlanningView extends LiteElement {
   renderCalendar() {
     const selectMonth = this.shadowRoot.querySelector('#selectmonth') as HTMLSelectElement
     const selectYear = this.shadowRoot.querySelector('#selectyear') as HTMLSelectElement
-    let selectedYear = selectYear.selectedIndex
+    let selectedYear = Number(selectYear.value)
     let selectedMonth = selectMonth.selectedIndex
+    
     let firstDay = (new Date(selectedYear, selectedMonth)).getDay()
     let amountDays = (new Date(selectedYear, selectedMonth + 1, 0)).getDate()
     const calendarBody: HTMLTableElement = this.shadowRoot.querySelector('#calendarbody')
