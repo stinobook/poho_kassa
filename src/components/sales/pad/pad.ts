@@ -13,7 +13,7 @@ import { CustomNotifications } from '@vandeurenglenn/lite-elements/notifications
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
   transaction: { [key: string]: Transaction[] } = {}
-  @property({ type: Array, consumer: true })
+  @property({ type: Object, consumer: true })
   accessor members: { Type: Member }
   @property({ consumer: true, renders: false })
   accessor promo: { [key: string]: Boolean }

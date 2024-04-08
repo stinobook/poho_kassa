@@ -70,6 +70,9 @@ export class PoHoShell extends LiteElement {
   @property({ provider: true, batchDelay: 70 })
   accessor payconiqTransactions = []
 
+  @property({ provider: true, batchDelay: 70 })
+  accessor planning = []
+
   @property()
   accessor attendanceDate = new Date().toISOString().slice(0, 10)
 

@@ -6,8 +6,8 @@ import { scrollbar } from '../mixins/styles.js'
 @customElement('planning-view')
 export class PlanningView extends LiteElement {
 
-  @property({ type: Array, consumer: true })
-  accessor planning = []
+  @property()
+  accessor planning = {}
 
   static styles = [
     css`
@@ -80,8 +80,14 @@ export class PlanningView extends LiteElement {
   }
 
   #clickHandler = (event) => {
-    console.log(event.target.getAttribute('date'))
-    let splitted = event.target.getAttribute('date').split('-')
+    if (event.target.getAttribute('date')) {
+      let splitted = event.target.getAttribute('date').split('-')
+      this.handlePlanning(splitted[0], splitted[1], splitted[2])
+    }
+  }
+
+  handlePlanning(year, month, day) {
+    if (!this.planning[year]) this.planning = this.planning[year][month] = day
     console.log(this.planning)
   }
 
