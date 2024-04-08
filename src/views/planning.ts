@@ -1,8 +1,14 @@
-import { html, css, LiteElement } from '@vandeurenglenn/lite'
+import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
+import '@vandeurenglenn/flex-elements/container.js'
+import { scrollbar } from '../mixins/styles.js'
 
 @customElement('planning-view')
 export class PlanningView extends LiteElement {
+
+  @property({ type: Array, consumer: true })
+  accessor planning = []
+
   static styles = [
     css`
       :host {
@@ -11,82 +17,122 @@ export class PlanningView extends LiteElement {
         width: 100%;
         height: 100%;
         display: flex;
+      }
+
+      ${scrollbar}
+
+      flex-container {
+        min-width: 100%;
+        height: 100%;
+        gap: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: flex-start;
+        overflow-y: auto;
+      }
+      div {
+        background-color: var(--md-sys-color-surface-container-high);
+        color: var(--md-sys-color-on-surface-container-high);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        padding: 20px;
+        align-self: stretch;
+        width: 20%;
+        display: flex;
         flex-direction: column;
+      }
+      div span {
+        display:flex;
+        justify-content: center;
+        align-items:center;
+        margin-bottom:20px;
+        font-size: 1.4em;
+        text-transform: capitalize;
+      }
+      div table {
+        text-align: center;
+      }
+      
+      div table tbody tr td {
+        cursor:pointer;
+        outline:0;
+        border:0;
+        background:transparent;
+        justify-self:center;
+        align-self:center;
+        border-radius:50px;
+        margin:2px;
+        transition-duration:.2s;
+        
+        &.today {
+          box-shadow:inset 0px 0px 0px 2px var(--md-sys-color-secondary);
+        }
+        &.active {
+          color: var(--md-sys-color-on-primary);
+          background: var(--md-sys-color-secondary);
+        }
       }
     `
   ]
 
   connectedCallback() {
-    const selectMonth = this.shadowRoot.querySelector('#selectmonth') as HTMLSelectElement
-    let i = new Date().getMonth()
-    selectMonth[i].setAttribute('selected','')
-    this.shadowRoot.addEventListener('change', ({ detail }: CustomEvent) => {
-      this.renderCalendar()
-    })
     this.renderCalendar()
+    this.shadowRoot.addEventListener('click', this.#clickHandler)
+  }
+
+  #clickHandler = (event) => {
+    console.log(event.target.getAttribute('date'))
+    let splitted = event.target.getAttribute('date').split('-')
+    console.log(this.planning)
   }
 
   renderCalendar() {
-    const selectMonth = this.shadowRoot.querySelector('#selectmonth') as HTMLSelectElement
-    const selectYear = this.shadowRoot.querySelector('#selectyear') as HTMLSelectElement
-    let selectedYear = Number(selectYear.value)
-    let selectedMonth = selectMonth.selectedIndex
-    
-    let firstDay = (new Date(selectedYear, selectedMonth)).getDay()
-    let amountDays = (new Date(selectedYear, selectedMonth + 1, 0)).getDate()
-    const calendarBody: HTMLTableElement = this.shadowRoot.querySelector('#calendarbody')
-    calendarBody.innerHTML=""
-    let day = 1
-    let value = ''
-    for (let rowIterator = 0; rowIterator < 6; rowIterator++) {
-      var row =  calendarBody.insertRow()
-      for (let cellIterated = 0; cellIterated < 7 && day <= amountDays; cellIterated++) {
-        var cell = row.insertCell()
-        if (rowIterator !== 0 || cellIterated >= firstDay) {
-          value = day.toString()
-          day++
+    for (let year = 0; year < 12; year++) {
+      var calendar: HTMLDivElement
+      calendar = document.createElement('div')
+      var table: HTMLTableElement
+      table = document.createElement('table')
+      var tHead = table.createTHead()
+      tHead.insertAdjacentHTML('beforeend','<tr><th>M</th><th>D</th><th>W</th><th>D</th><th>V</th><th>Z</th><th>Z</th></tr>')
+      var tBody = table.createTBody()
+      let today = new Date()
+      let date = new Date()
+      date = new Date(date.setMonth(today.getMonth()+year))
+      let selectedYear = date.getFullYear()
+      let selectedMonth = date.getMonth()
+      calendar.insertAdjacentHTML('beforeend','<span>' + 
+                                  date.toLocaleString('nl-BE', { month: 'long' }) + 
+                                  ' ' + 
+                                  selectedYear +
+                                  '</span>'
+                                  )
+      let firstDay = (new Date(selectedYear, selectedMonth)).getDay() - 1
+      if (firstDay === -1 ) firstDay = 6
+      let amountDays = (new Date(selectedYear, selectedMonth + 1, 0)).getDate()
+      let day = 1
+      let value = ''
+      for (let rowIterator = 0; rowIterator < 6; rowIterator++) {
+        var row =  tBody.insertRow()
+        for (let cellIterated = 0; cellIterated < 7 && day <= amountDays; cellIterated++) {
+          var cell = row.insertCell()
+          if (rowIterator !== 0 || cellIterated >= firstDay) {
+            if (day === today.getDate() && selectedMonth === today.getMonth()) cell.classList.add('today')
+            value = day.toString()
+            cell.setAttribute('date', selectedYear + '-' + (selectedMonth + 1) + '-' + day)
+            day++
+          }
+          const cellText = document.createTextNode(value)
+          cell.appendChild(cellText)
         }
-        const cellText = document.createTextNode(value)
-        cell.appendChild(cellText)
       }
+      tBody.appendChild(row)
+      calendar.appendChild(table)
+      this.shadowRoot.querySelector('#calslot').appendChild(calendar)
     }
-    calendarBody.appendChild(row)
   }
 
   render() {
     return html`
-    <select id="selectmonth" placeholder="${new Date().getMonth()}">
-      <option name="Januari" value="0">Januari</option>
-      <option name="Februari" value="1">Februari</option>
-      <option name="Maart" value="2">Maart</option>
-      <option name="April" value="3">April</option>
-      <option name="Mei" value="4">Mei</option>
-      <option name="Juni" value="5">Juni</option>
-      <option name="Juli" value="6">Juli</option>
-      <option name="Augustus" value="7">Augustus</option>
-      <option name="September" value="8">September</option>
-      <option name="Oktober" value="9">Oktober</option>
-      <option name="November" value="10">November</option>
-      <option name="December" value="12">December</option>
-    </select>
-    <select id="selectyear" placeholder="${new Date().getFullYear()}">
-      <option value="2024">2024</option>
-      <option value="2025">2025</option>
-    </select>
-    <table id="calendar">
-      <thead>
-          <tr>
-              <th>M</th>
-              <th>D</th>
-              <th>W</th>
-              <th>D</th>
-              <th>V</th>
-              <th>Z</th>
-              <th>Z</th>
-          </tr>
-      </thead>
-      <tbody id="calendarbody"></tbody>
-    </table>
+    <flex-container direction='row' id='calslot'></flex-container>
     `
   }
 }
