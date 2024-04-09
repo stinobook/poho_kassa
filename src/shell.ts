@@ -163,15 +163,17 @@ export class PoHoShell extends LiteElement {
        if (!(this.planning).hasOwnProperty(key)) {
         this.planning[key] = val
       } 
-      this.planning = {...this.planning}
     })
     firebase.onChildChanged(`planning`, async (snap) => {
       const key = await snap.key
       const val = await snap.val()
-      console.log(key)
-      console.log(val)
+      if ((this.planning).hasOwnProperty(key)) {
+       this.planning[key] = val
+     } 
     })
     firebase.onChildRemoved(`planning`, async (snap) => {
+      const key = await snap.key
+      delete this.planning[key]
     })
   }
   setupAttendanceListener() {
