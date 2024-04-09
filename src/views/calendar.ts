@@ -1,8 +1,15 @@
-import { html, css, LiteElement } from '@vandeurenglenn/lite'
+import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
+import '@vandeurenglenn/flex-elements/container.js'
+import { Member } from '../types.js'
 
 @customElement('calendar-view')
 export class CalendarView extends LiteElement {
+  @property({ type: Object, consumer: true })
+  accessor planning = {}
+  @property({ type: Array, consumer: true })
+  accessor members: { [group: string]: Member[] }
+
   static styles = [
     css`
       :host {
@@ -16,9 +23,29 @@ export class CalendarView extends LiteElement {
     `
   ]
 
+  selectUser() {
+    return Object.entries(this.members).map(
+      ([group, members]) =>
+      members?.length > 0
+        ? html`
+          <select id="selectuser">
+            ${members.map(
+              (member) =>
+                html`
+                  <option value=${member.key}> ${member.name} ${member.lastname}</option>
+                `
+            )}
+          </select>
+        `
+        : ''
+    )
+  }
+
   render() {
     return html`
-      <h1>Work in progress...</h1>
+    <flex-container>
+    ${this.members ? this.selectUser() : ''}
+    </flex-container>
     `
   }
 }

@@ -5,9 +5,8 @@ import { scrollbar } from '../mixins/styles.js'
 
 @customElement('planning-view')
 export class PlanningView extends LiteElement {
-
   @property({ type: Object, consumer: true })
-  accessor planning = {}
+  accessor planning
 
   static styles = [
     css`
@@ -61,9 +60,8 @@ export class PlanningView extends LiteElement {
         border-radius:50px;
         transition-duration:.2s;
         padding: 5px;
-        
         &.today {
-          box-shadow:inset 0px 0px 0px 2px var(--md-sys-color-secondary);
+          border:2px solid var(--md-sys-color-secondary-container);
         }
         &.active {
           color: var(--md-sys-color-on-primary);
@@ -74,7 +72,6 @@ export class PlanningView extends LiteElement {
   ]
 
   connectedCallback() {
-    this.renderCalendar()
     this.shadowRoot.addEventListener('click', this.#clickHandler)
   }
 
@@ -82,6 +79,14 @@ export class PlanningView extends LiteElement {
     if (event.target.getAttribute('date')) {
       let splitted = event.target.getAttribute('date').split('-')
       this.handlePlanning(splitted[0], splitted[1], splitted[2])
+    }
+  }
+
+
+  async onChange(propertyKey: any, value: any) {
+    console.log({ propertyKey, value })
+    if (propertyKey === 'planning') {
+      (this.planning) ? this.renderCalendar() : '' ;
     }
   }
 

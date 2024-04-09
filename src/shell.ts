@@ -487,12 +487,15 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('promo')) this.setupPromoListener()
     } else if (selected === 'categories' || selected === 'add-product' || selected === 'add-event') {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
-    } else if (selected === 'members' || selected === 'add-member' || selected === 'bookkeeping') {
+    } else if (selected === 'members' || selected === 'add-member' || selected === 'bookkeeping' ) {
       if (!this.#listeners.includes('members')) this.setupMembersListener()
     } else if (selected === 'events') {
       if (!this.#listeners.includes('events')) this.setupEventsListener()
-    } else if (selected === 'planning' || selected === 'calendar') {
+    } else if (selected === 'planning') {
       if (!this.#listeners.includes('planning')) this.setupPlanningListener()
+    } else if (selected === 'calendar') {
+      if (!this.#listeners.includes('planning')) this.setupPlanningListener()
+      if (!this.#listeners.includes('members')) this.setupMembersListener()
     }
     this.drawerLayout.drawerOpen = false
   }
