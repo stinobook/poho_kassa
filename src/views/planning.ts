@@ -6,7 +6,7 @@ import { scrollbar } from '../mixins/styles.js'
 @customElement('planning-view')
 export class PlanningView extends LiteElement {
 
-  @property()
+  @property({ type: Object, consumer: true })
   accessor planning = {}
 
   static styles = [
@@ -22,13 +22,13 @@ export class PlanningView extends LiteElement {
       ${scrollbar}
 
       flex-container {
-        min-width: 100%;
-        height: 100%;
         gap: 24px;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-content: flex-start;
         overflow-y: auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        grid-auto-rows: min-content;
+        height: 100%;
+        min-width: 100%;
       }
       div {
         background-color: var(--md-sys-color-surface-container-high);
@@ -36,7 +36,6 @@ export class PlanningView extends LiteElement {
         border-radius: var(--md-sys-shape-corner-extra-large);
         padding: 20px;
         align-self: stretch;
-        width: 20%;
         display: flex;
         flex-direction: column;
       }
@@ -50,18 +49,18 @@ export class PlanningView extends LiteElement {
       }
       div table {
         text-align: center;
+        border-spacing: 10px;
       }
-      
+
       div table tbody tr td {
         cursor:pointer;
         outline:0;
         border:0;
-        background:transparent;
         justify-self:center;
         align-self:center;
         border-radius:50px;
-        margin:2px;
         transition-duration:.2s;
+        padding: 5px;
         
         &.today {
           box-shadow:inset 0px 0px 0px 2px var(--md-sys-color-secondary);
@@ -87,12 +86,29 @@ export class PlanningView extends LiteElement {
   }
 
   handlePlanning(year, month, day) {
-    if (!this.planning[year]) this.planning = this.planning[year][month] = day
+    let date = this.shadowRoot.querySelector('[date="' + year + '-' + month + '-' + day + '"]')
+    if (!(this.planning).hasOwnProperty(year) || !(this.planning[year]).hasOwnProperty(month)) {
+      this.planning[year] = {
+        ...this.planning[year],
+        [month]:[day]
+      }
+      date.classList.add('active')
+    } else {
+      let i = this.planning[year][month].indexOf(day)
+      if (i > -1) {
+        this.planning[year][month].splice(i, 1)
+        date.classList.remove('active')
+      } else {
+        this.planning[year][month].push(day)
+        date.classList.add('active')
+      }
+    }
+    firebase.set('planning/' + [year] + '/' + [month], this.planning[year][month])
     console.log(this.planning)
   }
 
   renderCalendar() {
-    for (let year = 0; year < 12; year++) {
+    for (let year = 0; year < 6; year++) {
       var calendar: HTMLDivElement
       calendar = document.createElement('div')
       var table: HTMLTableElement
@@ -134,11 +150,19 @@ export class PlanningView extends LiteElement {
       calendar.appendChild(table)
       this.shadowRoot.querySelector('#calslot').appendChild(calendar)
     }
+    for (const [year, value] of Object.entries(this.planning)) {
+      for (const [month, days] of Object.entries(value)) {
+        for (const day of days) {
+          let date = this.shadowRoot.querySelector('[date="' + year + '-' + month + '-' + day + '"]')
+          date.classList.add('active')
+        }
+      }
+    }
   }
 
   render() {
     return html`
-    <flex-container direction='row' id='calslot'></flex-container>
+    <flex-container id='calslot'></flex-container>
     `
   }
 }

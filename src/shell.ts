@@ -71,7 +71,7 @@ export class PoHoShell extends LiteElement {
   accessor payconiqTransactions = []
 
   @property({ provider: true, batchDelay: 70 })
-  accessor planning = []
+  accessor planning = {}
 
   @property()
   accessor attendanceDate = new Date().toISOString().slice(0, 10)
@@ -153,6 +153,25 @@ export class PoHoShell extends LiteElement {
       if (this.promo[key]) {
         delete this.promo[key]
       }
+    })
+  }
+  setupPlanningListener() {
+    this.#listeners.push('planning')
+    firebase.onChildAdded(`planning`, async (snap) => {
+      const key = await snap.key
+      const val = await snap.val()
+       if (!(this.planning).hasOwnProperty(key)) {
+        this.planning[key] = val
+      } 
+      this.planning = {...this.planning}
+    })
+    firebase.onChildChanged(`planning`, async (snap) => {
+      const key = await snap.key
+      const val = await snap.val()
+      console.log(key)
+      console.log(val)
+    })
+    firebase.onChildRemoved(`planning`, async (snap) => {
     })
   }
   setupAttendanceListener() {
@@ -470,6 +489,8 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('members')) this.setupMembersListener()
     } else if (selected === 'events') {
       if (!this.#listeners.includes('events')) this.setupEventsListener()
+    } else if (selected === 'planning' || selected === 'calendar') {
+      if (!this.#listeners.includes('planning')) this.setupPlanningListener()
     }
     this.drawerLayout.drawerOpen = false
   }
