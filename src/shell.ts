@@ -163,7 +163,7 @@ export class PoHoShell extends LiteElement {
       const planning = this.planning ?? {}
       if (!planning[key]) {
         planning[key] = val
-        this.planning = planning
+        this.planning = { ...planning }
       }
       
     })
@@ -172,7 +172,7 @@ export class PoHoShell extends LiteElement {
       const val = await snap.val()
       const planning = this.planning ?? {}
       planning[key] = val
-      this.planning = planning
+      this.planning = {...planning}
     })
     firebase.onChildRemoved(`planning`, async (snap) => {
       const key = await snap.key
@@ -180,7 +180,7 @@ export class PoHoShell extends LiteElement {
       const planning = this.planning ?? {}
       if (planning[key]) {        
         delete planning[key]
-        this.planning = planning
+        this.planning = { ...planning }
       }
       
     })
