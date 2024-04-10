@@ -27,11 +27,11 @@ export class CalendarYear extends LiteElement {
   static styles?: StyleList = [
     css`
       :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
         width: 100%;
-        height: 100%;
+        padding-bottom: 24px;
         box-sizing: border-box;
-        padding: 24px;
       }
 
       h2 {
@@ -40,7 +40,6 @@ export class CalendarYear extends LiteElement {
 
       flex-container {
         gap: 24px;
-        overflow-y: auto;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(350px, 470px));
         grid-auto-rows: min-content;
@@ -48,7 +47,7 @@ export class CalendarYear extends LiteElement {
         min-width: 100%;
         justify-content: center;
       }
-
+      
       ${scrollbar}
     `
   ]

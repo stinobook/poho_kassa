@@ -1,7 +1,6 @@
 import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
-import { scrollbar } from '../mixins/styles.js'
 
 import './../components/calendar/calendar-year.js'
 
@@ -19,10 +18,11 @@ export class PlanningView extends LiteElement {
     css`
       :host {
         align-items: center;
-        justify-content: center;
         width: 100%;
         height: 100%;
         display: flex;
+        flex-direction: column;
+        overflow-y: auto;
       }
     `
   ]

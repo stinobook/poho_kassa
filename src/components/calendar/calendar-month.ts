@@ -73,7 +73,6 @@ export class CalendarMonth extends LiteElement {
 
       table {
         text-align: center;
-        border-spacing: 10px;
       }
 
       thead tr th {
@@ -96,8 +95,8 @@ export class CalendarMonth extends LiteElement {
         border-radius: 50px;
         padding: 4px;
         margin: 4px;
-        width: 24px;
-        height: 24px;
+        min-width: 24px;
+        max-height: 24px;
         display: block;
       }
 
@@ -149,7 +148,7 @@ export class CalendarMonth extends LiteElement {
     return html`${this.date && this.month ? html`
     <header>
 
-      ${this.longMonth} ${this.year}
+      ${this.longMonth}
     </header>
 
     <table>
