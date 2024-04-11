@@ -2,6 +2,16 @@
 
 > cash register app
 
+## screenshots
+### sales
+![sales screenshot](./media/sales.webp "Sales image")
+
+### products
+![products screenshot](./media/products.webp "Products image")
+
+### product-edit
+![product-edit screenshot](./media/product-edit.webp "Product-edit image")
+
 ## development
 
 ### watch
