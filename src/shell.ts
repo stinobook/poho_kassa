@@ -358,7 +358,7 @@ export class PoHoShell extends LiteElement {
         i += 1
         if (event.key === val.key) break
       }
-      this.transactions.splice(i)
+      this.transactions.splice(i, 1)
       this.transactions = [...this.transactions]
     })
   }

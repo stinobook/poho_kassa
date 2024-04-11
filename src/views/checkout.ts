@@ -291,6 +291,8 @@ export class CheckoutView extends LiteElement {
         }
 
         this.transactionsByCategory = transactionsByCategory
+      } else { 
+        this.requestRender() 
       }
     }
   }
