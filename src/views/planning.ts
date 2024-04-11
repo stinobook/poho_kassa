@@ -24,6 +24,38 @@ export class PlanningView extends LiteElement {
         flex-direction: column;
         overflow-y: auto;
       }
+
+      select {
+        border: none;
+        outline: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 24px;
+        color: var(--md-sys-color-on-background);
+        background: transparent;
+      }    
+      
+
+      @media(min-width: 860px) {
+
+        flex-container {
+          max-width: 860px;
+        }
+      }
+
+      @media(min-width: 1300px) {
+
+        flex-container {
+          max-width: 1300px;
+        }
+      }
+
+      @media(min-width: 2200px) {
+
+        flex-container {
+          max-width: 2200px;
+        }
+      }
     `
   ]
 
@@ -55,9 +87,14 @@ export class PlanningView extends LiteElement {
     return value
   }
 
-  render() {
-    
+  render() {    
     return html`
+      <flex-container>
+        <select>
+          ${this.planning ? Object.keys(this.planning).map(year => html`<option>${year}</option>`) : ''}
+        </select>
+      </flex-container>
+    
     ${this.planning ? Object.entries(this.planning).map(([year, months]) => html`
       <calendar-year .year=${year} .months=${months}></calendar-year>
     `): ''}
