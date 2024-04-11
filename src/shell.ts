@@ -7,7 +7,6 @@ import '@vandeurenglenn/lite-elements/theme.js'
 import '@vandeurenglenn/lite-elements/selector.js'
 import '@vandeurenglenn/lite-elements/pages.js'
 import '@vandeurenglenn/lite-elements/divider.js'
-import '@vandeurenglenn/lite-elements/theme.js'
 import './components/search.js'
 import icons from './icons.js'
 import Router from './routing.js'
@@ -682,10 +681,10 @@ export class PoHoShell extends LiteElement {
       ${icons}
 
       <md-dialog></md-dialog>
-      <custom-theme loadFont="false"></custom-theme>
+      <custom-theme loadFont="false" mobile-trigger="(max-width: 1200px)"></custom-theme>
       <!-- see https://vandeurenglenn.github.io/custom-elements/ -->
       ${this.renderPayBar()}
-      <custom-drawer-layout appBarType="small">
+      <custom-drawer-layout appBarType="small" mobile-trigger="(max-width: 1200px)">
         <span slot="top-app-bar-title">Poho</span>
         <span slot="top-app-bar-end">${this.renderSearch()}</span>
         <span slot="drawer-headline"> menu </span>
