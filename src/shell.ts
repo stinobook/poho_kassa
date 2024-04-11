@@ -126,7 +126,7 @@ export class PoHoShell extends LiteElement {
         i += 1
         if (event.key === val.key) break
       }
-      this.tabs.splice(i)
+      this.tabs.splice(i, 1)
       this.tabs = [...this.tabs]
     })
   }
