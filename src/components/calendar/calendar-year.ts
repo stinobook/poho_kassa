@@ -2,6 +2,7 @@ import { LiteElement, property, html, customElement } from "@vandeurenglenn/lite
 import './calendar-month.js'
 import { StyleList, css } from "@vandeurenglenn/lite/element";
 import { scrollbar } from './../../mixins/styles.js'
+import '@vandeurenglenn/flex-elements/wrap-between.js'
 
 @customElement('calendar-year')
 export class CalendarYear extends LiteElement {
@@ -11,16 +12,15 @@ export class CalendarYear extends LiteElement {
   @property() accessor active
 
   renderMonths() {
-    console.log(this.year, this.months);
     
     return html`
-      <h2>${this.year}</h2>
-      <flex-container>
+    <flex-container>
+      <flex-wrap-between>
       ${Object.entries(this.months).map(([month, active]) => 
         html`<calendar-month .year=${this.year} .month=${month} .active=${active}></calendar-month>`)
       }
+      </flex-wrap-between>
       </flex-container>
-      
     `
   }
   
@@ -32,6 +32,7 @@ export class CalendarYear extends LiteElement {
         width: 100%;
         padding-bottom: 24px;
         box-sizing: border-box;
+        align-items: center;
       }
 
       h2 {
@@ -39,15 +40,44 @@ export class CalendarYear extends LiteElement {
       }
 
       flex-container {
-        gap: 24px;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 470px));
-        grid-auto-rows: min-content;
         height: 100%;
-        min-width: 100%;
-        justify-content: center;
       }
+
+      flex-wrap-between {
+        gap: 24px;
+      }    
       
+
+      @media(min-width: 860px) {
+        calendar-month {
+          max-width: calc((100% / 2) - 12px)
+        }
+
+        flex-container {
+          max-width: 860px;
+        }
+      }
+
+      @media(min-width: 1300px) {
+        calendar-month {
+          max-width: calc((100% / 3) - 16px)
+        }
+
+        flex-container {
+          max-width: 1300px;
+        }
+      }
+
+      @media(min-width: 2200px) {
+        calendar-month {
+          max-width: calc((100% / 4) - 20px)
+        }
+
+        flex-container {
+          max-width: 2200px;
+        }
+      }
+
       ${scrollbar}
     `
   ]

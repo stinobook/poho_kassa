@@ -56,10 +56,11 @@ export class CalendarMonth extends LiteElement {
         color: var(--md-sys-color-on-surface-container-high);
         border-radius: var(--md-sys-shape-corner-extra-large);
         padding: 20px;
+        box-sizing: border-box;
         align-self: stretch;
         display: flex;
         flex-direction: column;
-        max-width: 470px;
+        width: 100%;
       }
 
       header {
