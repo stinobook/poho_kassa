@@ -659,6 +659,24 @@ export class PoHoShell extends LiteElement {
             margin-bottom: var(--paybarheight);
           }
         }
+
+        /* Temporary dividers, for organising account access */
+        .divider {
+          display: flex;
+          flex-direction: row;
+          pointer-events: auto;
+        }
+          .divider:before,
+          .divider:after {
+            content: "";
+            flex: 1 1;
+            border-bottom: 1px solid;
+            margin: auto 10px;
+          }
+          custom-selector {
+            margin-bottom: 125px
+          }
+          /* end temporary styles */
       </style>
       <!-- just cleaner -->
       ${icons}
@@ -672,19 +690,21 @@ export class PoHoShell extends LiteElement {
         <span slot="top-app-bar-end">${this.renderSearch()}</span>
         <span slot="drawer-headline"> menu </span>
         <custom-selector attr-for-selected="route" slot="drawer-content" @selected=${this.selectorSelected.bind(this)}>
+          <h2 class="divider">Kassa</h2>
           <custom-drawer-item route="sales"> Verkoop </custom-drawer-item>
           <custom-drawer-item route="checkout"> Afsluit </custom-drawer-item>
           <custom-drawer-item route="attendance"> Aanwezigheidslijst </custom-drawer-item>
-          <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="products"> Producten </custom-drawer-item>
           <custom-drawer-item route="categories"> Categorieën </custom-drawer-item>
+          <h2 class="divider">Kristel - Ann</h2>
+          <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
+          <h2 class="divider">Leden</h2>
+          <custom-drawer-item route="calendar"> Kalender </custom-drawer-item>
+          <h2 class="divider">Stijn</h2>
           <custom-drawer-item route="events"> Evenementinstellingen </custom-drawer-item>
           <custom-drawer-item route="members"> Leden </custom-drawer-item>
-          <custom-divider middle-inset></custom-divider>
-          <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
-          <custom-divider middle-inset></custom-divider>
-          <custom-drawer-item route="calendar"> Kalender </custom-drawer-item>
           <custom-drawer-item route="planning"> Planning </custom-drawer-item>
+          <custom-drawer-item route="users"> Gebruikers </custom-drawer-item>
           <custom-drawer-item route="logout" class="logout"> Uitloggen </custom-drawer-item>
         </custom-selector>
 
@@ -702,6 +722,7 @@ export class PoHoShell extends LiteElement {
           <products-view route="products"> </products-view>
           <calendar-view route="calendar"> </calendar-view>
           <planning-view route="planning"> </planning-view>
+          <users-view route="users"> </users-view>
           <add-product-view route="add-product"> </add-product-view>
           <add-member-view route="add-member"> </add-member-view>
         </custom-pages>
