@@ -250,7 +250,7 @@ export class PoHoShell extends LiteElement {
         i += 1
         if (event.key === val.key) break
       }
-      this.members.splice(i)
+      this.members.splice(i, 1)
       this.members = [...this.members]
     })
   }
@@ -290,7 +290,7 @@ export class PoHoShell extends LiteElement {
         i += 1
         if (event.key === val.key) break
       }
-      this.products.splice(i)
+      this.products.splice(i, 1)
       this.products = [...this.products]
     })
   }
@@ -401,7 +401,7 @@ export class PoHoShell extends LiteElement {
         if (event.paymentId === val.paymentId) break
       }
       this.salesView.payconiqPaymentChange(val)
-      this.payconiqTransactions.splice(i)
+      this.payconiqTransactions.splice(i, 1)
       this.payconiqTransactions = [...this.payconiqTransactions]
     })
   }
@@ -442,7 +442,7 @@ export class PoHoShell extends LiteElement {
         if (event.key === val.key) break
       }
 
-      this.events.splice(i)
+      this.events.splice(i, 1)
       this.events = [...this.events]
     })
   }
