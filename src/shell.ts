@@ -495,7 +495,7 @@ export class PoHoShell extends LiteElement {
       if (!this.#listeners.includes('promo')) this.setupPromoListener()
     } else if (selected === 'categories' || selected === 'add-product' || selected === 'add-event') {
       if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
-    } else if (selected === 'members' || selected === 'add-member' || selected === 'bookkeeping' ) {
+    } else if (selected === 'members' || selected === 'add-member' || selected === 'bookkeeping' || selected === 'users') {
       if (!this.#listeners.includes('members')) this.setupMembersListener()
     } else if (selected === 'events') {
       if (!this.#listeners.includes('events')) this.setupEventsListener()

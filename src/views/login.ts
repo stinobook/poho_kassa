@@ -1,11 +1,11 @@
-import { html, css, LiteElement, query } from '@vandeurenglenn/lite'
+import { html, css, LiteElement, query, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@material/web/button/filled-button.js'
 import '@material/web/button/outlined-button.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@vandeurenglenn/lite-elements/typography.js'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, isSignInWithEmailLink, signInWithEmailLink, updatePassword } from 'firebase/auth'
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
 
 @customElement('login-view')
@@ -16,6 +16,9 @@ export class LoginView extends LiteElement {
   @query('md-outlined-text-field[label="password"]')
   accessor password: MdOutlinedTextField
 
+  @property({ type: Object })
+  accessor auth = firebase.auth
+
   cancel() {
     this.email.value = null
     this.password.value = null
@@ -24,8 +27,13 @@ export class LoginView extends LiteElement {
   async login() {
     const email = this.email.value
     const password = this.password.value
-    const auth = getAuth()
-    await signInWithEmailAndPassword(auth, email, password)
+    if (isSignInWithEmailLink(this.auth, window.location.href)) {
+      await signInWithEmailLink(this.auth, email, window.location.href)
+      location.href = location.href.split('index')[0]
+      await updatePassword(this.auth.currentUser, password)
+    } else {
+      await signInWithEmailAndPassword(this.auth, email, password)
+    }
   }
 
   static styles = [
@@ -75,34 +83,41 @@ export class LoginView extends LiteElement {
     `
   ]
 
+  renderLogin() {
+      return html`
+      <h3><custom-typography>Welcome Back</custom-typography></h3>
+      <custom-typography size="medium"><h4>Login To Continue</h4></custom-typography>
+      <form>
+        <md-outlined-text-field
+          label="email"
+          type="email"
+          placeholder="email@domain.com"
+          autocomplete="email"
+          name="email"
+        >
+        </md-outlined-text-field>
+        <md-outlined-text-field
+          label="password"
+          type="password"
+          autocomplete="current-password"
+          name="current-password"
+        >
+        </md-outlined-text-field>
+      </form>
+      <flex-row>
+        <md-outlined-button @click=${this.cancel.bind(this)}>cancel</md-outlined-button>
+        <flex-it></flex-it>
+        <md-filled-button @click=${this.login.bind(this)}>login</md-filled-button>
+      </flex-row>
+      `
+
+  }
+
   render() {
-    return html`
-      <flex-container>
-        <h3><custom-typography>Welcome Back</custom-typography></h3>
-        <custom-typography size="medium"><h4>Login To Continue</h4></custom-typography>
-        <form>
-          <md-outlined-text-field
-            label="email"
-            type="email"
-            placeholder="email@domain.com"
-            autocomplete="email"
-            name="email"
-          >
-          </md-outlined-text-field>
-          <md-outlined-text-field
-            label="password"
-            type="password"
-            autocomplete="current-password"
-            name="current-password"
-          >
-          </md-outlined-text-field>
-        </form>
-        <flex-row>
-          <md-outlined-button @click=${this.cancel.bind(this)}>cancel</md-outlined-button>
-          <flex-it></flex-it>
-          <md-filled-button @click=${this.login.bind(this)}>login</md-filled-button>
-        </flex-row>
-      </flex-container>
+    return html` 
+    <flex-container>
+    ${this.renderLogin()}
+    </flex-container>
     `
   }
 }
