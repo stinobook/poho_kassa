@@ -160,6 +160,12 @@ export class AddMemberView extends LiteElement {
     location.hash = Router.bang('add-member')
   }
 
+  async _uploadImage(target: 'userphotobgURL' | 'userphotoURL') {
+    const result = await this.dialog.addImage()
+    console.log(result)
+    if (result.image)
+  }
+
   render() {
     return html`
       <image-selector-dialog></image-selector-dialog>
@@ -168,7 +174,7 @@ export class AddMemberView extends LiteElement {
         <flex-column>
           <flex-column>
             <label><custom-typography>Lid</custom-typography></label>
-            <img name="userphotobgURL" @click=${() => this.dialog.addImage('userphotobgURL')} />
+            <img name="userphotobgURL" @click=${() => this._uploadImage('userphotobgURL')} />
           </flex-column>
           <flex-wrap-between>
             <md-outlined-text-field label="Geboortedatum" type="date" name="birthday"></md-outlined-text-field>
@@ -184,7 +190,7 @@ export class AddMemberView extends LiteElement {
         <flex-column>
           <flex-column>
             <label><custom-typography>Baasje</custom-typography></label>
-            <img name="userphotoURL" @click=${() => this.dialog.addImage('userphotoURL')} />
+            <img name="userphotoURL" @click=${() => this._uploadImage('userphotoURL')} />
           </flex-column>
 
           <flex-wrap-between>
