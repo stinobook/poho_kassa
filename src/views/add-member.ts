@@ -33,12 +33,11 @@ export class AddMemberView extends LiteElement {
     }
   }
 
-  @queryAll('[label]')
-  accessor labels
+  @queryAll('[label]') accessor labels
 
   reset() {
     this.params = undefined
-    for (const label of this.labels.filter((item) => item.label)) {
+    for (const label of this.labels.filter(item => item.label)) {
       label.reset()
       if (label.placeholder) {
         label.value = label.placeholder
@@ -163,7 +162,10 @@ export class AddMemberView extends LiteElement {
   async _uploadImage(target: 'userphotobgURL' | 'userphotoURL') {
     const result = await this.dialog.addImage()
     console.log(result)
-    if (result.image)
+
+    if (result.image) {
+      console.log(result.image)
+    }
   }
 
   render() {
@@ -174,47 +176,100 @@ export class AddMemberView extends LiteElement {
         <flex-column>
           <flex-column>
             <label><custom-typography>Lid</custom-typography></label>
-            <img name="userphotobgURL" @click=${() => this._uploadImage('userphotobgURL')} />
+            <img
+              name="userphotobgURL"
+              @click=${() => this._uploadImage('userphotobgURL')} />
           </flex-column>
           <flex-wrap-between>
-            <md-outlined-text-field label="Geboortedatum" type="date" name="birthday"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Geboortedatum"
+              type="date"
+              name="birthday"></md-outlined-text-field>
 
-            <md-outlined-text-field label="naam" name="dogname"></md-outlined-text-field>
-            <md-outlined-text-field label="ras" name="dograce"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="naam"
+              name="dogname"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="ras"
+              name="dograce"></md-outlined-text-field>
 
-            <md-outlined-text-field label="Stamboomnummer" name="pedigree"></md-outlined-text-field>
-            <md-outlined-text-field label="Chipnummer" name="chipnumber"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Stamboomnummer"
+              name="pedigree"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Chipnummer"
+              name="chipnumber"></md-outlined-text-field>
           </flex-wrap-between>
         </flex-column>
 
         <flex-column>
           <flex-column>
             <label><custom-typography>Baasje</custom-typography></label>
-            <img name="userphotoURL" @click=${() => this._uploadImage('userphotoURL')} />
+            <img
+              name="userphotoURL"
+              @click=${() => this._uploadImage('userphotoURL')} />
           </flex-column>
 
           <flex-wrap-between>
-            <md-outlined-text-field label="Voornaam" name="name" required></md-outlined-text-field>
-            <md-outlined-text-field label="Naam" name="lastname" required></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Voornaam"
+              name="name"
+              required></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Naam"
+              name="lastname"
+              required></md-outlined-text-field>
 
-            <md-outlined-select label="Groep" name="group" required>
-              <md-select-option value="Bestuur" headline="bestuur">Bestuur</md-select-option>
-              <md-select-option value="Instructeurs" headline="instructeurs">Instructeurs</md-select-option>
-              <md-select-option value="Leden" headline="leden">Leden</md-select-option>
+            <md-outlined-select
+              label="Groep"
+              name="group"
+              required>
+              <md-select-option
+                value="Bestuur"
+                headline="bestuur"
+                >Bestuur</md-select-option
+              >
+              <md-select-option
+                value="Instructeurs"
+                headline="instructeurs"
+                >Instructeurs</md-select-option
+              >
+              <md-select-option
+                value="Leden"
+                headline="leden"
+                >Leden</md-select-option
+              >
             </md-outlined-select>
-            <md-outlined-text-field label="Functie" name="title" required></md-outlined-text-field>
-            <md-outlined-text-field label="Straat + huisnummer" name="street"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Functie"
+              name="title"
+              required></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Straat + huisnummer"
+              name="street"></md-outlined-text-field>
 
-            <md-outlined-text-field label="Gemeente" name="community"></md-outlined-text-field>
-            <md-outlined-text-field label="Postcode" name="postalcode"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Gemeente"
+              name="community"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Postcode"
+              name="postalcode"></md-outlined-text-field>
 
-            <md-outlined-text-field label="Telefoonnummer" name="phone"></md-outlined-text-field>
-            <md-outlined-text-field label="E-mail adres" name="email"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Telefoonnummer"
+              name="phone"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="E-mail adres"
+              name="email"></md-outlined-text-field>
           </flex-wrap-between>
         </flex-column>
       </flex-container>
-      <md-fab @click=${this.back.bind(this)} class="back"
-        ><custom-icon slot="icon" icon="arrow_back"></custom-icon
+      <md-fab
+        @click=${this.back.bind(this)}
+        class="back"
+        ><custom-icon
+          slot="icon"
+          icon="arrow_back"></custom-icon
       ></md-fab>
       <md-fab @click=${this.save.bind(this)}><custom-icon slot="icon">save</custom-icon></md-fab>
     `

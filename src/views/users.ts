@@ -8,12 +8,12 @@ import { Member, User } from '../types.js'
 
 @customElement('users-view')
 export class UsersView extends LiteElement {
-  @property({ type: Object, consumer: true })
-  accessor members: { Type: Member }
-  @property({ consumer: true })
-  accessor users: User[]
-  @query('input[label="email"]')
-  accessor email: HTMLInputElement
+  @property({ type: Object, consumer: true }) accessor members: { Type: Member }
+
+  @property({ consumer: true }) accessor users: User[]
+
+  @query('input[label="email"]') accessor email: HTMLInputElement
+
   @property()
   accessor editUser: String
 
@@ -27,7 +27,7 @@ export class UsersView extends LiteElement {
         display: flex;
         flex-direction: column;
       }
-      flex-container{
+      flex-container {
         gap: 24px;
         align-items: stretch;
       }
@@ -92,14 +92,14 @@ export class UsersView extends LiteElement {
   async test() {
     console.log(this.users)
   }
-  
+
   renderUsers() {
     return Object.values(this.users).map(
-      (user) =>
+      user =>
         html`
           <div key=${user.key}>
             <span class="start">${user.email}</span>
-            ${(user.key) ? html` <span class="end"> ${user.member} </span>`: '' }
+            ${user.key ? html` <span class="end"> ${user.member} </span>` : ''}
           </div>
         `
     )
@@ -107,7 +107,7 @@ export class UsersView extends LiteElement {
 
   connectedCallback() {
     let dialogEdit = this.shadowRoot.querySelector('custom-dialog.dialogEdit') as HTMLDialogElement
-    dialogEdit.addEventListener('close', (event) => {
+    dialogEdit.addEventListener('close', event => {
       this.edit({ event })
     })
     this.shadowRoot.querySelector('.userlist').addEventListener('click', this.#clickHandler.bind(this))
@@ -116,7 +116,7 @@ export class UsersView extends LiteElement {
     this.shadowRoot.removeEventListener('click', this.#clickHandler.bind(this))
   }
 
-  #clickHandler = (event) => {
+  #clickHandler = event => {
     const key = event.target.getAttribute('key')
     if (!key) return
     this.editUser = key
@@ -125,39 +125,43 @@ export class UsersView extends LiteElement {
     dialogEdit.open = true
   }
 
-  edit({event}) {
+  edit({ event }) {
     if (event.detail === 'cancel' || event.detail === 'close') return
   }
 
   render() {
     return html`
-    <flex-container>
-      <flex-row>
-      <span class="title">Send invite</span>
-      <span class="actioninput">
-        <input 
-          label="email"
-          type="email"
-          placeholder="email@domain.com"
-          autocomplete="email"
-          name="email" />
-        <custom-button @click=${this.sendInvite.bind(this)} label="Send"></custom-button>
-      </span>
-      </flex-row>
-      <flex-row>
-        <span class="title">Userlist</span>
-        <span  class="userlist">
-        ${this.users ? this.renderUsers() : ''}
-        </span>
-      </flex-row>
-      <custom-dialog class="dialogEdit">
-        <span slot="title">${this.editUser}</span>
-        <flex-wrap-between slot="actions">
-          <custom-button action="save" label="Save"></custom-button>
-        </flex-wrap-between>
-      </custom-dialog>
-      <custom-button @click=${this.test.bind(this)} label="test()"></custom-button>
-    </flex-container>
+      <flex-container>
+        <flex-row>
+          <span class="title">Send invite</span>
+          <span class="actioninput">
+            <input
+              label="email"
+              type="email"
+              placeholder="email@domain.com"
+              autocomplete="email"
+              name="email" />
+            <custom-button
+              @click=${this.sendInvite.bind(this)}
+              label="Send"></custom-button>
+          </span>
+        </flex-row>
+        <flex-row>
+          <span class="title">Userlist</span>
+          <span class="userlist"> ${this.users ? this.renderUsers() : ''} </span>
+        </flex-row>
+        <custom-dialog class="dialogEdit">
+          <span slot="title">${this.editUser}</span>
+          <flex-wrap-between slot="actions">
+            <custom-button
+              action="save"
+              label="Save"></custom-button>
+          </flex-wrap-between>
+        </custom-dialog>
+        <custom-button
+          @click=${this.test.bind(this)}
+          label="test()"></custom-button>
+      </flex-container>
     `
   }
 }

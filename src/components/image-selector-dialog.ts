@@ -219,10 +219,6 @@ export class ImageSelectorDialog extends LiteElement {
   }
 
   select(value) {
-    console.log(value)
-
-    console.log(this)
-
     this.selector.select(value)
   }
 
@@ -254,25 +250,25 @@ export class ImageSelectorDialog extends LiteElement {
         ${this.hasLibrary
           ? html`
               <custom-tab route="library">
-                <custom-icon>photo_library</custom-icon>
+                <custom-icon icon="photo_library"></custom-icon>
                 <span>library</span>
               </custom-tab>
             `
           : ''}
         <custom-tab route="url">
-          <custom-icon>link</custom-icon>
+          <custom-icon icon="link"></custom-icon>
           <span>url</span>
         </custom-tab>
         <flex-it flex="1"></flex-it>
 
         <custom-tab route="camera">
-          <custom-icon>camera</custom-icon>
+          <custom-icon icon="camera"></custom-icon>
           <span>camera</span>
         </custom-tab>
         <flex-it flex="1"></flex-it>
 
         <custom-tab route="file">
-          <custom-icon>upload</custom-icon>
+          <custom-icon icon="upload"></custom-icon>
           <span>file</span>
         </custom-tab>
         <flex-it flex="2"></flex-it>
