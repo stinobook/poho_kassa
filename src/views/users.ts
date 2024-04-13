@@ -80,6 +80,9 @@ export class UsersView extends LiteElement {
         color: var(--md-sys-color-on-primary-container);
         padding: 12px;
       }
+      .end {
+        float: right;
+      }
     `
   ]
 
@@ -90,7 +93,17 @@ export class UsersView extends LiteElement {
   }
 
   async test() {
-    console.log(this.users)
+    let test = Object.values(this.members).filter((member) => member.key === '-Nt1tBDUlYUryRq9HpH7')
+    console.log(test)
+  }
+
+  renderMembers() {
+    return Object.values(this.members).map(
+      (member) =>
+        html`
+          <option value=${member.key}>${member.name + ' ' + member.lastname}</option>
+        `
+    )
   }
 
   renderUsers() {
@@ -99,7 +112,13 @@ export class UsersView extends LiteElement {
         html`
           <div key=${user.key}>
             <span class="start">${user.email}</span>
-            ${user.key ? html` <span class="end"> ${user.member} </span>` : ''}
+            ${(user.key) ? html` <span class="end"> ${ (user?.member && user?.member !== 'kassa') ?
+              Object.values(this.members).filter((member) => member.key === user.member)[0]?.name + ' ' + 
+              Object.values(this.members).filter((member) => member.key === user.member)[0]?.lastname
+              : ''
+            } </span>`: '' }
+            ${(user.key) ? html` <span class="end"> ${ (user?.member && user?.member === 'kassa') ? 'Kassa' : ''} </span>`: '' }
+            ${(user.key) ? html` <span class="end"> ${ (!user?.member) ? 'Unlinked' : ''} </span>`: '' }
           </div>
         `
     )
@@ -122,46 +141,55 @@ export class UsersView extends LiteElement {
     this.editUser = key
     this.requestRender()
     let dialogEdit = this.shadowRoot.querySelector('custom-dialog.dialogEdit') as HTMLDialogElement
+    let selected = this.shadowRoot.querySelector('.memberselector') as HTMLSelectElement
+    let member = this.users.filter(user => user.key === this.editUser)[0].member
+    if (member) selected.value = member
     dialogEdit.open = true
   }
 
   edit({ event }) {
     if (event.detail === 'cancel' || event.detail === 'close') return
+    let selected = this.shadowRoot.querySelector('.memberselector') as HTMLSelectElement
+    const updates = {}
+    updates['member'] = selected.value
+    firebase.update('users/' + this.editUser, updates)
   }
 
   render() {
     return html`
-      <flex-container>
-        <flex-row>
-          <span class="title">Send invite</span>
-          <span class="actioninput">
-            <input
-              label="email"
-              type="email"
-              placeholder="email@domain.com"
-              autocomplete="email"
-              name="email" />
-            <custom-button
-              @click=${this.sendInvite.bind(this)}
-              label="Send"></custom-button>
-          </span>
-        </flex-row>
-        <flex-row>
-          <span class="title">Userlist</span>
-          <span class="userlist"> ${this.users ? this.renderUsers() : ''} </span>
-        </flex-row>
-        <custom-dialog class="dialogEdit">
-          <span slot="title">${this.editUser}</span>
-          <flex-wrap-between slot="actions">
-            <custom-button
-              action="save"
-              label="Save"></custom-button>
-          </flex-wrap-between>
-        </custom-dialog>
-        <custom-button
-          @click=${this.test.bind(this)}
-          label="test()"></custom-button>
-      </flex-container>
+    <flex-container>
+      <flex-row>
+      <span class="title">Send invite</span>
+      <span class="actioninput">
+        <input 
+          label="email"
+          type="email"
+          placeholder="email@domain.com"
+          autocomplete="email"
+          name="email" />
+        <custom-button @click=${this.sendInvite.bind(this)} label="Send"></custom-button>
+      </span>
+      </flex-row>
+      <flex-row>
+        <span class="title">Userlist</span>
+        <span  class="userlist">
+        ${this.users ? this.renderUsers() : ''}
+        </span>
+      </flex-row>
+      <custom-dialog class="dialogEdit">
+        <span slot="title">${this.editUser ? this.users.filter(user => user.key === this.editUser)[0].email : ''}</span>
+        <span>Link with user:
+          <select class="memberselector">
+            <option value='kassa'>Kassa</option>
+          ${this.members ? this.renderMembers() : ''}
+          </select>
+        </span>
+        <flex-wrap-between slot="actions">
+          <custom-button action="save" label="Save"></custom-button>
+        </flex-wrap-between>
+      </custom-dialog>
+      <custom-button @click=${this.test.bind(this)} label="test()"></custom-button>
+    </flex-container>
     `
   }
 }
