@@ -38,6 +38,21 @@ if (env.NODE_ENV === 'development') {
     if ("serviceWorker" in navigator) {
       try {
         const registration = await navigator.serviceWorker.register("./sw.js" );
+        console.log(registration);
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          installingWorker.onstatechange = () => {
+            switch (installingWorker.state) {
+              case "installed":
+                if (navigator.serviceWorker.controller) {
+                  // new update available
+                  alert('click ok to update app')
+                  location.reload()
+                }
+                break;
+            }
+          };
+        }
         if (registration.installing) {
           console.log("Service worker installing");
         } else if (registration.waiting) {
@@ -70,7 +85,7 @@ const generateServiceWorker = () => ({
 })
 const cleanBuild = () => ({
   name: 'clean',
-  buildStart: async (dir) => {
+  buildStart: async dir => {
     rimraf('./www/**/*.js', { glob: true })
     rimraf('./www/**/*.d.ts', { glob: true })
   }
