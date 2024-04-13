@@ -6,11 +6,6 @@ import '@vandeurenglenn/lite-elements/button.js'
 import '@vandeurenglenn/lite-elements/dialog.js'
 import { Member, User } from '../types.js'
 
-const actionCodeSettings = {
-  url: 'http://localhost:8080/index.html',
-  handleCodeInApp: true 
-}
-
 @customElement('users-view')
 export class UsersView extends LiteElement {
   @property({ type: Object, consumer: true })
