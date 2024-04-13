@@ -11,6 +11,7 @@ export class UsersView extends LiteElement {
   @property({ type: Object, consumer: true }) accessor members: { Type: Member }
 
   @property({ consumer: true }) accessor users: User[]
+  @property({ consumer: true }) accessor roles
 
   @query('input[label="email"]') accessor email: HTMLInputElement
 
@@ -93,7 +94,7 @@ export class UsersView extends LiteElement {
   }
 
   async test() {
-    let test = Object.values(this.members).filter((member) => member.key === '-Nt1tBDUlYUryRq9HpH7')
+    let test = this.roles
     console.log(test)
   }
 

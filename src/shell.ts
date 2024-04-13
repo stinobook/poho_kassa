@@ -57,6 +57,8 @@ export class PoHoShell extends LiteElement {
 
   @property({ provides: true, batchDelay: 70 }) accessor users
 
+  @property({ provides: true }) accessor roles
+
   @property() accessor attendanceDate = new Date().toISOString().slice(0, 10)
 
   @query('custom-drawer-layout') accessor drawerLayout: CustomDrawerLayout
@@ -107,6 +109,7 @@ export class PoHoShell extends LiteElement {
     planning: [{ name: 'planning', type: 'object' }],
     calendar: ['members', { name: 'planning', type: 'object' }]
   }
+
 
   setupPropertyProvider(propertyProvider, type = 'array') {
     this.#propertyProviders.push(propertyProvider)
@@ -195,6 +198,7 @@ export class PoHoShell extends LiteElement {
   }
 
   async connectedCallback() {
+    this.roles = Object.keys(PoHoShell.propertyProviders)
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
