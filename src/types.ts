@@ -80,9 +80,9 @@ export enum Group {
 }
 
 export type User = {
-  uid: string,
+  member?: string,
   email: string,
-  key?: string
+  key: string
 }
 
 export type Member = {

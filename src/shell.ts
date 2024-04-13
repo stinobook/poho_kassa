@@ -149,49 +149,6 @@ export class PoHoShell extends LiteElement {
     })
   }
 
-  setupUsersListener() {
-    //this.#listeners.push('users')
-    firebase.onChildAdded('users', async (snap) => {
-      const val = await snap.val()
-      const uid = snap.key
-      val.uid = uid
-      if (!this.users) {
-        this.users = [val]
-      } else if (!this.users.includes(val)) {
-        this.users.push(val)
-      }
-      this.users = [...this.users]
-      console.log(this.users)
-    })
-     firebase.onChildChanged('users', async (snap) => {
-      const val = await snap.val()
-      const uid = snap.key
-      val.uid = uid
-      let i = -1
-
-      for (const event of this.users) {
-        i += 1
-        if (event.uid === val.uid) break
-      }
-      this.users.splice(i, 1, val)
-      this.users = [...this.users]
-      console.log(this.users)
-    })
-    firebase.onChildRemoved('users', async (snap) => {
-      const val = await snap.val()
-      const uid = snap.key
-      val.uid = uid
-      let i = -1
-
-      for (const event of this.users) {
-        i += 1
-        if (event.uid === val.uid) break
-      }
-      this.users.splice(i, 1)
-      this.users = [...this.users]
-      console.log(this.users)
-    })
-  }
 
   #onSearch = (ev) => {
     if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
@@ -221,7 +178,7 @@ export class PoHoShell extends LiteElement {
     members: ['members'],
     'add-member': ['members'],
     bookkeeping: ['members'],
-    users: ['members'],
+    users: ['members', 'users'],
     events: ['events'],
     planning: [{name: 'planning', type: 'object'}],
     calendar: ['members', {name: 'planning', type: 'object'}],

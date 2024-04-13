@@ -97,9 +97,9 @@ export class UsersView extends LiteElement {
     return Object.values(this.users).map(
       (user) =>
         html`
-          <div uid=${user.uid}>
+          <div key=${user.key}>
             <span class="start">${user.email}</span>
-            ${(user.key) ? html` <span class="end"> ${user.key} </span>`: '' }
+            ${(user.key) ? html` <span class="end"> ${user.member} </span>`: '' }
           </div>
         `
     )
@@ -117,9 +117,9 @@ export class UsersView extends LiteElement {
   }
 
   #clickHandler = (event) => {
-    const uid = event.target.getAttribute('uid')
-    if (!uid) return
-    this.editUser = uid
+    const key = event.target.getAttribute('key')
+    if (!key) return
+    this.editUser = key
     this.requestRender()
     let dialogEdit = this.shadowRoot.querySelector('custom-dialog.dialogEdit') as HTMLDialogElement
     dialogEdit.open = true
