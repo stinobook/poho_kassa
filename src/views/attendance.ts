@@ -102,30 +102,35 @@ export class AttendanceView extends LiteElement {
 
   onChange(propertyKey: string, value: any): void {
     if (propertyKey === 'attendance' && Object.keys(this.members)?.length > 0) {
-      this.selectors.forEach((element) => {
+      this.selectors.forEach(element => {
         element.select(value)
       })
     } else if (propertyKey === 'members' && Object.keys(this.attendance)?.length > 0) {
-      this.selectors.forEach((element) => {
+      this.selectors.forEach(element => {
         element.select(this.attendance)
       })
     }
   }
 
   async _onSelected() {
+    if (this.attendanceDate !== new Date().toISOString().slice(0, 10)) {
+      alert(`client session expired, needs reload first`)
+      location.reload()
+      return
+    }
     await firebase.set(
       `attendance/${this.attendanceDate}`,
-      this.currentAttendance.map((el) => el.getAttribute('key'))
+      this.currentAttendance.map(el => el.getAttribute('key'))
     )
-    let attendanceKeys = this.currentAttendance.map((el) => el.getAttribute('key'))
+    let attendanceKeys = this.currentAttendance.map(el => el.getAttribute('key'))
 
     for (const key of attendanceKeys) {
-      if (!(Object.keys(this.promo)).includes(key)) this.promo[key] = true
+      if (!Object.keys(this.promo).includes(key)) this.promo[key] = true
     }
     for (const [key, value] of Object.entries(this.promo)) {
-      if (value && !(attendanceKeys.includes(key))) delete this.promo[key]
+      if (value && !attendanceKeys.includes(key)) delete this.promo[key]
     }
-    await firebase.set('promo',this.promo)
+    await firebase.set('promo', this.promo)
   }
 
   renderMembers() {
@@ -137,16 +142,14 @@ export class AttendanceView extends LiteElement {
               multi
               attr-for-selected="key"
               default-selected="[]"
-              @selected=${this._onSelected.bind(this)}
-            >
+              @selected=${this._onSelected.bind(this)}>
               ${members.map(
-                (member) =>
+                member =>
                   html`
                     <chip-element
                       key=${member.key}
                       .avatar=${member.userphotoURL}
-                      .name=${member.name + ' ' + member.lastname}
-                    >
+                      .name=${member.name + ' ' + member.lastname}>
                     </chip-element>
                   `
               )}
