@@ -21,65 +21,45 @@ export class PoHoShell extends LiteElement {
   #propertyProviders = []
   #inMem
 
-  @query('search-input')
-  accessor _searchInput
+  @query('search-input') accessor _searchInput
 
-  @query('custom-selector')
-  accessor selector: CustomSelector
+  @query('custom-selector') accessor selector: CustomSelector
 
-  @query('custom-pages')
-  accessor pages: CustomPages
+  @query('custom-pages') accessor pages: CustomPages
 
-  @query('sales-view')
-  accessor salesView
+  @query('sales-view') accessor salesView
 
-  @property()
-  accessor selected
+  @property() accessor selected
 
-  @property({ provider: true, batches: true, batchDelay: 70 })
-  accessor products = []
+  @property({ provider: true, batches: true, batchDelay: 70 }) accessor products = []
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor categories = []
+  @property({ provider: true, batchDelay: 70 }) accessor categories = []
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor eventMode = false
+  @property({ provider: true, batchDelay: 70 }) accessor eventMode = false
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor currentEvent: Evenement
+  @property({ provider: true, batchDelay: 70 }) accessor currentEvent: Evenement
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor events = []
+  @property({ provider: true, batchDelay: 70 }) accessor events = []
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor transactions = []
+  @property({ provider: true, batchDelay: 70 }) accessor transactions = []
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor members = []
+  @property({ provider: true, batchDelay: 70 }) accessor members = []
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor attendance = []
+  @property({ provider: true, batchDelay: 70 }) accessor attendance = []
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor promo = {}
+  @property({ provider: true, batchDelay: 70 }) accessor promo = {}
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor tabs = []
+  @property({ provider: true, batchDelay: 70 }) accessor tabs = []
 
-  @property({ provider: true, batchDelay: 70 })
-  accessor payconiqTransactions = []
+  @property({ provider: true, batchDelay: 70 }) accessor payconiqTransactions = []
 
-  @property({ provides: true, batchDelay: 70 })
-  accessor planning
+  @property({ provides: true, batchDelay: 70 }) accessor planning
 
-  @property({ provides: true, batchDelay: 70 })
-  accessor users
+  @property({ provides: true, batchDelay: 70 }) accessor users
 
-  @property()
-  accessor attendanceDate = new Date().toISOString().slice(0, 10)
+  @property() accessor attendanceDate = new Date().toISOString().slice(0, 10)
 
-  @query('custom-drawer-layout')
-  accessor drawerLayout: CustomDrawerLayout
+  @query('custom-drawer-layout') accessor drawerLayout: CustomDrawerLayout
 
   selectorSelected({ detail }: CustomEvent) {
     if (detail === 'logout') {
@@ -92,59 +72,6 @@ export class PoHoShell extends LiteElement {
         location.hash = Router.bang('login')
       }
     }
-  }
-  setupPromoListener() {
-    // this.#listeners.push('promo')
-    firebase.onChildAdded(`promo`, async (snap) => {
-      const key = await snap.key
-      const val = await snap.val()
-      if (!this.promo) {
-        this.promo[key] = val
-      } else if (!this.promo[key]) {
-        this.promo[key] = val
-      }
-    })
-    firebase.onChildChanged(`promo`, async (snap) => {
-      const key = await snap.key
-      const val = await snap.val()
-      if (this.promo[key]) {
-        this.promo[key] = val
-      }
-    })
-    firebase.onChildRemoved(`promo`, async (snap) => {
-      const key = await snap.key
-      if (this.promo[key]) {
-        delete this.promo[key]
-      }
-    })
-  }
-  setupPlanningListener() {
-    // this.#listeners.push('planning')
-    firebase.onChildAdded(`planning`, async (snap) => {
-      const key = await snap.key
-      const val = await snap.val()
-      const planning = this.planning ?? {}
-      if (!planning[key]) {
-        planning[key] = val
-        this.planning = { ...planning }
-      }
-    })
-    firebase.onChildChanged(`planning`, async (snap) => {
-      const key = await snap.key
-      const val = await snap.val()
-      const planning = this.planning ?? {}
-      planning[key] = val
-      this.planning = { ...planning }
-    })
-    firebase.onChildRemoved(`planning`, async (snap) => {
-      const key = await snap.key
-
-      const planning = this.planning ?? {}
-      if (planning[key]) {
-        delete planning[key]
-        this.planning = { ...planning }
-      }
-    })
   }
 
   #onSearch = (ev) => {
