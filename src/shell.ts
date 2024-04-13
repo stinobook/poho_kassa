@@ -128,27 +128,24 @@ export class PoHoShell extends LiteElement {
         planning[key] = val
         this.planning = { ...planning }
       }
-      
     })
     firebase.onChildChanged(`planning`, async (snap) => {
       const key = await snap.key
       const val = await snap.val()
       const planning = this.planning ?? {}
       planning[key] = val
-      this.planning = {...planning}
+      this.planning = { ...planning }
     })
     firebase.onChildRemoved(`planning`, async (snap) => {
       const key = await snap.key
-      
+
       const planning = this.planning ?? {}
-      if (planning[key]) {        
+      if (planning[key]) {
         delete planning[key]
         this.planning = { ...planning }
       }
-      
     })
   }
-
 
   #onSearch = (ev) => {
     if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
@@ -166,22 +163,22 @@ export class PoHoShell extends LiteElement {
     }
   }
 
-  /** 
+  /**
    * collection of the views and there desired providers
    */
   static propertyProviders = {
     products: ['products', 'categories'],
-    sales: ['products', 'categories', 'payconiqTransactions', {name: 'planning', type: 'object'}, 'members', 'tabs'],
+    sales: ['products', 'categories', 'payconiqTransactions', { name: 'planning', type: 'object' }, 'members', 'tabs'],
     checkout: ['transactions', 'members'],
-    attendance: ['attendance', 'members', {name: 'planning', type: 'object'}],
+    attendance: ['attendance', 'members', { name: 'planning', type: 'object' }],
     categories: ['categories'],
     members: ['members'],
     'add-member': ['members'],
     bookkeeping: ['members'],
     users: ['members', 'users'],
     events: ['events'],
-    planning: [{name: 'planning', type: 'object'}],
-    calendar: ['members', {name: 'planning', type: 'object'}],
+    planning: [{ name: 'planning', type: 'object' }],
+    calendar: ['members', { name: 'planning', type: 'object' }]
   }
 
   setupPropertyProvider(propertyProvider, type = 'array') {
@@ -192,20 +189,20 @@ export class PoHoShell extends LiteElement {
       if (type === 'array') {
         if (typeof val === 'object' && !Array.isArray(val)) val.key = snap.key
         let i = -1
-  
+
         for (const item of this[propertyProvider]) {
           i += 1
           if (item.key === snap.key) break
         }
-  
+
         if (task === 'replace') this[propertyProvider].splice(i, 1, val)
         else this[propertyProvider].splice(i, 1)
+        this[propertyProvider] = [...this[propertyProvider]]
       } else if (type === 'object') {
         if (task === 'replace') this[propertyProvider][val.key] = val
         else delete this[propertyProvider][val.key]
+        this[propertyProvider] = { ...this[propertyProvider] }
       }
-      
-      this[propertyProvider] = [...this[propertyProvider]]
     }
 
     firebase.onChildAdded(propertyProvider, async (snap) => {
@@ -217,12 +214,12 @@ export class PoHoShell extends LiteElement {
         } else if (!this[propertyProvider].includes(val)) {
           this[propertyProvider].push(val)
         }
-      } else if (type ==='object') {
+        this[propertyProvider] = [...this[propertyProvider]]
+      } else if (type === 'object') {
         if (!this[propertyProvider]) this[propertyProvider] = {}
-        this[propertyProvider][snap.key] = val        
+        this[propertyProvider][snap.key] = val
+        this[propertyProvider] = { ...this[propertyProvider] }
       }
-      
-      this[propertyProvider] = [...this[propertyProvider]]
     })
 
     firebase.onChildChanged(propertyProvider, (snap) => deleteOrReplace(propertyProvider, snap, 'replace'))
@@ -237,7 +234,6 @@ export class PoHoShell extends LiteElement {
 
       if (!this.#propertyProviders.includes(propertyKey)) this.setupPropertyProvider(propertyKey, input?.type)
     }
-      
   }
 
   async select(selected) {
@@ -255,7 +251,7 @@ export class PoHoShell extends LiteElement {
     this.selector.select(selected)
     this.pages.select(selected)
 
-    this.handlePropertyProvider(selected)    
+    this.handlePropertyProvider(selected)
     this.drawerLayout.drawerOpen = false
   }
 
@@ -277,7 +273,7 @@ export class PoHoShell extends LiteElement {
     }
 
     if (firebase.auth.currentUser) await firebase.set('tabPay', null)
-    
+
     this.shadowRoot.addEventListener('click', (event) => {
       if (event.target.hasAttribute('input-tap')) {
         this.salesView.inputTap({ detail: event.target.getAttribute('input-tap') })
@@ -416,17 +412,17 @@ export class PoHoShell extends LiteElement {
           flex-direction: row;
           pointer-events: auto;
         }
-          .divider:before,
-          .divider:after {
-            content: "";
-            flex: 1 1;
-            border-bottom: 1px solid;
-            margin: auto 10px;
-          }
-          custom-selector {
-            margin-bottom: 125px
-          }
-          /* end temporary styles */
+        .divider:before,
+        .divider:after {
+          content: '';
+          flex: 1 1;
+          border-bottom: 1px solid;
+          margin: auto 10px;
+        }
+        custom-selector {
+          margin-bottom: 125px;
+        }
+        /* end temporary styles */
       </style>
       <!-- just cleaner -->
       ${icons}
