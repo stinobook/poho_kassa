@@ -173,7 +173,7 @@ export class CheckoutView extends LiteElement {
       .currencies input {
         padding: 10px 0 10px 15px;
         font-size: 1rem;
-        color: var(--md-sys-color-on-primary);
+        color: var(--md-sys-color-on-secondary);
         background: var(--md-sys-color-secondary);
         border: 0;
         border-radius: 3px;

@@ -72,6 +72,9 @@ export class PoHoShell extends LiteElement {
   @property({ provides: true, batchDelay: 70 })
   accessor planning
 
+  @property({ provides: true, batchDelay: 70 })
+  accessor users
+
   @property()
   accessor attendanceDate = new Date().toISOString().slice(0, 10)
 
@@ -143,6 +146,50 @@ export class PoHoShell extends LiteElement {
         this.planning = { ...planning }
       }
       
+    })
+  }
+
+  setupUsersListener() {
+    //this.#listeners.push('users')
+    firebase.onChildAdded('users', async (snap) => {
+      const val = await snap.val()
+      const uid = snap.key
+      val.uid = uid
+      if (!this.users) {
+        this.users = [val]
+      } else if (!this.users.includes(val)) {
+        this.users.push(val)
+      }
+      this.users = [...this.users]
+      console.log(this.users)
+    })
+     firebase.onChildChanged('users', async (snap) => {
+      const val = await snap.val()
+      const uid = snap.key
+      val.uid = uid
+      let i = -1
+
+      for (const event of this.users) {
+        i += 1
+        if (event.uid === val.uid) break
+      }
+      this.users.splice(i, 1, val)
+      this.users = [...this.users]
+      console.log(this.users)
+    })
+    firebase.onChildRemoved('users', async (snap) => {
+      const val = await snap.val()
+      const uid = snap.key
+      val.uid = uid
+      let i = -1
+
+      for (const event of this.users) {
+        i += 1
+        if (event.uid === val.uid) break
+      }
+      this.users.splice(i, 1)
+      this.users = [...this.users]
+      console.log(this.users)
     })
   }
 

@@ -79,6 +79,12 @@ export enum Group {
   leden
 }
 
+export type User = {
+  uid: string,
+  email: string,
+  key?: string
+}
+
 export type Member = {
   key?: string
   userphotoURL: string

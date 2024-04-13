@@ -1,19 +1,26 @@
 import { html, css, LiteElement, property, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
-import '@material/web/button/filled-button.js'
-import '@material/web/button/outlined-button.js'
-import '@material/web/textfield/outlined-text-field.js'
-import '@vandeurenglenn/lite-elements/typography.js'
-import { Member } from '../types.js'
-import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
+import '@vandeurenglenn/flex-elements/row.js'
+import '@vandeurenglenn/lite-elements/button.js'
+import '@vandeurenglenn/lite-elements/dialog.js'
+import { Member, User } from '../types.js'
+
+const actionCodeSettings = {
+  url: 'http://localhost:8080/index.html',
+  handleCodeInApp: true 
+}
 
 @customElement('users-view')
 export class UsersView extends LiteElement {
   @property({ type: Object, consumer: true })
   accessor members: { Type: Member }
-  @query('md-outlined-text-field[label="email"]')
-  accessor email: MdOutlinedTextField
+  @property({ consumer: true })
+  accessor users: User[]
+  @query('input[label="email"]')
+  accessor email: HTMLInputElement
+  @property()
+  accessor editUser: String
 
   static styles = [
     css`
@@ -25,60 +32,136 @@ export class UsersView extends LiteElement {
         display: flex;
         flex-direction: column;
       }
+      flex-container{
+        gap: 24px;
+        align-items: stretch;
+      }
+      flex-row {
+        background-color: var(--md-sys-color-surface-container-high);
+        color: var(--md-sys-color-on-surface-container-high);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        padding: 20px;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+      .title {
+        width: 100%;
+        margin: 12px;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+      input {
+        padding: 10px 0 10px 15px;
+        font-size: 1rem;
+        color: var(--md-sys-color-on-primary-container);
+        background: var(--md-sys-color-primary-container);
+        border: 0;
+        border-radius: 3px;
+        outline: 0;
+        margin: 0 24px;
+      }
+      .actioninput {
+        display: flex;
+        flex: 1;
+        & input {
+          flex: 1;
+        }
+      }
+      custom-button {
+        background-color: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        height: 38px;
+      }
+      .userlist {
+        gap: 24px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .userlist div {
+        background-color: var(--md-sys-color-surface-container-highest);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        color: var(--md-sys-color-on-primary-container);
+        padding: 12px;
+      }
     `
   ]
 
   async sendInvite() {
     const email = this.email.value
     await firebase.sendSignInLinkToEmail(email)
-    this.cancel()
-  }
-
-  cancel() {
-    this.email.value = null
+    this.email.value = ''
   }
 
   async test() {
-    let option = this.shadowRoot.querySelector('select') as HTMLSelectElement
-    console.log(option.value)
-    console.log(firebase.auth)
+    console.log(this.users)
   }
-
-  renderMembers() {
-    return Object.values(this.members).map(
-      (member) =>
+  
+  renderUsers() {
+    return Object.values(this.users).map(
+      (user) =>
         html`
-          <option value=${member.key}>${member.name + ' ' + member.lastname}</option>
+          <div uid=${user.uid}>
+            <span class="start">${user.email}</span>
+            ${(user.key) ? html` <span class="end"> ${user.key} </span>`: '' }
+          </div>
         `
     )
+  }
 
+  connectedCallback() {
+    let dialogEdit = this.shadowRoot.querySelector('custom-dialog.dialogEdit') as HTMLDialogElement
+    dialogEdit.addEventListener('close', (event) => {
+      this.edit({ event })
+    })
+    this.shadowRoot.querySelector('.userlist').addEventListener('click', this.#clickHandler.bind(this))
+  }
+  disconnectedCallback() {
+    this.shadowRoot.removeEventListener('click', this.#clickHandler.bind(this))
+  }
+
+  #clickHandler = (event) => {
+    const uid = event.target.getAttribute('uid')
+    if (!uid) return
+    this.editUser = uid
+    this.requestRender()
+    let dialogEdit = this.shadowRoot.querySelector('custom-dialog.dialogEdit') as HTMLDialogElement
+    dialogEdit.open = true
+  }
+
+  edit({event}) {
+    if (event.detail === 'cancel' || event.detail === 'close') return
   }
 
   render() {
     return html`
     <flex-container>
-      <custom-typography size="medium"><h4>Register</h4></custom-typography>
-      <form>
-        <h1>Link with user:</h1>
-        <select>
-        ${this.members ? this.renderMembers() : ''}
-        </select>
-        <md-outlined-text-field
+      <flex-row>
+      <span class="title">Send invite</span>
+      <span class="actioninput">
+        <input 
           label="email"
           type="email"
           placeholder="email@domain.com"
           autocomplete="email"
-          name="email"
-        >
-        </md-outlined-text-field>
-      </form>
-      <flex-row>
-        <md-outlined-button @click=${this.cancel.bind(this)}>cancel</md-outlined-button>
-        <flex-it></flex-it>
-        <md-filled-button @click=${this.sendInvite.bind(this)}>Send</md-filled-button>
-
-        <md-filled-button @click=${this.test.bind(this)}>test</md-filled-button>
+          name="email" />
+        <custom-button @click=${this.sendInvite.bind(this)} label="Send"></custom-button>
+      </span>
       </flex-row>
+      <flex-row>
+        <span class="title">Userlist</span>
+        <span  class="userlist">
+        ${this.users ? this.renderUsers() : ''}
+        </span>
+      </flex-row>
+      <custom-dialog class="dialogEdit">
+        <span slot="title">${this.editUser}</span>
+        <flex-wrap-between slot="actions">
+          <custom-button action="save" label="Save"></custom-button>
+        </flex-wrap-between>
+      </custom-dialog>
+      <custom-button @click=${this.test.bind(this)} label="test()"></custom-button>
     </flex-container>
     `
   }
