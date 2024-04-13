@@ -18,7 +18,7 @@ import { Evenement } from './types.js'
 @customElement('po-ho-shell')
 export class PoHoShell extends LiteElement {
   router: Router
-
+  #propertyProviders = []
   #inMem
 
   @query('search-input')
@@ -90,47 +90,8 @@ export class PoHoShell extends LiteElement {
       }
     }
   }
-  setupTabsListener() {
-    this.#listeners.push('tabs')
-    firebase.onChildAdded('tabs', async (snap) => {
-      const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      if (!this.tabs) {
-        this.tabs = [val]
-      } else if (!this.tabs.includes(val)) {
-        this.tabs.push(val)
-      }
-      this.tabs = [...this.tabs]
-    })
-    firebase.onChildChanged('tabs', async (snap) => {
-      const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      let i = -1
-
-      for (const event of this.tabs) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.tabs.splice(i, val)
-      this.tabs = [...this.tabs]
-    })
-    firebase.onChildRemoved('tabs', async (snap) => {
-      const val = await snap.val()
-      val.key = snap.key
-      let i = -1
-
-      for (const event of this.tabs) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.tabs.splice(i, 1)
-      this.tabs = [...this.tabs]
-    })
-  }
   setupPromoListener() {
-    this.#listeners.push('promo')
+    // this.#listeners.push('promo')
     firebase.onChildAdded(`promo`, async (snap) => {
       const key = await snap.key
       const val = await snap.val()
@@ -155,7 +116,7 @@ export class PoHoShell extends LiteElement {
     })
   }
   setupPlanningListener() {
-    this.#listeners.push('planning')
+    // this.#listeners.push('planning')
     firebase.onChildAdded(`planning`, async (snap) => {
       const key = await snap.key
       const val = await snap.val()
@@ -184,270 +145,6 @@ export class PoHoShell extends LiteElement {
       
     })
   }
-  setupAttendanceListener() {
-    this.#listeners.push('attendance')
-    firebase.onChildAdded(`attendance/${this.attendanceDate}`, async (snap) => {
-      const val = await snap.val()
-      if (!this.attendance) {
-        this.attendance = [val]
-      } else if (!this.attendance.includes(val)) {
-        this.attendance.push(val)
-      }
-      this.attendance = [...this.attendance]
-    })
-    firebase.onChildChanged(`attendance/${this.attendanceDate}`, async (snap) => {
-      const val = await snap.val()
-
-      if (!this.attendance.includes(val)) {
-        this.attendance.push(val)
-      } else {
-        const i = this.attendance.indexOf(val)
-        this.attendance.splice(i, val)
-      }
-      this.attendance = [...this.attendance]
-    })
-    firebase.onChildRemoved(`attendance/${this.attendanceDate}`, async (snap) => {
-      const val = await snap.val()
-      if (this.attendance.includes(val)) {
-        const i = this.attendance.indexOf(val)
-        this.attendance.splice(i, val)
-      }
-      this.attendance = [...this.attendance]
-    })
-  }
-  setupMembersListener() {
-    this.#listeners.push('members')
-    firebase.onChildAdded('members', async (snap) => {
-      const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      if (!this.members) {
-        this.members = [val]
-      } else if (!this.members.includes(val)) {
-        this.members.push(val)
-      }
-      this.members = [...this.members]
-    })
-    firebase.onChildChanged('members', async (snap) => {
-      const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      let i = -1
-
-      for (const event of this.members) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.members.splice(i, val)
-      this.members = [...this.members]
-    })
-    firebase.onChildRemoved('members', async (snap) => {
-      const val = await snap.val()
-      val.key = snap.key
-      let i = -1
-
-      for (const event of this.members) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.members.splice(i, 1)
-      this.members = [...this.members]
-    })
-  }
-
-  setupProductsListener() {
-    this.#listeners.push('products')
-    firebase.onChildAdded('products', async (snap) => {
-      const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      if (!this.categories) {
-        this.products = [val]
-      } else if (!this.products.includes(val)) {
-        this.products.push(val)
-      }
-      this.products = [...this.products]
-    })
-    firebase.onChildChanged('products', async (snap) => {
-      const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      let i = -1
-
-      for (const event of this.products) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.products.splice(i, val)
-      this.products = [...this.products]
-    })
-    firebase.onChildRemoved('products', async (snap) => {
-      const val = await snap.val()
-      val.key = snap.key
-      let i = -1
-
-      for (const event of this.products) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.products.splice(i, 1)
-      this.products = [...this.products]
-    })
-  }
-
-  setupCategoriesListener() {
-    this.#listeners.push('categories')
-    firebase.onChildAdded('categories', async (snap) => {
-      const val = await snap.val()
-
-      if (!this.categories) {
-        this.categories = [val]
-      } else if (!this.categories.includes(val)) {
-        this.categories.push(val)
-      }
-      this.categories = [...this.categories]
-    })
-    firebase.onChildChanged('categories', async (snap) => {
-      const val = await snap.val()
-      this.categories.splice(this.categories.indexOf(val), val)
-      this.categories = [...this.categories]
-    })
-    firebase.onChildRemoved('categories', async (snap) => {
-      const val = await snap.val()
-
-      if (this.categories.includes(val)) {
-        this.categories.splice(this.categories.indexOf(val))
-      }
-      this.categories = [...this.categories]
-    })
-  }
-
-  setupTransactionsListener() {
-    this.#listeners.push('transactions')
-    firebase.onChildAdded('transactions', async (snap) => {
-      const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      if (!this.transactions) {
-        this.transactions = [val]
-      } else if (!this.transactions.includes(val)) {
-        this.transactions.push(val)
-      }
-      this.transactions = [...this.transactions]
-    })
-    firebase.onChildChanged('transactions', async (snap) => {
-      const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      let i = -1
-
-      for (const event of this.transactions) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.transactions.splice(i, val)
-      this.transactions = [...this.transactions]
-    })
-    firebase.onChildRemoved('transactions', async (snap) => {
-      const val = await snap.val()
-      val.key = snap.key
-      let i = -1
-
-      for (const event of this.transactions) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.transactions.splice(i, 1)
-      this.transactions = [...this.transactions]
-    })
-  }
-
-  setupPayconiqTransactionsListener() {
-    this.#listeners.push('payconiqTransactions')
-    firebase.onChildAdded('payconiqTransactions', async (snap) => {
-      const val = await snap.val()
-
-      if (!this.payconiqTransactions) {
-        this.payconiqTransactions = [val]
-      } else {
-        let i = -1
-
-        for (const event of this.payconiqTransactions) {
-          i += 1
-          if (event.paymentId === val.paymentId) break
-        }
-        if (i === -1) this.payconiqTransactions.push(val)
-        else this.payconiqTransactions.splice(i, val)
-      }
-      this.payconiqTransactions = [...this.payconiqTransactions]
-    })
-    firebase.onChildChanged('payconiqTransactions', async (snap) => {
-      const val = await snap.val()
-      let i = -1
-
-      for (const tx of this.payconiqTransactions) {
-        i += 1
-        if (tx.paymentId === val.paymentId) break
-      }
-      this.payconiqTransactions.splice(i, val)
-      this.payconiqTransactions = [...this.payconiqTransactions]
-    })
-    firebase.onChildRemoved('payconiqTransactions', async (snap) => {
-      const val = await snap.val()
-      let i = -1
-
-      for (const event of this.payconiqTransactions) {
-        i += 1
-        if (event.paymentId === val.paymentId) break
-      }
-      this.salesView.payconiqPaymentChange(val)
-      this.payconiqTransactions.splice(i, 1)
-      this.payconiqTransactions = [...this.payconiqTransactions]
-    })
-  }
-
-  setupEventsListener() {
-    this.#listeners.push('events')
-    firebase.onChildAdded('events', async (snap) => {
-      const val = await snap.val()
-      val.key = snap.key
-      if (!this.events) {
-        this.events = [val]
-      } else if (!this.events.includes(val)) {
-        this.events.push(val)
-      }
-      this.events = [...this.events]
-    })
-    firebase.onChildChanged('events', async (snap) => {
-      const val = await snap.val()
-      const key = snap.key
-      val.key = key
-      let i = -1
-
-      for (const event of this.events) {
-        i += 1
-        if (event.key === val.key) break
-      }
-      this.events.splice(i, val)
-      this.events = [...this.events]
-    })
-    firebase.onChildRemoved('events', async (snap) => {
-      const val = await snap.val()
-      val.key = snap.key
-
-      let i = -1
-
-      for (const event of this.events) {
-        i += 1
-        if (event.key === val.key) break
-      }
-
-      this.events.splice(i, 1)
-      this.events = [...this.events]
-    })
-  }
-
-  #listeners = []
 
   #onSearch = (ev) => {
     if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
@@ -465,6 +162,80 @@ export class PoHoShell extends LiteElement {
     }
   }
 
+  /** 
+   * collection of the views and there desired providers
+   */
+  static propertyProviders = {
+    products: ['products', 'categories'],
+    sales: ['products', 'categories', 'payconiqTransactions', {name: 'planning', type: 'object'}, 'members', 'tabs'],
+    checkout: ['transactions', 'members'],
+    attendance: ['attendance', 'members', {name: 'planning', type: 'object'}],
+    categories: ['categories'],
+    members: ['members'],
+    'add-member': ['members'],
+    bookkeeping: ['members'],
+    users: ['members'],
+    events: ['events'],
+    planning: [{name: 'planning', type: 'object'}],
+    calendar: ['members', {name: 'planning', type: 'object'}],
+  }
+
+  setupPropertyProvider(propertyProvider, type = 'array') {
+    this.#propertyProviders.push(propertyProvider)
+
+    const deleteOrReplace = async (propertyProvider, snap, task = 'replace') => {
+      const val = await snap.val()
+      if (type === 'array') {
+        if (typeof val === 'object' && !Array.isArray(val)) val.key = snap.key
+        let i = -1
+  
+        for (const item of this[propertyProvider]) {
+          i += 1
+          if (item.key === snap.key) break
+        }
+  
+        if (task === 'replace') this[propertyProvider].splice(i, 1, val)
+        else this[propertyProvider].splice(i, 1)
+      } else if (type === 'object') {
+        if (task === 'replace') this[propertyProvider][val.key] = val
+        else delete this[propertyProvider][val.key]
+      }
+      
+      this[propertyProvider] = [...this[propertyProvider]]
+    }
+
+    firebase.onChildAdded(propertyProvider, async (snap) => {
+      const val = await snap.val()
+      if (type === 'array') {
+        if (typeof val === 'object') val.key = snap.key
+        if (!this[propertyProvider]) {
+          this[propertyProvider] = [val]
+        } else if (!this[propertyProvider].includes(val)) {
+          this[propertyProvider].push(val)
+        }
+      } else if (type ==='object') {
+        if (!this[propertyProvider]) this[propertyProvider] = {}
+        this[propertyProvider][snap.key] = val        
+      }
+      
+      this[propertyProvider] = [...this[propertyProvider]]
+    })
+
+    firebase.onChildChanged(propertyProvider, (snap) => deleteOrReplace(propertyProvider, snap, 'replace'))
+    firebase.onChildRemoved(propertyProvider, (snap) => deleteOrReplace(propertyProvider, snap, 'delete'))
+  }
+
+  handlePropertyProvider(propertyProvider) {
+    for (const input of PoHoShell.propertyProviders[propertyProvider]) {
+      let propertyKey
+      if (typeof input === 'object') propertyKey = input.name
+      else propertyKey = input
+
+      if (!this.#propertyProviders.includes(propertyKey)) this.setupPropertyProvider(propertyKey, input?.type)
+    }
+      
+  }
+
   async select(selected) {
     if (this.#inMem) {
       if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
@@ -479,32 +250,8 @@ export class PoHoShell extends LiteElement {
     }
     this.selector.select(selected)
     this.pages.select(selected)
-    if (selected === 'products' || selected === 'sales') {
-      if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
-      if (!this.#listeners.includes('products')) this.setupProductsListener()
-      if (!this.#listeners.includes('payconiqTransactions')) this.setupPayconiqTransactionsListener()
-      if (!this.#listeners.includes('promo')) this.setupPromoListener()
-      if (!this.#listeners.includes('members')) this.setupMembersListener()
-      if (!this.#listeners.includes('tabs')) this.setupTabsListener()
-    } else if (selected === 'checkout') {
-      if (!this.#listeners.includes('transactions')) this.setupTransactionsListener()
-      if (!this.#listeners.includes('members')) this.setupMembersListener()
-    } else if (selected === 'attendance') {
-      if (!this.#listeners.includes('attendance')) this.setupAttendanceListener()
-      if (!this.#listeners.includes('members')) this.setupMembersListener()
-      if (!this.#listeners.includes('promo')) this.setupPromoListener()
-    } else if (selected === 'categories' || selected === 'add-product' || selected === 'add-event') {
-      if (!this.#listeners.includes('categories')) this.setupCategoriesListener()
-    } else if (selected === 'members' || selected === 'add-member' || selected === 'bookkeeping' || selected === 'users') {
-      if (!this.#listeners.includes('members')) this.setupMembersListener()
-    } else if (selected === 'events') {
-      if (!this.#listeners.includes('events')) this.setupEventsListener()
-    } else if (selected === 'planning') {
-      if (!this.#listeners.includes('planning')) this.setupPlanningListener()
-    } else if (selected === 'calendar') {
-      if (!this.#listeners.includes('planning')) this.setupPlanningListener()
-      if (!this.#listeners.includes('members')) this.setupMembersListener()
-    }
+
+    this.handlePropertyProvider(selected)    
     this.drawerLayout.drawerOpen = false
   }
 
@@ -535,7 +282,7 @@ export class PoHoShell extends LiteElement {
     this.drawerLayout.drawerOpen = false
     document.addEventListener('search', this.#onSearch)
     this.router = new Router(this)
-    this.setupEventsListener()
+    this.setupPropertyProvider('events')
     this.eventsinterval()
   }
 
