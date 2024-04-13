@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
-import { getAuth, signOut } from 'firebase/auth'
+import { getAuth, signOut, sendSignInLinkToEmail as _sendSignInLinkToEmail } from 'firebase/auth'
 import {
   get as _get,
   push as _push,
@@ -81,6 +81,15 @@ const onChildRemoved = (target, cb) => {
 const onChildChanged = (target, cb) => {
   _onChildChanged(ref(database, target), cb)
 }
+
+const actionCodeSettings = {
+  url: 'http://localhost:8080/index.html',
+  handleCodeInApp: true 
+}
+
+const sendSignInLinkToEmail = (email) => 
+  _sendSignInLinkToEmail(auth, email, actionCodeSettings)
+
 const _firebase = {
   get,
   push,
@@ -95,6 +104,7 @@ const _firebase = {
   onChildChanged,
   uploadBytes,
   getDownloadURL,
+  sendSignInLinkToEmail,
   signOut: () => signOut(auth)
 }
 

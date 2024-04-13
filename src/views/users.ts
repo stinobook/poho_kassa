@@ -6,13 +6,7 @@ import '@material/web/button/outlined-button.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@vandeurenglenn/lite-elements/typography.js'
 import { Member } from '../types.js'
-import { getAuth, sendSignInLinkToEmail } from "firebase/auth";
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
-
-const actionCodeSettings = {
-  url: 'http://localhost:8080/index.html',
-  handleCodeInApp: true 
-}
 
 @customElement('users-view')
 export class UsersView extends LiteElement {
@@ -36,8 +30,7 @@ export class UsersView extends LiteElement {
 
   async sendInvite() {
     const email = this.email.value
-    const auth = getAuth()
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+    await firebase.sendSignInLinkToEmail(email)
     this.cancel()
   }
 
@@ -48,8 +41,7 @@ export class UsersView extends LiteElement {
   async test() {
     let option = this.shadowRoot.querySelector('select') as HTMLSelectElement
     console.log(option.value)
-    const auth = getAuth()
-    console.log(auth)
+    console.log(firebase.auth)
   }
 
   renderMembers() {
