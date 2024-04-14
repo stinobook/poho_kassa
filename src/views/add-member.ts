@@ -27,6 +27,10 @@ export class AddMemberView extends LiteElement {
 
   editing
 
+  userphotoURL
+
+  userphotobgURL
+
   async firstRender() {
     if (this.params) {
       await this.updateView(this.params)
@@ -80,43 +84,49 @@ export class AddMemberView extends LiteElement {
 
   async save() {
     const user = {}
-    const userphoto = (this.shadowRoot.querySelector('input[name=userphotoURL]') as HTMLInputElement).files[0]
-    const userphotobg = (this.shadowRoot.querySelector('input[name=userphotobgURL]') as HTMLInputElement).files[0]
+
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
     for (const field of fields) {
       if (field.value) user[field.name] = field.value
     }
     user['group'] = this.shadowRoot.querySelector('md-outlined-select').value
-    if (this.editing) {
-      if (!userphoto) {
+    if (this.userphotoURL) {
+      // check if link
+      if (typeof this['userphotoURL'] === 'string') {
+        user['userphotoURL'] = this.userphotoURL
       } else {
-        let uploadUserphoto = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}avatar`, userphoto)
+        let uploadUserphoto = await firebase.uploadBytes(
+          `members/${user['lastname'] + user['name']}avatar`,
+          this.userphotoURL
+        )
         user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
       }
-      if (!userphotobg) {
+    } else {
+      user['userphotoURL'] = this.shadowRoot.querySelector(`img[name="userphotoURL"]`).src
+    }
+    if (this.userphotobgURL) {
+      if (typeof this['userphotobgURL'] === 'string') {
+        user['userphotobgURL'] = this.userphotobgURL
       } else {
         let uploadUserphotobg = await firebase.uploadBytes(
           `members/${user['lastname'] + user['name']}background`,
-          userphotobg
+          this.userphotobgURL
         )
         user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
       }
+    } else {
+      user['userphotobgURL'] = this.shadowRoot.querySelector(`img[name="userphotobgURL"]`).src
+    }
+    if (this.editing) {
       await firebase.set(`members/${this.params.edit}`, user)
       this.params = undefined
       this.editing = false
       this.back()
     } else {
-      if (!userphoto || !userphotobg) {
+      if (!user['userphotobgURL'] || !user['userphotoURL']) {
         alert('Picture missing!')
         return
       }
-      let uploadUserphoto = await firebase.uploadBytes(`members/${user['lastname'] + user['name']}avatar`, userphoto)
-      let uploadUserphotobg = await firebase.uploadBytes(
-        `members/${user['lastname'] + user['name']}background`,
-        userphotobg
-      )
-      user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
-      user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
       firebase.push(`members`, user)
       this.back()
     }
@@ -129,10 +139,14 @@ export class AddMemberView extends LiteElement {
         justify-content: center;
         width: 100%;
         height: 100%;
-        overflow-y: auto;
       }
       flex-column {
         width: auto;
+      }
+      flex-column.wrapper {
+        overflow-y: auto;
+        width: 100%;
+        align-items: center;
       }
       md-outlined-text-field,
       md-outlined-select,
@@ -152,6 +166,12 @@ export class AddMemberView extends LiteElement {
       ${scrollbar}
       .back {
         left: 24px;
+        right: 0;
+      }
+
+      img {
+        width: 200px;
+        height: 200px;
       }
     `
   ]
@@ -161,19 +181,20 @@ export class AddMemberView extends LiteElement {
 
   async _uploadImage(target: 'userphotobgURL' | 'userphotoURL') {
     const result = await this.dialog.addImage()
-    console.log(result)
-
-    if (result.image) {
-      console.log(result.image)
+    if (result.fields.url.length > 0) {
+      this[target] = result.fields.url
+    } else if (result.image) {
+      this[target] = result.image.data[0].data
     }
+    this.shadowRoot.querySelector(`img[name="${target}"]`).src = this[target]
   }
 
   render() {
     return html`
       <image-selector-dialog></image-selector-dialog>
 
-      <flex-container>
-        <flex-column>
+      <flex-column class="wrapper">
+        <flex-container>
           <flex-column>
             <label><custom-typography>Lid</custom-typography></label>
             <img
@@ -200,9 +221,7 @@ export class AddMemberView extends LiteElement {
               label="Chipnummer"
               name="chipnumber"></md-outlined-text-field>
           </flex-wrap-between>
-        </flex-column>
 
-        <flex-column>
           <flex-column>
             <label><custom-typography>Baasje</custom-typography></label>
             <img
@@ -262,8 +281,9 @@ export class AddMemberView extends LiteElement {
               label="E-mail adres"
               name="email"></md-outlined-text-field>
           </flex-wrap-between>
-        </flex-column>
-      </flex-container>
+        </flex-container>
+      </flex-column>
+
       <md-fab
         @click=${this.back.bind(this)}
         class="back"
