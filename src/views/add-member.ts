@@ -8,6 +8,7 @@ import '@material/web/select/select-option.js'
 import '@material/web/checkbox/checkbox.js'
 import '@vandeurenglenn/flex-elements/wrap-between.js'
 import '@vandeurenglenn/flex-elements/it.js'
+import '@vandeurenglenn/lite-elements/icon.js'
 import Router from '../routing.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
@@ -64,7 +65,7 @@ export class AddMemberView extends LiteElement {
       if (!field) alert(`property declared but no field found for: ${key}`)
       else {
         if (field.tagName === 'IMG') {
-          field.src = value
+          this[key] = value
         } else field.value = value as string
       }
     }
@@ -197,9 +198,18 @@ export class AddMemberView extends LiteElement {
         <flex-container>
           <flex-column>
             <label><custom-typography>Lid</custom-typography></label>
-            <img
-              name="userphotobgURL"
-              @click=${() => this._uploadImage('userphotobgURL')} />
+            ${this.userphotoURL
+              ? html`<img
+                  label="userphotobgURL"
+                  src=${this.userphotobgURL}
+                  @click=${() => this._uploadImage('userphotobgURL')} />`
+              : html`<custom-button
+                  label="upload pet image"
+                  @click=${() => this._uploadImage('userphotobgURL')}
+                  ><custom-icon
+                    icon="upload"
+                    slot="icon"></custom-icon
+                ></custom-button>`}
           </flex-column>
           <flex-wrap-between>
             <md-outlined-text-field
@@ -224,9 +234,18 @@ export class AddMemberView extends LiteElement {
 
           <flex-column>
             <label><custom-typography>Baasje</custom-typography></label>
-            <img
-              name="userphotoURL"
-              @click=${() => this._uploadImage('userphotoURL')} />
+            ${this.userphotoURL
+              ? html`<img
+                  label="userphotoURL"
+                  src=${this.userphotoURL}
+                  @click=${() => this._uploadImage('userphotoURL')} />`
+              : html`<custom-button
+                  label="upload owner image"
+                  @click=${() => this._uploadImage('userphotoURL')}
+                  ><custom-icon
+                    icon="upload"
+                    slot="icon"></custom-icon
+                ></custom-button>`}
           </flex-column>
 
           <flex-wrap-between>
