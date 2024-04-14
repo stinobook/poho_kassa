@@ -56,6 +56,8 @@ const login = async () => {}
 
 const logout = async () => {}
 
+let userRoles
+
 const auth = await getAuth(app)
 auth.onAuthStateChanged(async (user) => {
   if (!user) {
@@ -70,6 +72,8 @@ auth.onAuthStateChanged(async (user) => {
 await auth.authStateReady()
 if (!auth.currentUser) {
   location.hash = Router.bang('login')
+} else {
+  if (!userRoles) userRoles = await get('users/' + auth.currentUser.uid + '/roles')
 }
 const onChildAdded = (target, cb) => {
   _onChildAdded(ref(database, target), cb)
@@ -94,6 +98,7 @@ const _firebase = {
   get,
   push,
   set,
+  userRoles,
   remove,
   update,
   auth,
