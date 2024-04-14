@@ -174,6 +174,7 @@ export class UsersView extends LiteElement {
     this.requestRender()
     let dialogEdit = this.shadowRoot.querySelector('custom-dialog.dialogEdit') as HTMLDialogElement
     let selected = this.shadowRoot.querySelector('.memberselector') as HTMLSelectElement
+    this.shadowRoot.querySelectorAll('input[name=roles]:checked').forEach((checkbox) => checkbox.removeAttribute('checked'))
     let member = this.users.filter(user => user.key === this.editUser)[0].member
     if (member) selected.value = member
     let roles = this.users.filter(user => user.key === this.editUser)[0].roles
