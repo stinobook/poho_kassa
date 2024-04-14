@@ -89,7 +89,7 @@ export class AddMemberView extends LiteElement {
     for (const field of fields) {
       if (field.value) user[field.name] = field.value
     }
-    user['group'] = this.shadowRoot.querySelector('md-outlined-select').value
+    user['group'] = this.shadowRoot.querySelector('md-outlined-select').value.toLowerCase()
     if (this.userphotoURL) {
       // check if link
       if (typeof this['userphotoURL'] === 'string') {

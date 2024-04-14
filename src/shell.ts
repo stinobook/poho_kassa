@@ -197,13 +197,26 @@ export class PoHoShell extends LiteElement {
     return false
   }
 
+/*   checkRoles(): Promise<any> {
+    return new Promise((resolve) => {
+      if (!this.userRoles) {
+        resolve(firebase.get('users/' + firebase.auth.currentUser.uid + '/roles'))
+      }
+    })
+  }
+
+  async onChange(propertyKey: any, value: any) {
+    if (propertyKey === 'selected') {
+    console.log( value.getAttribute('route') )
+    this.userRoles = await this.checkRoles()
+    console.log(this.userRoles)
+    }
+  } */
   async connectedCallback() {
     this.roles = Object.keys(PoHoShell.propertyProviders)
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
-
-    if (firebase.auth.currentUser) await firebase.set('tabPay', null)
 
     this.shadowRoot.addEventListener('click', (event) => {
       if (event.target.hasAttribute('input-tap')) {

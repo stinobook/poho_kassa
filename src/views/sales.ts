@@ -263,6 +263,11 @@ export class SalesView extends LiteElement {
     }
   }
 
+
+  async connectedCallback() {
+  if (firebase.auth.currentUser) await firebase.set('tabPay', null)
+  }
+
   renderTabs() {
     return this.tabs.map(tab =>
         html `
