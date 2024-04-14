@@ -42,12 +42,18 @@ export class AddMemberView extends LiteElement {
 
   reset() {
     this.params = undefined
-    for (const label of this.labels.filter(item => item.label)) {
+    for (const label of this.labels) {
       label.reset()
       if (label.placeholder) {
         label.value = label.placeholder
       }
     }
+
+    this.userphotoURL = undefined
+    this.userphotobgURL = undefined
+    console.log(this.userphotoURL)
+
+    this.requestRender()
   }
 
   back() {
@@ -56,17 +62,18 @@ export class AddMemberView extends LiteElement {
   }
 
   async updateView(value) {
+    this.userphotoURL = undefined
+    this.userphotobgURL = undefined
     const member = await firebase.get(`members/${value.edit}`)
     for (const [key, value] of Object.entries(member)) {
-      const field = this.shadowRoot.querySelector(`[name=${key}]`) as
-        | MdFilledTextField
-        | MdOutlinedSelect
-        | HTMLImageElement
-      if (!field) alert(`property declared but no field found for: ${key}`)
-      else {
-        if (field.tagName === 'IMG') {
-          this[key] = value
-        } else field.value = value as string
+      if (key === 'userphotoURL' || key === 'userphotobgURL') {
+        this[key] = value
+      } else {
+        const field = this.shadowRoot.querySelector(`[name=${key}]`) as
+          | MdFilledTextField
+          | MdOutlinedSelect
+          | HTMLImageElement
+        field.value = value as string
       }
     }
     this.requestRender()
@@ -198,9 +205,8 @@ export class AddMemberView extends LiteElement {
         <flex-container>
           <flex-column>
             <label><custom-typography>Lid</custom-typography></label>
-            ${this.userphotoURL
+            ${this.userphotobgURL
               ? html`<img
-                  label="userphotobgURL"
                   src=${this.userphotobgURL}
                   @click=${() => this._uploadImage('userphotobgURL')} />`
               : html`<custom-button
@@ -236,7 +242,6 @@ export class AddMemberView extends LiteElement {
             <label><custom-typography>Baasje</custom-typography></label>
             ${this.userphotoURL
               ? html`<img
-                  label="userphotoURL"
                   src=${this.userphotoURL}
                   @click=${() => this._uploadImage('userphotoURL')} />`
               : html`<custom-button
