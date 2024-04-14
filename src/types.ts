@@ -83,6 +83,7 @@ export type User = {
   member?: string,
   email: string,
   key: string
+  roles?: string[]
 }
 
 export type Member = {

@@ -84,6 +84,35 @@ export class UsersView extends LiteElement {
       .end {
         float: right;
       }
+      .userlist span {
+        pointer-events: none;
+      }
+      .rolesselector {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        gap: 12px;
+      }
+      .rolesselector label {
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        background-color: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        padding: 10px 24px;
+      }
+      .rolesselector input[type=checkbox]:checked + label {
+        background-color: lightgreen;
+      }
+      .rolesselector input {
+        display: none;
+    }
+      .subheading {
+        font-weight: var(--md-sys-typescale-title-medium-font-weight);
+        font-size: var(--md-sys-typescale-title-medium-font-size);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
     `
   ]
 
@@ -93,11 +122,6 @@ export class UsersView extends LiteElement {
     this.email.value = ''
   }
 
-  async test() {
-    let test = this.roles
-    console.log(test)
-  }
-
   renderMembers() {
     return Object.values(this.members).map(
       (member) =>
@@ -105,6 +129,13 @@ export class UsersView extends LiteElement {
           <option value=${member.key}>${member.name + ' ' + member.lastname}</option>
         `
     )
+  }
+  renderRoles() {
+    return this.roles.map((role) =>
+    html`
+    <input type="checkbox" name="roles" id=${role} />
+    <label for=${role}>${role}</label>
+    `)
   }
 
   renderUsers() {
@@ -145,6 +176,13 @@ export class UsersView extends LiteElement {
     let selected = this.shadowRoot.querySelector('.memberselector') as HTMLSelectElement
     let member = this.users.filter(user => user.key === this.editUser)[0].member
     if (member) selected.value = member
+    let roles = this.users.filter(user => user.key === this.editUser)[0].roles
+    if (roles) {
+      for (const role of roles) {
+        const roleID = this.shadowRoot.querySelector('#' + role) as HTMLInputElement
+        roleID.setAttribute('checked', '')
+      }
+    }
     dialogEdit.open = true
   }
 
@@ -153,6 +191,7 @@ export class UsersView extends LiteElement {
     let selected = this.shadowRoot.querySelector('.memberselector') as HTMLSelectElement
     const updates = {}
     updates['member'] = selected.value
+    updates['roles'] = Array.from(this.shadowRoot.querySelectorAll(`input[name=roles]:checked`)).map(check=>check.id)
     firebase.update('users/' + this.editUser, updates)
   }
 
@@ -179,17 +218,21 @@ export class UsersView extends LiteElement {
       </flex-row>
       <custom-dialog class="dialogEdit">
         <span slot="title">${this.editUser ? this.users.filter(user => user.key === this.editUser)[0].email : ''}</span>
-        <span>Link with user:
+        <span class="subheading">Link with user:
           <select class="memberselector">
             <option value='kassa'>Kassa</option>
           ${this.members ? this.renderMembers() : ''}
           </select>
         </span>
+        <span class="subheading">Roles:
+          <div class="rolesselector">
+          ${this.roles ? this.renderRoles() : ''}
+          </div>
+        </span>
         <flex-wrap-between slot="actions">
           <custom-button action="save" label="Save"></custom-button>
         </flex-wrap-between>
       </custom-dialog>
-      <custom-button @click=${this.test.bind(this)} label="test()"></custom-button>
     </flex-container>
     `
   }
