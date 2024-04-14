@@ -338,17 +338,23 @@ export class ImageSelectorDialog extends LiteElement {
         <section route="file">
           <custom-button
             type="tonal"
+            label="select"
             @click=${this.#selectFile.bind(this)}>
-            <custom-icon slot="icon">upload</custom-icon>
-            select
+            <custom-icon
+              slot="icon"
+              icon="upload"></custom-icon>
           </custom-button>
         </section>
       </custom-pages>
 
       <flex-row slot="actions">
-        <custom-button action="cancel">cancel</custom-button>
+        <custom-button
+          action="cancel"
+          label="cancel"></custom-button>
         <flex-one></flex-one>
-        <custom-button action="submit">submit</custom-button>
+        <custom-button
+          action="submit"
+          label="submit"></custom-button>
       </flex-row>
     `
   }
