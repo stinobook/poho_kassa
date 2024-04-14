@@ -291,7 +291,11 @@ export class AddMemberView extends LiteElement {
           slot="icon"
           icon="arrow_back"></custom-icon
       ></md-fab>
-      <md-fab @click=${this.save.bind(this)}><custom-icon slot="icon">save</custom-icon></md-fab>
+      <md-fab @click=${this.save.bind(this)}
+        ><custom-icon
+          slot="icon"
+          icon="save"></custom-icon
+      ></md-fab>
     `
   }
 }

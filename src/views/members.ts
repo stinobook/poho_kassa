@@ -85,7 +85,7 @@ export class MembersView extends LiteElement {
     this.shadowRoot.removeEventListener('click', this.#clickHandler.bind(this))
   }
 
-  #clickHandler = (event) => {
+  #clickHandler = event => {
     const key = event.target.getAttribute('key')
     const action = event.target.getAttribute('action')
     if (!action) return
@@ -94,46 +94,48 @@ export class MembersView extends LiteElement {
   _add() {
     location.hash = Router.bang('add-member')
   }
-  _edit = (target) => {
+  _edit = target => {
     location.hash = Router.bang(`add-member?edit=${target}`)
   }
 
   renderMembers() {
-    return Object.entries(this.members).map(
-      ([group, members]) =>
+    return Object.entries(this.members).map(([group, members]) =>
       members?.length > 0
         ? html`
-          <custom-typography>${group}</custom-typography>
-          <flex-wrap-center>
-            ${members.map(
-              (member) =>
-                html`
-                  <card-element
-                    action="edit"
-                    key=${member.key}
-                    center
-                    .image=${member.userphotobgURL}
-                    .avatar=${member.userphotoURL}
-                    .headline=${member.name + ' ' + member.lastname}
-                    .subline=${member.title}
-                  >
-                    <flex-it></flex-it>
-                    <div class="content">
-                      <h3></h3>
-                      <p>extra info to be coded</p>
-                    </div>
-                  </card-element>
-                `
-            )}
-          </flex-wrap-center>
-        `
+            <custom-typography>${group}</custom-typography>
+            <flex-wrap-center>
+              ${members.map(
+                member =>
+                  html`
+                    <card-element
+                      action="edit"
+                      key=${member.key}
+                      center
+                      .image=${member.userphotobgURL}
+                      .avatar=${member.userphotoURL}
+                      .headline=${member.name + ' ' + member.lastname}
+                      .subline=${member.title}>
+                      <flex-it></flex-it>
+                      <div class="content">
+                        <h3></h3>
+                        <p>extra info to be coded</p>
+                      </div>
+                    </card-element>
+                  `
+              )}
+            </flex-wrap-center>
+          `
         : ''
     )
   }
   render() {
     return html`
       <flex-container> ${this.members ? this.renderMembers() : ''} </flex-container>
-      <md-fab action="add"><custom-icon slot="icon">add</custom-icon></md-fab>
+      <md-fab action="add"
+        ><custom-icon
+          slot="icon"
+          icon="add"></custom-icon
+      ></md-fab>
     `
   }
 }
