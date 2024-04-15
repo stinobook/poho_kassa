@@ -97,9 +97,9 @@ export class PoHoShell extends LiteElement {
    */
   static propertyProviders = {
     products: ['products', 'categories'],
-    sales: ['products', 'categories', 'payconiqTransactions', { name: 'planning', type: 'object' }, 'members', 'tabs'],
+    sales: ['products', 'categories', 'payconiqTransactions', { name: 'promo', type: 'object' }, 'members', 'tabs'],
     checkout: ['transactions', 'members'],
-    attendance: ['attendance', 'members', { name: 'planning', type: 'object' }],
+    attendance: ['attendance', 'members', { name: 'promo', type: 'object' }],
     categories: ['categories'],
     members: ['members'],
     bookkeeping: ['members'],
