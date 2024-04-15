@@ -280,7 +280,7 @@ export class PoHoShell extends LiteElement {
 
   renderMenu() {
     for (const item of this.shadowRoot.querySelectorAll('custom-drawer-item')) {
-      if (!firebase.userRoles.includes(item.getAttribute('route'))) {
+      if (!firebase.userRoles.includes(item.getAttribute('route')) && item.getAttribute('route') !== 'logout') {
         this.shadowRoot.querySelector('custom-drawer-layout > custom-selector > [route=' + item.getAttribute('route')).remove()
         this.shadowRoot.querySelector('custom-drawer-layout > custom-pages > [route=' + item.getAttribute('route')).remove()
       }
