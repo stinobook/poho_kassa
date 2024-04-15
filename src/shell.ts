@@ -213,6 +213,7 @@ export class PoHoShell extends LiteElement {
     this.router = new Router(this)
     this.setupPropertyProvider('events')
     this.eventsinterval()
+    this.renderMenu()
   }
 
   stylePaybar() {
@@ -274,6 +275,15 @@ export class PoHoShell extends LiteElement {
 
       default:
         return ''
+    }
+  }
+
+  renderMenu() {
+    for (const item of this.shadowRoot.querySelectorAll('custom-drawer-item')) {
+      if (!firebase.userRoles.includes(item.getAttribute('route'))) {
+        this.shadowRoot.querySelector('custom-drawer-layout > custom-selector > [route=' + item.getAttribute('route')).remove()
+        this.shadowRoot.querySelector('custom-drawer-layout > custom-pages > [route=' + item.getAttribute('route')).remove()
+      }
     }
   }
 
@@ -368,7 +378,6 @@ export class PoHoShell extends LiteElement {
           <custom-drawer-item route="users"> Gebruikers </custom-drawer-item>
           <custom-drawer-item route="logout" class="logout"> Uitloggen </custom-drawer-item>
         </custom-selector>
-
         <custom-pages attr-for-selected="route">
           <loading-view route="loading"> </loading-view>
           <sales-view route="sales"> </sales-view>
