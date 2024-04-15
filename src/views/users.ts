@@ -162,7 +162,6 @@ export class UsersView extends LiteElement {
       this.edit({ event })
     })
     this.shadowRoot.querySelector('.userlist').addEventListener('click', this.#clickHandler.bind(this))
-    console.log(this.roles)
   }
   disconnectedCallback() {
     this.shadowRoot.removeEventListener('click', this.#clickHandler.bind(this))

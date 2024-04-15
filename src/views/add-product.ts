@@ -112,7 +112,7 @@ export class AddProductView extends LiteElement {
       this.back()
     } else {
       firebase.push(`products`, product)
-      this.reset()
+      this.back()
     }
   }
 

@@ -66,7 +66,7 @@ auth.onAuthStateChanged(async (user) => {
     }
     location.hash = Router.bang('login')
   } else if (!location.hash || location.hash === '#!/login') {
-    location.hash = Router.bang('sales')
+    location.hash = Router.bang(userRoles[0])
   }
 })
 await auth.authStateReady()
