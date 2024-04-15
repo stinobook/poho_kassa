@@ -16,9 +16,6 @@ export class LoginView extends LiteElement {
   @query('md-outlined-text-field[label="password"]')
   accessor password: MdOutlinedTextField
 
-  @property({ type: Object })
-  accessor auth = firebase.auth
-
   cancel() {
     this.email.value = null
     this.password.value = null
@@ -27,13 +24,13 @@ export class LoginView extends LiteElement {
   async login() {
     const email = this.email.value
     const password = this.password.value
-    if (isSignInWithEmailLink(this.auth, window.location.href)) {
-      await signInWithEmailLink(this.auth, email, window.location.href)
-      await updatePassword(this.auth.currentUser, password)
-      await firebase.update('users/' + this.auth.currentUser.uid, { 'email': email } )
+    if (isSignInWithEmailLink(firebase.auth, window.location.href)) {
+      await signInWithEmailLink(firebase.auth, email, window.location.href)
+      await updatePassword(firebase.auth.currentUser, password)
+      await firebase.update('users/' + firebase.auth.currentUser.uid, { email: email })
       location.href = location.href.split('index')[0]
     } else {
-      await signInWithEmailAndPassword(this.auth, email, password)
+      await signInWithEmailAndPassword(firebase.auth, email, password)
     }
   }
 
@@ -85,7 +82,7 @@ export class LoginView extends LiteElement {
   ]
 
   renderLogin() {
-      return html`
+    return html`
       <h3><custom-typography>Welcome Back</custom-typography></h3>
       <custom-typography size="medium"><h4>Login To Continue</h4></custom-typography>
       <form>
@@ -94,15 +91,13 @@ export class LoginView extends LiteElement {
           type="email"
           placeholder="email@domain.com"
           autocomplete="email"
-          name="email"
-        >
+          name="email">
         </md-outlined-text-field>
         <md-outlined-text-field
           label="password"
           type="password"
           autocomplete="current-password"
-          name="current-password"
-        >
+          name="current-password">
         </md-outlined-text-field>
       </form>
       <flex-row>
@@ -110,15 +105,10 @@ export class LoginView extends LiteElement {
         <flex-it></flex-it>
         <md-filled-button @click=${this.login.bind(this)}>login</md-filled-button>
       </flex-row>
-      `
-
+    `
   }
 
   render() {
-    return html` 
-    <flex-container>
-    ${this.renderLogin()}
-    </flex-container>
-    `
+    return html` <flex-container> ${this.renderLogin()} </flex-container> `
   }
 }

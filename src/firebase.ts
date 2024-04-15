@@ -59,22 +59,26 @@ const logout = async () => {}
 let userRoles
 
 const auth = await getAuth(app)
-auth.onAuthStateChanged(async (user) => {
+
+auth.onAuthStateChanged(async user => {
   if (!user) {
     if (!customElements.get('login-view')) {
       await import('./views/login.js')
     }
     location.hash = Router.bang('login')
   } else if (!location.hash || location.hash === '#!/login') {
+    userRoles = Object.keys(await get('users/' + user.uid + '/roles'))
     location.hash = Router.bang(userRoles[0])
   }
 })
+
 await auth.authStateReady()
 if (!auth.currentUser) {
   location.hash = Router.bang('login')
 } else {
-  if (!userRoles) userRoles = Object.keys(await get('users/' + auth.currentUser.uid + '/roles'))
+  userRoles = Object.keys(await get('users/' + auth.currentUser.uid + '/roles'))
 }
+
 const onChildAdded = (target, cb) => {
   _onChildAdded(ref(database, target), cb)
 }
@@ -88,11 +92,10 @@ const onChildChanged = (target, cb) => {
 
 const actionCodeSettings = {
   url: 'http://localhost:8080/index.html',
-  handleCodeInApp: true 
+  handleCodeInApp: true
 }
 
-const sendSignInLinkToEmail = (email) => 
-  _sendSignInLinkToEmail(auth, email, actionCodeSettings)
+const sendSignInLinkToEmail = email => _sendSignInLinkToEmail(auth, email, actionCodeSettings)
 
 const _firebase = {
   get,
