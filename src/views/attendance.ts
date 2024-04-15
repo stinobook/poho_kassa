@@ -1,16 +1,17 @@
 import { property, html, LiteElement, css, customElement, queryAll } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/container.js'
+import '@vandeurenglenn/lite-elements/selector.js'
 import { scrollbar } from '../mixins/styles.js'
 import type { Member } from '../types.js'
 import './../components/chip/chip.js'
 
 @customElement('attendance-view')
 export class AttendanceView extends LiteElement {
+  @property({ consumer: true, renders: false })
+  accessor attendance
+
   @property({ type: Array, consumer: true })
   accessor members: { [group: string]: Member[] }
-
-  @property({ consumer: true, renders: false })
-  accessor attendance: []
 
   @property({ consumer: true, renders: false })
   accessor promo: { [key: string]: Boolean }
@@ -21,8 +22,7 @@ export class AttendanceView extends LiteElement {
   @queryAll('custom-selector')
   accessor selectors
 
-  @property()
-  accessor attendanceDate = new Date().toISOString().slice(0, 10)
+  attendanceDate = new Date().toISOString().slice(0, 10)
 
   static styles = [
     css`
@@ -97,15 +97,22 @@ export class AttendanceView extends LiteElement {
       }
       return members
     }
+    if (propertyKey === 'attendance') {
+      const attendance = value[this.attendanceDate]
+      return attendance
+    }
     return value
   }
 
   onChange(propertyKey: string, value: any): void {
+    console.log({ propertyKey })
+    console.log({ value })
+
     if (propertyKey === 'attendance' && Object.keys(this.members)?.length > 0) {
       this.selectors.forEach(element => {
         element.select(value)
       })
-    } else if (propertyKey === 'members' && Object.keys(this.attendance)?.length > 0) {
+    } else if (propertyKey === 'members' && this.attendance && Object.keys(this.attendance)?.length > 0) {
       this.selectors.forEach(element => {
         element.select(this.attendance)
       })

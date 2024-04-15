@@ -31,27 +31,27 @@ export class PoHoShell extends LiteElement {
 
   @property() accessor selected
 
-  @property({ provider: true, batches: true, batchDelay: 70 }) accessor products = []
+  @property({ provider: true, batches: true, batchDelay: 70 }) accessor products
 
-  @property({ provider: true, batchDelay: 70 }) accessor categories = []
+  @property({ provider: true, batchDelay: 70 }) accessor categories
 
   @property({ provider: true, batchDelay: 70 }) accessor eventMode = false
 
   @property({ provider: true, batchDelay: 70 }) accessor currentEvent: Evenement
 
-  @property({ provider: true, batchDelay: 70 }) accessor events = []
+  @property({ provider: true, batchDelay: 70 }) accessor events
 
-  @property({ provider: true, batchDelay: 70 }) accessor transactions = []
+  @property({ provider: true, batchDelay: 70 }) accessor transactions
 
-  @property({ provider: true, batchDelay: 70 }) accessor members = []
+  @property({ provider: true, batchDelay: 70 }) accessor members
 
-  @property({ provider: true, batchDelay: 70 }) accessor attendance = []
+  @property({ provider: true, batchDelay: 70 }) accessor attendance
 
-  @property({ provider: true, batchDelay: 70 }) accessor promo = {}
+  @property({ provider: true, batchDelay: 70 }) accessor promo
 
-  @property({ provider: true, batchDelay: 70 }) accessor tabs = []
+  @property({ provider: true, batchDelay: 70 }) accessor tabs
 
-  @property({ provider: true, batchDelay: 70 }) accessor payconiqTransactions = []
+  @property({ provider: true, batchDelay: 70 }) accessor payconiqTransactions
 
   @property({ provides: true, batchDelay: 70 }) accessor planning
 
@@ -76,11 +76,11 @@ export class PoHoShell extends LiteElement {
     }
   }
 
-  #onSearch = (ev) => {
+  #onSearch = ev => {
     if (this.pages.selected === 'sales' || this.pages.selected === 'products') {
       if (this.#inMem) this.products = this.#inMem
       this.#inMem = this.products
-      this.products = this.products.filter((product) => {
+      this.products = this.products.filter(product => {
         if (product.key.includes(ev.detail.toLowerCase())) return true
         if (product.name.toLowerCase().includes(ev.detail.toLowerCase())) return true
         if (product.category.toLowerCase().includes(ev.detail.toLowerCase())) return true
@@ -88,7 +88,7 @@ export class PoHoShell extends LiteElement {
     } else if (this.pages.selected === 'categories') {
       if (this.#inMem) this.categories = this.#inMem
       this.#inMem = this.categories
-      this.categories = this.categories.filter((category) => category.toLowerCase().includes(ev.detail))
+      this.categories = this.categories.filter(category => category.toLowerCase().includes(ev.detail))
     }
   }
 
@@ -99,7 +99,7 @@ export class PoHoShell extends LiteElement {
     products: ['products', 'categories'],
     sales: ['products', 'categories', 'payconiqTransactions', { name: 'promo', type: 'object' }, 'members', 'tabs'],
     checkout: ['transactions', 'members'],
-    attendance: ['attendance', 'members', { name: 'promo', type: 'object' }],
+    attendance: [{ name: 'attendance', type: 'object' }, 'members', { name: 'promo', type: 'object' }],
     categories: ['categories'],
     members: ['members'],
     bookkeeping: ['members'],
@@ -108,7 +108,6 @@ export class PoHoShell extends LiteElement {
     planning: [{ name: 'planning', type: 'object' }],
     calendar: ['members', { name: 'planning', type: 'object' }]
   }
-
 
   setupPropertyProvider(propertyProvider, type = 'array') {
     this.#propertyProviders.push(propertyProvider)
@@ -134,13 +133,16 @@ export class PoHoShell extends LiteElement {
       }
     }
 
-    firebase.onChildAdded(propertyProvider, async (snap) => {
+    firebase.onChildAdded(propertyProvider, async snap => {
       const val = await snap.val()
       if (type === 'array') {
-        if (typeof val === 'object') val.key = snap.key
+        if (typeof val === 'object' && !Array.isArray(val)) val.key = snap.key
         if (!this[propertyProvider]) {
           this[propertyProvider] = [val]
+          console.log({ propertyProvider })
         } else if (!this[propertyProvider].includes(val)) {
+          console.log({ propertyProvider })
+
           this[propertyProvider].push(val)
         }
         this[propertyProvider] = [...this[propertyProvider]]
@@ -151,8 +153,8 @@ export class PoHoShell extends LiteElement {
       }
     })
 
-    firebase.onChildChanged(propertyProvider, (snap) => deleteOrReplace(propertyProvider, snap, 'replace'))
-    firebase.onChildRemoved(propertyProvider, (snap) => deleteOrReplace(propertyProvider, snap, 'delete'))
+    firebase.onChildChanged(propertyProvider, snap => deleteOrReplace(propertyProvider, snap, 'replace'))
+    firebase.onChildRemoved(propertyProvider, snap => deleteOrReplace(propertyProvider, snap, 'delete'))
   }
 
   handlePropertyProvider(propertyProvider) {
@@ -195,14 +197,14 @@ export class PoHoShell extends LiteElement {
     if (end < new Date().getTime()) return true
     return false
   }
-  
+
   async connectedCallback() {
     this.roles = Object.keys(PoHoShell.propertyProviders)
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
 
-    this.shadowRoot.addEventListener('click', (event) => {
+    this.shadowRoot.addEventListener('click', event => {
       if (event.target.hasAttribute('input-tap')) {
         this.salesView.inputTap({ detail: event.target.getAttribute('input-tap') })
       }
@@ -210,6 +212,7 @@ export class PoHoShell extends LiteElement {
     this.drawerLayout.drawerOpen = false
     document.addEventListener('search', this.#onSearch)
     this.router = new Router(this)
+    this.setupPropertyProvider('promo', 'object')
     this.setupPropertyProvider('events')
     this.eventsinterval()
     this.renderMenu()
@@ -262,7 +265,9 @@ export class PoHoShell extends LiteElement {
   renderPayBar() {
     switch (this.pages?.selected) {
       case 'sales':
-        return html`<flex-row center class="pay-bar">
+        return html`<flex-row
+          center
+          class="pay-bar">
           <custom-elevation level="2"></custom-elevation>
           <md-filled-button input-tap="cash">Cash</md-filled-button>
           <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
@@ -280,8 +285,12 @@ export class PoHoShell extends LiteElement {
   renderMenu() {
     for (const item of this.shadowRoot.querySelectorAll('custom-drawer-item')) {
       if (!firebase.userRoles.includes(item.getAttribute('route')) && item.getAttribute('route') !== 'logout') {
-        this.shadowRoot.querySelector('custom-drawer-layout > custom-selector > [route=' + item.getAttribute('route')).remove()
-        this.shadowRoot.querySelector('custom-drawer-layout > custom-pages > [route=' + item.getAttribute('route')).remove()
+        this.shadowRoot
+          .querySelector('custom-drawer-layout > custom-selector > [route=' + item.getAttribute('route'))
+          .remove()
+        this.shadowRoot
+          .querySelector('custom-drawer-layout > custom-pages > [route=' + item.getAttribute('route'))
+          .remove()
       }
     }
   }
@@ -344,22 +353,28 @@ export class PoHoShell extends LiteElement {
           }
         }
         custom-selector {
-            margin-bottom: 125px
-          }
-
+          margin-bottom: 125px;
+        }
       </style>
       <!-- just cleaner -->
       ${icons}
 
       <md-dialog></md-dialog>
-      <custom-theme loadFont="false" mobile-trigger="(max-width: 1200px)"></custom-theme>
+      <custom-theme
+        loadFont="false"
+        mobile-trigger="(max-width: 1200px)"></custom-theme>
       <!-- see https://vandeurenglenn.github.io/custom-elements/ -->
       ${this.renderPayBar()}
-      <custom-drawer-layout appBarType="small" mobile-trigger="(max-width: 1200px)">
+      <custom-drawer-layout
+        appBarType="small"
+        mobile-trigger="(max-width: 1200px)">
         <span slot="top-app-bar-title">Poho</span>
         <span slot="top-app-bar-end">${this.renderSearch()}</span>
         <span slot="drawer-headline"> menu </span>
-        <custom-selector attr-for-selected="route" slot="drawer-content" @selected=${this.selectorSelected.bind(this)}>
+        <custom-selector
+          attr-for-selected="route"
+          slot="drawer-content"
+          @selected=${this.selectorSelected.bind(this)}>
           <custom-drawer-item route="sales"> Verkoop </custom-drawer-item>
           <custom-drawer-item route="checkout"> Afsluit </custom-drawer-item>
           <custom-drawer-item route="attendance"> Aanwezigheidslijst </custom-drawer-item>
@@ -375,7 +390,11 @@ export class PoHoShell extends LiteElement {
           <custom-drawer-item route="members"> Leden </custom-drawer-item>
           <custom-drawer-item route="planning"> Planning </custom-drawer-item>
           <custom-drawer-item route="users"> Gebruikers </custom-drawer-item>
-          <custom-drawer-item route="logout" class="logout"> Uitloggen </custom-drawer-item>
+          <custom-drawer-item
+            route="logout"
+            class="logout">
+            Uitloggen
+          </custom-drawer-item>
         </custom-selector>
         <custom-pages attr-for-selected="route">
           <loading-view route="loading"> </loading-view>

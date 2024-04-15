@@ -12,12 +12,12 @@ import { CustomNotifications } from '@vandeurenglenn/lite-elements/notifications
 
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
+  @property({ consumer: true, renders: false })
+  accessor promo: { [key: string]: Boolean }
   transaction: { [key: string]: Transaction[] } = {}
   @property({ type: Object, consumer: true })
   accessor members: { Type: Member }
-  @property({ consumer: true, renders: false })
-  accessor promo: { [key: string]: Boolean }
-  @property({ type: Array, consumer: true }) 
+  @property({ type: Array, consumer: true })
   accessor tabs: Tab[]
   currentSelectedProduct: string
   currentProductAmount: string = ''
@@ -152,7 +152,7 @@ export class SalesPad extends LiteElement {
   async inputTap({ detail }: CustomEvent) {
     let tabPay = await firebase.get('tabPay')
     if (tabPay) {
-      this.receipt.items = Object.values(this.tabs).filter((tab) => tab.key === tabPay)[0].transactionItems
+      this.receipt.items = Object.values(this.tabs).filter(tab => tab.key === tabPay)[0].transactionItems
       let total = 0
       for (const item of Object.values(this.receipt.items) as ReceiptItem[]) {
         total += Number(item.price) * Number(item.amount)
@@ -279,15 +279,15 @@ export class SalesPad extends LiteElement {
 
   connectedCallback() {
     let dialogCash = this.shadowRoot.querySelector('custom-dialog.dialogCash') as HTMLDialogElement
-    dialogCash.addEventListener('close', (event) => {
+    dialogCash.addEventListener('close', event => {
       this.writeTransaction({ event })
     })
     let dialogPayconiq = this.shadowRoot.querySelector('custom-dialog.dialogPayconiq') as HTMLDialogElement
-    dialogPayconiq.addEventListener('close', (event) => {
+    dialogPayconiq.addEventListener('close', event => {
       this.writeTransaction({ event }, true)
     })
     let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPromo') as HTMLDialogElement
-    dialogPromo.addEventListener('close', (event) => {
+    dialogPromo.addEventListener('close', event => {
       this.writeTransaction({ event }, '', true)
     })
   }
@@ -359,11 +359,13 @@ export class SalesPad extends LiteElement {
 
   renderPromo() {
     return Object.values(this.members)
-      .filter((promoMember) => Object.keys(this.promo).includes(promoMember.key) && this.promo[promoMember.key])
+      .filter(promoMember => Object.keys(this.promo).includes(promoMember.key) && this.promo[promoMember.key])
       .map(
-        (promoMember) =>
+        promoMember =>
           html`
-            <custom-button action=${promoMember.key} .label=${promoMember.name + ' ' + promoMember.lastname}
+            <custom-button
+              action=${promoMember.key}
+              .label=${promoMember.name + ' ' + promoMember.lastname}
               >${promoMember.name + ' ' + promoMember.lastname}</custom-button
             >
           `
@@ -375,21 +377,63 @@ export class SalesPad extends LiteElement {
       <custom-dialog class="dialogCash">
         <span slot="title">Cash Ontvangst</span>
         <flex-wrap-between slot="actions">
-          <custom-button label="&euro;300" action="300" has-label="">&euro;300</custom-button>
-          <custom-button label="&euro;200" action="200" has-label="">&euro;200</custom-button>
-          <custom-button label="&euro;100" action="100" has-label="">&euro;100</custom-button>
-          <custom-button label="&euro;50" action="50" has-label="">&euro;50</custom-button>
-          <custom-button label="&euro;20" action="20" has-label="">&euro;20</custom-button>
-          <custom-button label="&euro;10" action="10" has-label="">&euro;10</custom-button>
-          <custom-button label="&euro;5" action="5" has-label="">&euro;5</custom-button>
-          <custom-button label="Gepast" action="exact" has-label="">Gepast</custom-button>
+          <custom-button
+            label="&euro;300"
+            action="300"
+            has-label=""
+            >&euro;300</custom-button
+          >
+          <custom-button
+            label="&euro;200"
+            action="200"
+            has-label=""
+            >&euro;200</custom-button
+          >
+          <custom-button
+            label="&euro;100"
+            action="100"
+            has-label=""
+            >&euro;100</custom-button
+          >
+          <custom-button
+            label="&euro;50"
+            action="50"
+            has-label=""
+            >&euro;50</custom-button
+          >
+          <custom-button
+            label="&euro;20"
+            action="20"
+            has-label=""
+            >&euro;20</custom-button
+          >
+          <custom-button
+            label="&euro;10"
+            action="10"
+            has-label=""
+            >&euro;10</custom-button
+          >
+          <custom-button
+            label="&euro;5"
+            action="5"
+            has-label=""
+            >&euro;5</custom-button
+          >
+          <custom-button
+            label="Gepast"
+            action="exact"
+            has-label=""
+            >Gepast</custom-button
+          >
         </flex-wrap-between>
       </custom-dialog>
 
       <custom-dialog class="dialogPayconiq">
         <span slot="title">Payconiq Ontvangst</span>
         ${this.qrcode
-          ? html`<flex-row slot="actions" direction="row">
+          ? html`<flex-row
+              slot="actions"
+              direction="row">
               <img src=${this.qrcode} />
             </flex-row>`
           : html` <loading-view></loading-view>`}
@@ -400,9 +444,9 @@ export class SalesPad extends LiteElement {
         <flex-wrap-between slot="actions"> ${this.promo ? this.renderPromo() : ''} </flex-wrap-between>
       </custom-dialog>
 
-      <sales-receipt @selection=${(event) => this.onReceiptSelection(event)}></sales-receipt>
+      <sales-receipt @selection=${event => this.onReceiptSelection(event)}></sales-receipt>
       <flex-it></flex-it>
-      <sales-input @input-click=${(event) => this.inputTap(event)}></sales-input>
+      <sales-input @input-click=${event => this.inputTap(event)}></sales-input>
     `
   }
 }
