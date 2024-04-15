@@ -2,12 +2,57 @@
   "rules": {
     ".write": "root.child('admins').child(auth.uid).exists() === true",
     ".read": "root.child('admins').child(auth.uid).exists() === true",
-
     "users": {
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('users') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('users') || root.child('admins').child(auth.uid).exists() === true",
       "$userId": {
         ".write": "$userId === auth.uid || root.child('admins').child(auth.uid).exists() === true",
         ".read": "$userId === auth.uid || root.child('admins').child(auth.uid).exists() === true"
       }
+    },
+    "categories":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('categories') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('events') || root.child('users').child(auth.uid).child('roles').hasChild('categories') || root.child('users').child(auth.uid).child('roles').hasChild('products') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "tabPay":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "tabs":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "promo":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('attendance') ||root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('attendance') ||root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "sales":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('bookkeeping') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "payconiqTransactions":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "products":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('products') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('products') || root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "members":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('members') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('users') || root.child('users').child(auth.uid).child('roles').hasChild('members') || root.child('users').child(auth.uid).child('roles').hasChild('bookkeeping') || root.child('users').child(auth.uid).child('roles').hasChild('attendance') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "transactions":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "events":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('events') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('events') || root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "planning":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('planning') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('planning') || root.child('admins').child(auth.uid).exists() === true"
     }
   }
 }
