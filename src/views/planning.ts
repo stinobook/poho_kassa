@@ -71,7 +71,6 @@ export class PlanningView extends LiteElement {
     
     if (propertyKey === 'selectedYear' && this.planning && this._lite_planning !== undefined && value) {
       
-      
       const selectedYear = Object.keys(value).filter(year => Number(year) === value)[0]
       const year = this._lite_planning[selectedYear]
       const planning = {}

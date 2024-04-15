@@ -73,7 +73,7 @@ await auth.authStateReady()
 if (!auth.currentUser) {
   location.hash = Router.bang('login')
 } else {
-  if (!userRoles) userRoles = await get('users/' + auth.currentUser.uid + '/roles')
+  if (!userRoles) userRoles = Object.keys(await get('users/' + auth.currentUser.uid + '/roles'))
 }
 const onChildAdded = (target, cb) => {
   _onChildAdded(ref(database, target), cb)

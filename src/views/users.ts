@@ -178,7 +178,7 @@ export class UsersView extends LiteElement {
     this.shadowRoot.querySelectorAll('input[name=roles]:checked').forEach((checkbox) => checkbox.removeAttribute('checked'))
     let member = this.users.filter(user => user.key === this.editUser)[0].member
     if (member) selected.value = member
-    let roles = this.users.filter(user => user.key === this.editUser)[0].roles
+    let roles = Object.keys(this.users.filter(user => user.key === this.editUser)[0].roles)
     if (roles) {
       for (const role of roles) {
         const roleID = this.shadowRoot.querySelector('#' + role) as HTMLInputElement
@@ -193,7 +193,7 @@ export class UsersView extends LiteElement {
     let selected = this.shadowRoot.querySelector('.memberselector') as HTMLSelectElement
     const updates = {}
     updates['member'] = selected.value
-    updates['roles'] = Array.from(this.shadowRoot.querySelectorAll(`input[name=roles]:checked`)).map(check=>check.id)
+    updates['roles'] = (Array.from(this.shadowRoot.querySelectorAll(`input[name=roles]:checked`)).map(check => check.id)).reduce((m, v) => (m[v] = true, m), {})
     firebase.update('users/' + this.editUser, updates)
   }
 
