@@ -20,11 +20,10 @@ export type Products = Product[]
 
 @customElement('categories-view')
 export class CategoriesView extends LiteElement {
+  @property({ value: [] }) accessor targetEdit = []
+
   @property({ type: Array, consumer: true })
   accessor categories: string[]
-
-  @property()
-  accessor targetEdit
 
   static styles = [
     css`
@@ -87,7 +86,7 @@ export class CategoriesView extends LiteElement {
     }
   }
 
-  _remove = (target) => {
+  _remove = target => {
     const dialog = document.querySelector('po-ho-shell').shadowRoot.querySelector('md-dialog')
     dialog.innerHTML = `
     <div slot="headline">
@@ -105,10 +104,9 @@ export class CategoriesView extends LiteElement {
     const handleClose = async () => {
       if (dialog.returnValue === 'remove') {
         if (this.categories.includes(target)) {
-          this.categories.splice(this.categories.indexOf(target), 1)
-          this.requestRender()
-
-          await firebase.set('categories', this.categories)
+          const categories = [...this.categories]
+          categories.splice(categories.indexOf(target), 1)
+          await firebase.set('categories', categories)
         }
       }
       dialog.removeEventListener('close', handleClose)
@@ -118,9 +116,12 @@ export class CategoriesView extends LiteElement {
   }
 
   renderHeadline(item) {
-    if (this.targetEdit === item)
+    if (this.targetEdit?.includes(item))
       return html`<span slot="headline">
-        <md-outlined-text-field label="value" value=${item}></md-outlined-text-field>
+        <md-outlined-text-field
+          label="value"
+          key=${item}
+          value=${item}></md-outlined-text-field>
       </span>`
 
     return html`<span slot="headline">${item}</span>`
@@ -133,18 +134,19 @@ export class CategoriesView extends LiteElement {
       const key = target.getAttribute('key')
 
       if (action === 'editOrSave') {
-        if (!this.targetEdit) {
-          this.targetEdit = key
+        if (!this.targetEdit.includes(key)) {
+          this.targetEdit.push(key)
         } else {
-          const field = this.shadowRoot.querySelector('md-outlined-text-field').value
+          const field = this.shadowRoot.querySelector(`md-outlined-text-field[key="${key}"]`)?.value
           if (!field) return
-          this.categories.splice(this.categories.indexOf(this.targetEdit), 1)
-          if (!this.categories.includes(field)) {
-            this.categories.push(field)
-            await firebase.set('categories', this.categories)
+          const categories = [...this.categories]
+          if (field !== key) {
+            categories.splice(categories.indexOf(key), 1, field)
+            await firebase.set('categories', categories)
           }
-          this.targetEdit = null
+          this.targetEdit.splice(this.targetEdit.indexOf(key), 1)
         }
+        this.targetEdit = [...this.targetEdit]
       } else this[`_${action}`](key)
     }
   }
@@ -158,17 +160,19 @@ export class CategoriesView extends LiteElement {
         <flex-container>
           ${this.categories
             ? this.categories.map(
-                (item) => html`
+                item => html`
                   <md-list-item>
                     ${this.renderHeadline(item)}
                     <flex-row slot="end">
-                      <custom-icon-button icon="delete" key=${item} action="remove"></custom-icon-button>
+                      <custom-icon-button
+                        icon="delete"
+                        key=${item}
+                        action="remove"></custom-icon-button>
 
                       <custom-icon-button
-                        icon=${this.targetEdit === item ? 'save' : 'edit'}
+                        .icon=${this.targetEdit?.includes(item) ? 'save' : 'edit'}
                         key=${item}
-                        action="editOrSave"
-                      ></custom-icon-button>
+                        action="editOrSave"></custom-icon-button>
                     </flex-row>
                   </md-list-item>
                 `
