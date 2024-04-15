@@ -162,6 +162,7 @@ export class UsersView extends LiteElement {
       this.edit({ event })
     })
     this.shadowRoot.querySelector('.userlist').addEventListener('click', this.#clickHandler.bind(this))
+    console.log(this.roles)
   }
   disconnectedCallback() {
     this.shadowRoot.removeEventListener('click', this.#clickHandler.bind(this))
@@ -181,7 +182,7 @@ export class UsersView extends LiteElement {
     if (roles) {
       for (const role of roles) {
         const roleID = this.shadowRoot.querySelector('#' + role) as HTMLInputElement
-        roleID.setAttribute('checked', '')
+        if (roleID) roleID.setAttribute('checked', '')
       }
     }
     dialogEdit.open = true

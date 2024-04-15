@@ -30,7 +30,7 @@ export class LoginView extends LiteElement {
     if (isSignInWithEmailLink(this.auth, window.location.href)) {
       await signInWithEmailLink(this.auth, email, window.location.href)
       await updatePassword(this.auth.currentUser, password)
-      await firebase.set('users/' + this.auth.currentUser.uid, { 'email': email } )
+      await firebase.update('users/' + this.auth.currentUser.uid, { 'email': email } )
       location.href = location.href.split('index')[0]
     } else {
       await signInWithEmailAndPassword(this.auth, email, password)
