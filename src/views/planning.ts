@@ -1,4 +1,4 @@
-import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
+import { html, css, LiteElement, property, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
 
@@ -10,9 +10,15 @@ export class PlanningView extends LiteElement {
   startYear = this.date.getFullYear()
   startMonth = this.date.getMonth()
 
+  @property({ type: Array }) accessor years
+
+  @property({ type: Object }) accessor activeYear
+
   @property({ type: Number }) accessor selectedYear: number = this.startYear
 
-  @property({ type: Object, consumes: true }) accessor planning
+  @property({ type: Object, consumes: true, renders: false }) accessor planning
+
+  @query('select') accessor select
 
   static styles = [
     css`
@@ -51,37 +57,43 @@ export class PlanningView extends LiteElement {
 
   connectedCallback() {
     document.addEventListener('calendar-change', this.#calendarChange.bind(this))
+    this.select.addEventListener('change', () => {
+      console.log(this.select.value)
+
+      this.selectedYear = Number(this.select.value)
+    })
   }
 
   async #calendarChange({ detail }) {
     await firebase.set(`planning/${detail.year}/${detail.month}`, detail.active)
   }
 
-  async willChange(propertyKey: string, value: any): Promise<any> {
-    if (propertyKey === 'selectedYear' && this.planning && this._lite_planning !== undefined && value) {
-      const selectedYear = Object.keys(value).filter(year => Number(year) === value)[0]
-      const year = this._lite_planning[selectedYear]
-      const planning = {}
-      planning[selectedYear] = year
-      this.planning = planning[selectedYear] = year
-    } else if (propertyKey === 'planning' && this.selectedYear) {
+  onChange(propertyKey: string, value: any): void {
+    if (propertyKey === 'selectedYear' && this.planning && value) {
+      this.years = Object.keys(this.planning)
+
+      const selectedYear = this.years.filter(year => Number(year) === value)[0]
+      const year = this.planning[selectedYear]
+
+      this.activeYear = { [selectedYear]: year }
+    } else if (propertyKey === 'planning' && this.selectedYear && value) {
+      this.years = Object.keys(value)
+
       const selectedYear = Object.keys(value).filter(year => Number(year) === this.selectedYear)[0]
       const year = value[selectedYear]
-      value = {}
-      value[selectedYear] = year
+      this.activeYear = { [selectedYear]: year }
     }
-    return value
   }
 
   render() {
     return html`
       <flex-container class="selector">
         <select>
-          ${this.planning ? Object.keys(this.planning).map(year => html`<option>${year}</option>`) : ''}
+          ${this.years ? this.years.map(year => html`<option>${year}</option>`) : ''}
         </select>
 
-        ${this.planning
-          ? Object.entries(this.planning).map(
+        ${this.activeYear
+          ? Object.entries(this.activeYear).map(
               ([year, months]) => html`
                 <calendar-year
                   .year=${year}
