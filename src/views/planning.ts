@@ -69,18 +69,12 @@ export class PlanningView extends LiteElement {
   }
 
   onChange(propertyKey: string, value: any): void {
-    if (propertyKey === 'selectedYear' && this.planning && value) {
+    if ((propertyKey === 'selectedYear' && this.planning) || (propertyKey === 'planning' && this.selectedYear)) {
       this.years = Object.keys(this.planning)
 
-      const selectedYear = this.years.filter(year => Number(year) === value)[0]
+      const selectedYear = this.years.filter(year => Number(year) === this.selectedYear)[0]
       const year = this.planning[selectedYear]
 
-      this.activeYear = { [selectedYear]: year }
-    } else if (propertyKey === 'planning' && this.selectedYear && value) {
-      this.years = Object.keys(value)
-
-      const selectedYear = Object.keys(value).filter(year => Number(year) === this.selectedYear)[0]
-      const year = value[selectedYear]
       this.activeYear = { [selectedYear]: year }
     }
   }
