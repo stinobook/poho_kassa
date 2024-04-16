@@ -20,8 +20,6 @@ export class CalendarMonth extends LiteElement {
     if ((this.month && propertyKey === 'year') || (this.year && propertyKey === 'month')) {
       this.date = new Date(`${this.year}-${this.month}-1`)
       this.longMonth = this.date.toLocaleString('nl-BE', { month: 'long' })
-
-      if (Number(this.today.getMonth()) === Number(this.month)) this.scrollIntoView()
       const days = []
 
       let firstDay = new Date(this.year, this.month - 1).getDay() - 1
@@ -41,6 +39,8 @@ export class CalendarMonth extends LiteElement {
         days.push(cells)
       }
       this.dates = days
+
+      if (Number(this.today.getMonth()) === Number(this.month)) this.scrollIntoView(true)
     }
   }
   static styles?: StyleList = [
@@ -132,7 +132,6 @@ export class CalendarMonth extends LiteElement {
       month,
       active: this.active
     }
-    console.log(detail)
 
     document.dispatchEvent(
       new CustomEvent('calendar-change', {
@@ -142,7 +141,7 @@ export class CalendarMonth extends LiteElement {
   }
 
   dayToDate(day) {
-    return `${day}-${this.month}-${this.year}`
+    return `${Number(day)}-${Number(this.month)}-${this.year}`
   }
   render() {
     return html`${this.date && this.month
