@@ -127,8 +127,8 @@ export class PoHoShell extends LiteElement {
         else this[propertyProvider].splice(i, 1)
         this[propertyProvider] = [...this[propertyProvider]]
       } else if (type === 'object') {
-        if (task === 'replace') this[propertyProvider][val.key] = val
-        else delete this[propertyProvider][val.key]
+        if (task === 'replace') this[propertyProvider][snap.key] = val
+        else delete this[propertyProvider][snap.key]
         this[propertyProvider] = { ...this[propertyProvider] }
       }
     }
@@ -139,10 +139,7 @@ export class PoHoShell extends LiteElement {
         if (typeof val === 'object' && !Array.isArray(val)) val.key = snap.key
         if (!this[propertyProvider]) {
           this[propertyProvider] = [val]
-          console.log({ propertyProvider })
         } else if (!this[propertyProvider].includes(val)) {
-          console.log({ propertyProvider })
-
           this[propertyProvider].push(val)
         }
         this[propertyProvider] = [...this[propertyProvider]]
