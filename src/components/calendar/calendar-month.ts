@@ -1,10 +1,10 @@
-import { LiteElement, property, html, customElement, query } from "@vandeurenglenn/lite";
-import { StyleList, css } from "@vandeurenglenn/lite/element";
+import { LiteElement, property, html, customElement, query } from '@vandeurenglenn/lite'
+import { StyleList, css } from '@vandeurenglenn/lite/element'
 
 @customElement('calendar-month')
 export class CalendarMonth extends LiteElement {
   today = new Date()
-  days = [ 'm', 'd', 'w', 'd', 'v', 'z', 'z' ]
+  days = ['m', 'd', 'w', 'd', 'v', 'z', 'z']
 
   @query('tbody') accessor tbody
 
@@ -17,28 +17,26 @@ export class CalendarMonth extends LiteElement {
   date: Date
 
   async onChange(propertyKey): Promise<any> {
-    
-    if (this.month && propertyKey === 'year' || this.year && propertyKey === 'month') {
+    if ((this.month && propertyKey === 'year') || (this.year && propertyKey === 'month')) {
       this.date = new Date(`${this.year}-${this.month}-1`)
       this.longMonth = this.date.toLocaleString('nl-BE', { month: 'long' })
-      
+
+      if (Number(this.today.getMonth()) === Number(this.month)) this.scrollIntoView()
       const days = []
 
-
-      let firstDay = (new Date(this.year, this.month - 1)).getDay() - 1
-      if (firstDay === -1 ) firstDay = 6
-      let amountDays = (new Date(this.year, this.month, 0)).getDate()
+      let firstDay = new Date(this.year, this.month - 1).getDay() - 1
+      if (firstDay === -1) firstDay = 6
+      let amountDays = new Date(this.year, this.month, 0).getDate()
       let day = 1
       let value = ''
       for (let rowIterator = 0; rowIterator < 6; rowIterator++) {
         const cells = []
         for (let cellIterated = 0; cellIterated < 7 && day <= amountDays; cellIterated++) {
-          
           if (rowIterator !== 0 || cellIterated >= firstDay) {
-            value = day.toString()            
+            value = day.toString()
             day++
           }
-          cells.push(value)          
+          cells.push(value)
         }
         days.push(cells)
       }
@@ -81,12 +79,12 @@ export class CalendarMonth extends LiteElement {
       }
 
       table tbody tr td {
-        cursor:pointer;
-        outline:0;
-        justify-self:center;
-        align-self:center;
-        border-radius:50px;
-        transition-duration:.2s;
+        cursor: pointer;
+        outline: 0;
+        justify-self: center;
+        align-self: center;
+        border-radius: 50px;
+        transition-duration: 0.2s;
         pointer-events: auto;
         cursor: pointer;
         border: 4px solid var(--md-sys-color-surface-container-high);
@@ -103,11 +101,12 @@ export class CalendarMonth extends LiteElement {
 
       [today] {
         gap: 2px;
-        
+
         border: 4px solid var(--md-sys-color-inverse-primary);
       }
 
-      [active] .selection-wrapper, [active]:not([today]) {
+      [active] .selection-wrapper,
+      [active]:not([today]) {
         color: var(--md-sys-color-on-secondary);
         background: var(--md-sys-color-secondary);
       }
@@ -118,11 +117,11 @@ export class CalendarMonth extends LiteElement {
     this.shadowRoot.addEventListener('click', this.#clickHandler)
   }
 
-  #clickHandler = (event) => {
+  #clickHandler = event => {
     const [day, month, year] = event.target.getAttribute('date').split('-')
-    
+
     if (event.target.hasAttribute('active')) {
-      this.active.splice(this.active.indexOf(day), 1)      
+      this.active.splice(this.active.indexOf(day), 1)
     } else {
       this.active.push(day)
     }
@@ -133,8 +132,8 @@ export class CalendarMonth extends LiteElement {
       month,
       active: this.active
     }
-    console.log(detail);
-    
+    console.log(detail)
+
     document.dispatchEvent(
       new CustomEvent('calendar-change', {
         detail
@@ -146,31 +145,38 @@ export class CalendarMonth extends LiteElement {
     return `${day}-${this.month}-${this.year}`
   }
   render() {
-    return html`${this.date && this.month ? html`
-    <header>
+    return html`${this.date && this.month
+      ? html`
+          <header>${this.longMonth}</header>
 
-      ${this.longMonth}
-    </header>
-
-    <table>
-      <thead>
-        <tr>
-        ${this.days.map(day => html`<th>${day}</th>`)}
-        </tr>
-        
-      </thead>
-      <tbody>
-        ${this.dates ? this.dates.map((row) => html`
-          <tr>
-            ${row.map(day => html`
-              <td date=${this.dayToDate(day)} ?today=${this.today.toLocaleDateString('be-nl') === this.dayToDate(day)} ?active=${this.active?.includes(day)}>
-              <span class="selection-wrapper">${day}</span></td>
-            `) }
-          </tr>
-        `) : ''}
-      </tbody>
-    </table>
-    
-    ` : '' }`
+          <table>
+            <thead>
+              <tr>
+                ${this.days.map(day => html`<th>${day}</th>`)}
+              </tr>
+            </thead>
+            <tbody>
+              ${this.dates
+                ? this.dates.map(
+                    row => html`
+                      <tr>
+                        ${row.map(
+                          day => html`
+                            <td
+                              date=${this.dayToDate(day)}
+                              ?today=${this.today.toLocaleDateString('be-nl') === this.dayToDate(day)}
+                              ?active=${this.active?.includes(day)}>
+                              <span class="selection-wrapper">${day}</span>
+                            </td>
+                          `
+                        )}
+                      </tr>
+                    `
+                  )
+                : ''}
+            </tbody>
+          </table>
+        `
+      : ''}`
   }
 }
