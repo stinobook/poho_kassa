@@ -55,27 +55,51 @@ export class PlanningView extends LiteElement {
     `
   ]
 
-  connectedCallback() {
+  async connectedCallback() {
+    const value = await firebase.get('planning')
+    console.log(value)
+    if (!value) {
+      this.planning = {
+        [this.startYear]: [[], [], [], [], [], [], [], [], [], [], [], []],
+        [this.startYear + 1]: [[], [], [], [], [], [], [], [], [], [], [], []]
+      }
+    }
+
     document.addEventListener('calendar-change', this.#calendarChange.bind(this))
     this.select.addEventListener('change', () => {
-      console.log(this.select.value)
-
       this.selectedYear = Number(this.select.value)
     })
   }
 
   async #calendarChange({ detail }) {
-    await firebase.set(`planning/${detail.year}/${detail.month}`, detail.active)
+    await firebase.set(`planning/${Number(detail.year)}/${Number(detail.month) - 1}`, detail.active)
   }
 
-  onChange(propertyKey: string, value: any): void {
+  async onChange(propertyKey: string) {
     if ((propertyKey === 'selectedYear' && this.planning) || (propertyKey === 'planning' && this.selectedYear)) {
       this.years = Object.keys(this.planning)
 
-      const selectedYear = this.years.filter(year => Number(year) === this.selectedYear)[0]
+      if (!this.years.includes(String(this.startYear))) {
+        this.planning[this.startYear] = [[], [], [], [], [], [], [], [], [], [], [], []]
+      }
+
+      if (!this.years.includes(String(this.startYear + 1))) {
+        this.planning[this.startYear + 1] = [[], [], [], [], [], [], [], [], [], [], [], []]
+      }
+
+      const selectedYear = this.years.filter(year => Number(year) === Number(this.selectedYear))[0]
       const year = this.planning[selectedYear]
 
-      this.activeYear = { [selectedYear]: year }
+      if (year?.length < 12) {
+        const mock = []
+        for (let i = 0; i < 12; i++) {
+          const month = year[i]
+          mock[i] = month ? month : []
+        }
+        this.activeYear = { [selectedYear]: mock }
+      } else {
+        this.activeYear = { [selectedYear]: year }
+      }
     }
   }
 

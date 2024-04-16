@@ -14,13 +14,15 @@ export class CalendarYear extends LiteElement {
     return html`
       <flex-container>
         <flex-wrap-between>
-          ${Object.entries(this.months).map(
-            ([month, active]) =>
-              html`<calendar-month
-                .year=${this.year}
-                .month=${month}
-                .active=${active}></calendar-month>`
-          )}
+          ${this.months
+            ? this.months.map(
+                (active, i) =>
+                  html`<calendar-month
+                    .year=${this.year}
+                    .month=${i < 9 ? `0${i + 1}` : i + 1}
+                    .active=${active}></calendar-month>`
+              )
+            : ''}
         </flex-wrap-between>
       </flex-container>
     `
