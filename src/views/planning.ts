@@ -10,7 +10,7 @@ export class PlanningView extends LiteElement {
   startYear = this.date.getFullYear()
   startMonth = this.date.getMonth()
 
-  @property({type: Number}) accessor selectedYear: number = this.startYear
+  @property({ type: Number }) accessor selectedYear: number = this.startYear
 
   @property({ type: Object, consumes: true }) accessor planning
 
@@ -33,27 +33,17 @@ export class PlanningView extends LiteElement {
         font-size: 24px;
         color: var(--md-sys-color-on-background);
         background: transparent;
-      }    
-      
+      }
 
-      @media(min-width: 860px) {
-
-        flex-container {
-          max-width: 860px;
+      @media (min-width: 874px) {
+        .selector {
+          max-width: 874px;
         }
       }
 
-      @media(min-width: 1300px) {
-
-        flex-container {
-          max-width: 1300px;
-        }
-      }
-
-      @media(min-width: 2200px) {
-
-        flex-container {
-          max-width: 2200px;
+      @media (min-width: 1640px) {
+        .selector {
+          max-width: 1640px;
         }
       }
     `
@@ -63,20 +53,17 @@ export class PlanningView extends LiteElement {
     document.addEventListener('calendar-change', this.#calendarChange.bind(this))
   }
 
-  async #calendarChange({detail}) {
+  async #calendarChange({ detail }) {
     await firebase.set(`planning/${detail.year}/${detail.month}`, detail.active)
   }
- 
+
   async willChange(propertyKey: string, value: any): Promise<any> {
-    
     if (propertyKey === 'selectedYear' && this.planning && this._lite_planning !== undefined && value) {
-      
       const selectedYear = Object.keys(value).filter(year => Number(year) === value)[0]
       const year = this._lite_planning[selectedYear]
       const planning = {}
       planning[selectedYear] = year
       this.planning = planning[selectedYear] = year
-     
     } else if (propertyKey === 'planning' && this.selectedYear) {
       const selectedYear = Object.keys(value).filter(year => Number(year) === this.selectedYear)[0]
       const year = value[selectedYear]
@@ -86,21 +73,23 @@ export class PlanningView extends LiteElement {
     return value
   }
 
-  render() {    
+  render() {
     return html`
-      <flex-container>
+      <flex-container class="selector">
         <select>
           ${this.planning ? Object.keys(this.planning).map(year => html`<option>${year}</option>`) : ''}
         </select>
-      </flex-container>
-    
-    ${this.planning ? Object.entries(this.planning).map(([year, months]) => html`
-      <calendar-year .year=${year} .months=${months}></calendar-year>
-    `): ''}
-    
-    
-    
 
+        ${this.planning
+          ? Object.entries(this.planning).map(
+              ([year, months]) => html`
+                <calendar-year
+                  .year=${year}
+                  .months=${months}></calendar-year>
+              `
+            )
+          : ''}
+      </flex-container>
     `
   }
 }
