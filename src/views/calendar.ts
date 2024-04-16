@@ -4,7 +4,7 @@ import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/lite-elements/tabs.js'
 import '@vandeurenglenn/lite-elements/selector.js'
 import { Member } from '../types.js'
-import type { CustomSelector } from '.././component-types.js'
+import './../components/presence/presence.js'
 
 @customElement('calendar-view')
 export class CalendarView extends LiteElement {
@@ -26,6 +26,11 @@ export class CalendarView extends LiteElement {
         height: 100%;
         display: flex;
         flex-direction: column;
+      }
+      presence-element {
+        background-color: var(--md-sys-color-surface-container-high);
+        color: var(--md-sys-color-on-surface-container-high);
+        width: 100%;
       }
     `
   ]
@@ -72,6 +77,10 @@ export class CalendarView extends LiteElement {
       <div class="attendance">
         ${(this.year && this.month) ? this.renderPlanning() : ''}
       </div>
+      <presence-element
+        .date=${"2024-04-03"}
+        .group=${"bestuur"}
+      ></presence-element>
     </flex-container>
     `
   }
