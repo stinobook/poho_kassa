@@ -224,16 +224,19 @@ export class PoHoShell extends LiteElement {
   eventsinterval() {
     setInterval(async () => {
       let change = false
+      let pages = this.shadowRoot.querySelector("custom-drawer-layout").shadowRoot.querySelector("flex-column > slot:nth-child(2) > custom-top-app-bar") as HTMLElement
       for (const event of this.events) {
         if (!this.didEnd(event) && this.didStart(event)) {
           this.eventMode = true
           this.currentEvent = event
+          pages.style.setProperty('background', 'var(--md-sys-color-error-container)')
           change = true
           break
         }
       }
       if (!change) {
         this.eventMode = false
+        pages.style.setProperty('background', 'var(--md-sys-color-surface)')
         this.currentEvent = undefined
       }
     }, 5000)
