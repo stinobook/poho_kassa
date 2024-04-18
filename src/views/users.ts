@@ -177,7 +177,7 @@ export class UsersView extends LiteElement {
     this.shadowRoot.querySelectorAll('input[name=roles]:checked').forEach((checkbox) => checkbox.removeAttribute('checked'))
     let member = this.users.filter(user => user.key === this.editUser)[0].member
     if (member) selected.value = member
-    let roles = Object.keys(this.users.filter(user => user.key === this.editUser)[0].roles)
+    let roles = Object.keys(this.users.filter(user => user.key === this.editUser)[0].roles || {})
     if (roles) {
       for (const role of roles) {
         const roleID = this.shadowRoot.querySelector('#' + role) as HTMLInputElement

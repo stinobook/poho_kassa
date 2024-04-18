@@ -263,7 +263,7 @@ export class CheckoutView extends LiteElement {
     if (propertyKey === 'transactions' || propertyKey === 'cashStart') {
       if (
         this.transactions !== undefined &&
-        this.transactions.length > 0 &&
+        this.transactions?.length > 0 &&
         this.cashExpected !== undefined &&
         this.cashStart !== undefined
       ) {
@@ -371,7 +371,7 @@ export class CheckoutView extends LiteElement {
   }
 
   render() {
-    if (this.transactions.length === 0) {
+    if (this.transactions?.length === 0) {
       return html`<flex-container>
                     <custom-typography><h1>Niets om af te boeken</h1></custom-typography>
                   </flex-container>`
