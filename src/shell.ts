@@ -179,7 +179,7 @@ export class PoHoShell extends LiteElement {
     this.selector.select(selected)
     this.pages.select(selected)
 
-    this.handlePropertyProvider(selected)
+    if (this.roles.includes(selected)) this.handlePropertyProvider(selected)
     this.drawerLayout.drawerOpen = false
   }
 
