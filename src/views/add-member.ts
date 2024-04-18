@@ -162,6 +162,9 @@ export class AddMemberView extends LiteElement {
       span {
         margin-top: 16px;
       }
+      md-select-option {
+        text-transform: capitalize;
+      }
       md-fab {
         position: absolute;
         right: 24px;
@@ -175,6 +178,7 @@ export class AddMemberView extends LiteElement {
       .back {
         left: 24px;
         right: 0;
+        width: min-content;
       }
 
       img {
@@ -268,17 +272,17 @@ export class AddMemberView extends LiteElement {
               name="group"
               required>
               <md-select-option
-                value="Bestuur"
+                value="bestuur"
                 headline="bestuur"
                 >Bestuur</md-select-option
               >
               <md-select-option
-                value="Instructeurs"
+                value="instructeurs"
                 headline="instructeurs"
                 >Instructeurs</md-select-option
               >
               <md-select-option
-                value="Leden"
+                value="leden"
                 headline="leden"
                 >Leden</md-select-option
               >
