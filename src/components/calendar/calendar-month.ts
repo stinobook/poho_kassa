@@ -19,7 +19,7 @@ export class CalendarMonth extends LiteElement {
   async onChange(propertyKey): Promise<any> {
     if ((this.month && propertyKey === 'year') || (this.year && propertyKey === 'month')) {
       this.date = new Date(`${this.year}-${this.month}-1`)
-      this.longMonth = this.date.toLocaleString('nl-BE', { month: 'long' })
+      this.longMonth = new Date(this.year + '-' +this.month).toLocaleString('nl-BE', { month: 'long' })
       const days = []
 
       let firstDay = new Date(this.year, this.month - 1).getDay() - 1

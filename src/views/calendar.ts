@@ -32,6 +32,12 @@ export class CalendarView extends LiteElement {
         color: var(--md-sys-color-on-surface-container-high);
         width: 100%;
       }
+      .attendance {
+        display: flex;
+        flex-direction: column;
+        min-width: 100%;
+        gap: 12px;
+      }
     `
   ]
   
@@ -45,9 +51,9 @@ export class CalendarView extends LiteElement {
   renderTabs() {
     return Object.entries(this.planning).map(([year, months]) =>
       Object.entries(months).map(([month, days]) =>
-        (Number(month) === (new Date().getMonth() +1)) ?
-          html`<custom-tab class="custom-selected" plandate=${year + '-' + month}>${new Date(Number(year), Number(month)-1).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
-          : html`<custom-tab plandate=${year + '-' + month}>${new Date(Number(year), Number(month)-1).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
+        (Number(month) === (new Date().getMonth())) ?
+          html`<custom-tab class="custom-selected" plandate=${year + '-' + month}>${new Date(Number(year), Number(month)).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
+          : html`<custom-tab plandate=${year + '-' + month}>${new Date(Number(year), Number(month)).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
       )
     )
   }
@@ -57,14 +63,29 @@ export class CalendarView extends LiteElement {
       (this.year === year) ? 
         Object.entries(months).map(([month, days]) =>
           (this.month === month) ?
-            days.map((day) =>
-            html `<div calyear=${year} calmonth=${month} calday=${day}>${day}</div>`
+            days.sort(function (a, b) {  return a - b;  }).map((day) =>
+            html `
+              <presence-element
+                .date=${year + '-' + (Number(month) + 1) + '-' + day}
+                .group=${"instructeurs"}
+              ></presence-element>
+            `
             )
           : ''
         )
       : ''
     
   )
+  }
+
+  async connectedCallback() {
+/*    const value = await firebase.get('planning')
+    console.log(value)
+ 
+    document.addEventListener('calendar-change', this.#calendarChange.bind(this))
+    this.select.addEventListener('change', () => {
+      this.selectedYear = Number(this.select.value)
+    }) */
   }
 
   render() {
@@ -77,10 +98,6 @@ export class CalendarView extends LiteElement {
       <div class="attendance">
         ${(this.year && this.month) ? this.renderPlanning() : ''}
       </div>
-      <presence-element
-        .date=${"2024-04-03"}
-        .group=${"bestuur"}
-      ></presence-element>
     </flex-container>
     `
   }

@@ -37,6 +37,10 @@ export default html`
       <span name="shopping_cart_checkout">@symbol-shopping_cart_checkout</span>
       <span name="notifications">@symbol-notifications</span>
       <span name="clear-all">@symbol-clear_all</span>
+      <span name="lock_open">@symbol-lock_open</span>
+      <span name="lock">@symbol-lock</span>
+      <span name="location_off">@symbol-location_off</span>
+      <span name="location_on">@symbol-location_on</span>
     </template>
   </custom-icon-set>
 `
