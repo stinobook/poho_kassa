@@ -10,7 +10,7 @@ export class CalendarMonth extends LiteElement {
 
   @property() accessor active
   @property() accessor year
-  @property() accessor month
+  @property({ reflect: true, attribute: true }) accessor month
   @property() accessor longMonth
   @property() accessor dates
 
@@ -18,8 +18,8 @@ export class CalendarMonth extends LiteElement {
 
   async onChange(propertyKey): Promise<any> {
     if ((this.month && propertyKey === 'year') || (this.year && propertyKey === 'month')) {
-      this.date = new Date(`${this.year}-${this.month}-1`)
-      this.longMonth = new Date(this.year + '-' +this.month).toLocaleString('nl-BE', { month: 'long' })
+      this.date = new Date(`${this.year}-${this.month}-01`)
+      this.longMonth = new Date(this.year + '-' + this.month).toLocaleString('nl-BE', { month: 'long' })
       const days = []
 
       let firstDay = new Date(this.year, this.month - 1).getDay() - 1
@@ -39,8 +39,6 @@ export class CalendarMonth extends LiteElement {
         days.push(cells)
       }
       this.dates = days
-
-      if (Number(this.today.getMonth()) === Number(this.month)) this.scrollIntoView(true)
     }
   }
   static styles?: StyleList = [

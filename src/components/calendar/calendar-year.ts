@@ -62,6 +62,17 @@ export class CalendarYear extends LiteElement {
     `
   ]
 
+  // async onChange(propertyKey: string, value: any): void {
+  //   if (propertyKey === 'months') {
+  //     const lastMonth = this.shadowRoot.querySelector(`[month="12"]`)
+  //     await lastMonth.rendered
+  //     const date = new Date().getMonth()
+  //     const month = this.shadowRoot.querySelector(`[month="${date < 9 ? `0${date + 1}` : date + 1}"]`)
+  //     month?.scrollIntoView(true)
+  //     console.log(month)
+  //   }
+  // }
+
   render() {
     return html`${this.year && this.months ? this.renderMonths() : ''}`
   }
