@@ -90,15 +90,15 @@ export class PlanningView extends LiteElement {
       const selectedYear = this.years.filter(year => Number(year) === Number(this.selectedYear))[0]
       const year = this.planning[selectedYear]
 
-      if (year?.length < 12) {
+      if (!year || Object.keys(year)?.length < 12) {
         const mock = []
         for (let i = 0; i < 12; i++) {
-          const month = year[i]
+          const month = year ? year[i] : undefined
           mock[i] = month ? month : []
         }
         this.activeYear = { [selectedYear]: mock }
       } else {
-        this.activeYear = { [selectedYear]: year }
+        this.activeYear = { [selectedYear]: Object.values(year) }
       }
     }
   }
