@@ -9,10 +9,11 @@ import './../components/presence/presence.js'
 @customElement('calendar-view')
 export class CalendarView extends LiteElement {
   @property({ type: Object, consumer: true })
-  accessor planning = {}
+  accessor planning
   @property({ type: Array, consumer: true })
-  accessor members: { [group: string]: Member[] }
-
+  accessor members
+  @property() accessor user
+  @property() accessor userGroup
   @property() accessor selected
   @property() accessor year
   @property() accessor month
@@ -66,8 +67,8 @@ export class CalendarView extends LiteElement {
             days.sort(function (a, b) {  return a - b;  }).map((day) =>
             html `
               <presence-element
-                .date=${year + '-' + (Number(month) + 1) + '-' + day}
-                .group=${"instructeurs"}
+                .date=${year + '-' + (Number(month) + 1) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
+                .group=${this.userGroup}
               ></presence-element>
             `
             )
@@ -77,15 +78,21 @@ export class CalendarView extends LiteElement {
     
   )
   }
+  async onChange(propertyKey: any, value: any) {
+    console.log(propertyKey, value)
+    if ((propertyKey === 'members' || propertyKey === 'user') && this.user) {
+      this.userGroup = Object.values(this.members).filter((member) => member.key === this.user.member)[0].group
+    }
+  }
 
-  async connectedCallback() {
-/*    const value = await firebase.get('planning')
-    console.log(value)
- 
-    document.addEventListener('calendar-change', this.#calendarChange.bind(this))
-    this.select.addEventListener('change', () => {
-      this.selectedYear = Number(this.select.value)
-    }) */
+  async connectedCallback(): Promise<void> {
+    this.user = await firebase.get('users/' + firebase.auth.currentUser.uid)
+   
+    document.addEventListener('presence-change', this.#presenceChange.bind(this))
+  }
+
+  async #presenceChange({detail}) {
+    await firebase.set(`planning/${Number(detail.year)}/${Number(detail.month) - 1}/${Number(detail.day)}/${this.user.member}`,detail.presence)
   }
 
   render() {

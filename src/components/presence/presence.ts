@@ -87,7 +87,7 @@ export class PresenceElement extends LiteElement {
   
   #clickHandler = event => {
     if (event.target.hasAttribute('id')) {
-      const [day, month, year] = this.date.split('-')
+      const [year, month, day] = this.date.split('-')
       let presence:any = Array.from(this.shadowRoot.querySelectorAll('input[type=checkbox]:checked'))
       if (event.target.getAttribute('id') === 'no') {
         presence.forEach((checkbox) => {
@@ -100,13 +100,13 @@ export class PresenceElement extends LiteElement {
         }
         )
       }
-      this.presence = presence.map(checked => checked.id)
       const detail = {
         day,
         year,
         month,
-        presence: this.presence
+        presence: Array.from(this.shadowRoot.querySelectorAll('input[type=checkbox]:checked')).map(checked => checked.id)
       }
+      console.log(detail)
       document.dispatchEvent(
         new CustomEvent('presence-change', {
           detail
