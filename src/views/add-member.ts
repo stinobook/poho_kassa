@@ -196,10 +196,10 @@ export class AddMemberView extends LiteElement {
     const result = await this.dialog.addImage()
     if (result.fields.url.length > 0) {
       this[target] = result.fields.url
-    } else if (result.image) {
-      this[target] = result.image.data[0].data
+      this.shadowRoot.querySelector(`img[name="${target}"]`).src = this[target]
+    } else {
+      this.shadowRoot.querySelector(`img[name="${target}"]`).src = result.image.data[0].data
     }
-    this.shadowRoot.querySelector(`img[name="${target}"]`).src = this[target]
   }
 
   async _cropImage(target: 'userphotobgURL' | 'userphotoURL') {

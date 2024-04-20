@@ -224,7 +224,9 @@ export class PoHoShell extends LiteElement {
   eventsinterval() {
     setInterval(async () => {
       let change = false
-      let pages = this.shadowRoot.querySelector("custom-drawer-layout").shadowRoot.querySelector("flex-column > slot:nth-child(2) > custom-top-app-bar") as HTMLElement
+      let pages = this.shadowRoot
+        .querySelector('custom-drawer-layout')
+        .shadowRoot.querySelector('flex-column > slot:nth-child(2) > custom-top-app-bar') as HTMLElement
       for (const event of this.events) {
         if (!this.didEnd(event) && this.didStart(event)) {
           this.eventMode = true
@@ -272,12 +274,11 @@ export class PoHoShell extends LiteElement {
           <md-filled-button input-tap="cash">Cash</md-filled-button>
           <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
           <md-filled-button input-tap="tabs">Rekeningen</md-filled-button>
-          ${this.promo 
+          ${this.promo
             ? Object.values(this.promo).includes(true)
               ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>`
               : ''
-            : ''
-          }
+            : ''}
         </flex-row>`
 
       default:
