@@ -57,6 +57,10 @@
     "planning":{
       ".write": "root.child('users').child(auth.uid).child('roles').hasChild('planning') || root.child('admins').child(auth.uid).exists() === true",
       ".read": "root.child('users').child(auth.uid).child('roles').hasChild('planning') || root.child('admins').child(auth.uid).exists() === true"
+    },
+    "calendar":{
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('calendar') || root.child('admins').child(auth.uid).exists() === true",
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('calendar') || root.child('admins').child(auth.uid).exists() === true"
     }
   }
 }

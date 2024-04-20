@@ -55,6 +55,8 @@ export class PoHoShell extends LiteElement {
 
   @property({ provides: true, batchDelay: 70 }) accessor planning
 
+  @property({ provides: true, batchDelay: 70 }) accessor calendar
+
   @property({ provides: true, batchDelay: 70 }) accessor users
 
   @property({ provides: true }) accessor roles
@@ -106,7 +108,7 @@ export class PoHoShell extends LiteElement {
     users: ['members', 'users'],
     events: ['events', 'categories'],
     planning: [{ name: 'planning', type: 'object' }],
-    calendar: ['members', { name: 'planning', type: 'object' }]
+    calendar: ['members', { name: 'planning', type: 'object' }, { name: 'calendar', type: 'object' }]
   }
 
   setupPropertyProvider(propertyProvider, type = 'array') {

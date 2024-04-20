@@ -10,6 +10,8 @@ import './../components/presence/presence.js'
 export class CalendarView extends LiteElement {
   @property({ type: Object, consumer: true })
   accessor planning
+  @property({ type: Object, consumer: true })
+  accessor calendar
   @property({ type: Array, consumer: true })
   accessor members
   @property() accessor user
@@ -69,6 +71,7 @@ export class CalendarView extends LiteElement {
               <presence-element
                 .date=${year + '-' + (Number(month) + 1) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
                 .group=${this.userGroup}
+                .presence=${Object.keys(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)]).includes(this.user.member) ? this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)][this.user.member] : ''}
               ></presence-element>
             `
             )
@@ -79,7 +82,6 @@ export class CalendarView extends LiteElement {
   )
   }
   async onChange(propertyKey: any, value: any) {
-    console.log(propertyKey, value)
     if ((propertyKey === 'members' || propertyKey === 'user') && this.user) {
       this.userGroup = Object.values(this.members).filter((member) => member.key === this.user.member)[0].group
     }
@@ -92,7 +94,7 @@ export class CalendarView extends LiteElement {
   }
 
   async #presenceChange({detail}) {
-    await firebase.set(`planning/${Number(detail.year)}/${Number(detail.month) - 1}/${Number(detail.day)}/${this.user.member}`,detail.presence)
+    await firebase.set(`calendar/${Number(detail.year)}-${Number(detail.month) - 1}-${Number(detail.day)}/${this.user.member}`,detail.presence)
   }
 
   render() {

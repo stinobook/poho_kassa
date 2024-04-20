@@ -89,6 +89,7 @@ export class PresenceElement extends LiteElement {
     if (event.target.hasAttribute('id')) {
       const [year, month, day] = this.date.split('-')
       let presence:any = Array.from(this.shadowRoot.querySelectorAll('input[type=checkbox]:checked'))
+      if (presence.length === 0) (this.shadowRoot.getElementById('no') as HTMLInputElement).checked = true
       if (event.target.getAttribute('id') === 'no') {
         presence.forEach((checkbox) => {
           (checkbox.id !== 'no') ? checkbox.checked = false : ''
@@ -112,6 +113,12 @@ export class PresenceElement extends LiteElement {
           detail
         })
       )
+    }
+  }
+
+  async onChange(propertyKey): Promise<any> {
+    if (propertyKey === 'presence') {
+      this.presence.forEach(i => this.shadowRoot.getElementById(i).checked = true)
     }
   }
 
