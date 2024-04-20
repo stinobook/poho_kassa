@@ -1,6 +1,14 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
-import { getAuth, signOut, sendSignInLinkToEmail as _sendSignInLinkToEmail } from 'firebase/auth'
+import {
+  getAuth,
+  signOut,
+  sendSignInLinkToEmail as _sendSignInLinkToEmail,
+  signInWithEmailAndPassword as _signInWithEmailAndPassword,
+  isSignInWithEmailLink as _isSignInWithEmailLink,
+  signInWithEmailLink as _signInWithEmailLink,
+  updatePassword as _updatePassword
+} from 'firebase/auth'
 import {
   get as _get,
   push as _push,
@@ -52,6 +60,8 @@ const remove = async (path: string): Promise<void> => _remove(ref(database, path
 
 const update = async (path: string, value: any): Promise<void> => _update(ref(database, path), value)
 
+const signInWithEmailAndPassword = (email, password) => _signInWithEmailAndPassword(auth, email, password)
+
 const login = async () => {}
 
 const logout = async () => {}
@@ -96,7 +106,9 @@ const actionCodeSettings = {
 }
 
 const sendSignInLinkToEmail = email => _sendSignInLinkToEmail(auth, email, actionCodeSettings)
-
+const isSignInWithEmailLink = link => _isSignInWithEmailLink(auth, link)
+const signInWithEmailLink = (email, link) => _signInWithEmailLink(auth, email, link)
+const updatePassword = password => _updatePassword(auth.currentUser, password)
 const _firebase = {
   get,
   push,
@@ -112,7 +124,11 @@ const _firebase = {
   onChildChanged,
   uploadBytes,
   getDownloadURL,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
   sendSignInLinkToEmail,
+  signInWithEmailAndPassword,
+  updatePassword,
   signOut: () => signOut(auth)
 }
 

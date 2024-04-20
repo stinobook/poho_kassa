@@ -5,7 +5,6 @@ import '@material/web/button/filled-button.js'
 import '@material/web/button/outlined-button.js'
 import '@material/web/textfield/outlined-text-field.js'
 import '@vandeurenglenn/lite-elements/typography.js'
-import { signInWithEmailAndPassword, isSignInWithEmailLink, signInWithEmailLink, updatePassword } from 'firebase/auth'
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
 
 @customElement('login-view')
@@ -24,13 +23,13 @@ export class LoginView extends LiteElement {
   async login() {
     const email = this.email.value
     const password = this.password.value
-    if (isSignInWithEmailLink(firebase.auth, window.location.href)) {
-      await signInWithEmailLink(firebase.auth, email, window.location.href)
-      await updatePassword(firebase.auth.currentUser, password)
+    if (firebase.isSignInWithEmailLink(window.location.href)) {
+      await firebase.signInWithEmailLink(email, window.location.href)
+      await firebase.updatePassword(password)
       await firebase.update('users/' + firebase.auth.currentUser.uid, { email: email })
       location.href = location.href.split('index')[0]
     } else {
-      await signInWithEmailAndPassword(firebase.auth, email, password)
+      await firebase.signInWithEmailAndPassword(email, password)
     }
   }
 
