@@ -2,10 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="white" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black" />
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="white" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="black" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="assets/favicon.ico" />
     <title>PoHo Kassa</title>
     <!-- service-worker-placeholder -->
     <style>
@@ -19,11 +30,22 @@
         -moz-osx-font-smoothing: grayscale;
         overflow: auto;
       }
+
+      body,
+      html {
+        position: initial;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
     </style>
   </head>
   <body>
     <custom-notifications></custom-notifications>
     <po-ho-shell></po-ho-shell>
-    <script type="module" src="./shell.js"></script>
+    <script
+      type="module"
+      src="./shell.js"></script>
   </body>
 </html>

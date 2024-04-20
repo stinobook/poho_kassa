@@ -304,9 +304,8 @@ export class PoHoShell extends LiteElement {
         :host {
           display: block;
           inset: 0;
-          position: relative;
-          height: 100%;
-          width: 100%;
+          position: absolute;
+
           --paybarheight: 75px;
         }
         custom-pages {
