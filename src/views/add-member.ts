@@ -13,8 +13,9 @@ import Router from '../routing.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
 import { scrollbar } from '../mixins/styles.js'
-
 import './../components/image-selector-dialog.js'
+import './../components/image-editor.js'
+
 @customElement('add-member-view')
 export class AddMemberView extends LiteElement {
   @property({ type: Object })
@@ -201,6 +202,16 @@ export class AddMemberView extends LiteElement {
     this.shadowRoot.querySelector(`img[name="${target}"]`).src = this[target]
   }
 
+  async _cropImage(target: 'userphotobgURL' | 'userphotoURL') {
+    const currentImage = this.shadowRoot.querySelector(`img[name="${target}"]`).src
+    const editor = this.shadowRoot.querySelector('image-editor')
+    const result = await editor.show(currentImage)
+    console.log({ result })
+    if (result?.action === 'done') {
+      this.shadowRoot.querySelector(`img[name="${target}"]`).src = result.image
+    }
+  }
+
   render() {
     return html`
       <image-selector-dialog></image-selector-dialog>
@@ -211,8 +222,12 @@ export class AddMemberView extends LiteElement {
             <label><custom-typography>Lid</custom-typography></label>
             ${this.userphotobgURL
               ? html`<img
-                  src=${this.userphotobgURL}
-                  @click=${() => this._uploadImage('userphotobgURL')} />`
+                    src=${this.userphotobgURL}
+                    name="userphotobgURL"
+                    @click=${() => this._uploadImage('userphotobgURL')} />
+                  <custom-icon-button
+                    icon="crop"
+                    @click=${() => this._cropImage('userphotobgURL')}></custom-icon-button>`
               : html`<custom-button
                   label="upload pet image"
                   @click=${() => this._uploadImage('userphotobgURL')}
@@ -246,8 +261,12 @@ export class AddMemberView extends LiteElement {
             <label><custom-typography>Baasje</custom-typography></label>
             ${this.userphotoURL
               ? html`<img
-                  src=${this.userphotoURL}
-                  @click=${() => this._uploadImage('userphotoURL')} />`
+                    src=${this.userphotoURL}
+                    name="userphotoURL"
+                    @click=${() => this._uploadImage('userphotoURL')} />
+                  <custom-icon-button
+                    icon="crop"
+                    @click=${() => this._cropImage('userphotoURL')}></custom-icon-button>`
               : html`<custom-button
                   label="upload owner image"
                   @click=${() => this._uploadImage('userphotoURL')}
@@ -324,6 +343,8 @@ export class AddMemberView extends LiteElement {
           slot="icon"
           icon="save"></custom-icon
       ></md-fab>
+
+      <image-editor></image-editor>
     `
   }
 }

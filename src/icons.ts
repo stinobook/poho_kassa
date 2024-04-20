@@ -19,17 +19,19 @@ export default html`
     <template>
       <span name="add">@symbol-add</span>
       <span name="arrow_back">@symbol-arrow_back</span>
-      <span name="menu">@symbol-menu</span>
-      <span name="menu_open">@symbol-menu_open</span>
-      <span name="edit">@symbol-edit</span>
-      <span name="save">@symbol-save</span>
-      <span name="search">@symbol-search</span>
-      <span name="delete">@symbol-delete</span>
-      <span name="voting_chip">@symbol-voting_chip</span>
+      <span name="camera">@symbol-camera</span>
       <span name="check">@symbol-check</span>
       <span name="close">@symbol-close</span>
+      <span name="crop">@symbol-crop</span>
+      <span name="delete">@symbol-delete</span>
+      <span name="done">@symbol-done</span>
+      <span name="edit">@symbol-edit</span>
       <span name="link">@symbol-link</span>
-      <span name="camera">@symbol-camera</span>
+      <span name="menu">@symbol-menu</span>
+      <span name="menu_open">@symbol-menu_open</span>
+      <span name="save">@symbol-save</span>
+      <span name="search">@symbol-search</span>
+      <span name="voting_chip">@symbol-voting_chip</span>
       <span name="upload">@symbol-upload</span>
       <span name="photo_camera_back">@symbol-photo_camera_back</span>
       <span name="photo_camera_front">@symbol-photo_camera_front</span>
