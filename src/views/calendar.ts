@@ -94,7 +94,7 @@ export class CalendarView extends LiteElement {
             days.sort(function (a, b) {  return a - b;  }).map((day) =>
             html `
               <presence-element
-                .date=${year + '-' + (Number(month) + 1) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
+                .date=${year + '-' + ((Number(month +1) <= 9) ? month = '0' + month.toString() : month + 1) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
                 .group=${this.userGroup}
                 .presence=${(this.calendar?.[Number(year) +'-' + Number(month) + '-' + Number(day)]) 
                   ? Object.keys(this.calendar?.[Number(year) +'-' + Number(month) + '-' + Number(day)]).includes(this.user.member) 
