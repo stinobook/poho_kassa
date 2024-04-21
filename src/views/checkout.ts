@@ -340,8 +340,8 @@ export class CheckoutView extends LiteElement {
           }
         })
         if ((this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
-          this.cashBank = this.cashVaultNew
-          this.cashVaultNew = 0
+          this.cashBank = this.cashVaultNew - 100
+          this.cashVaultNew = 100
         }
 
         let sales: Sales = {
