@@ -101,7 +101,7 @@ const onChildChanged = (target, cb) => {
 }
 
 const actionCodeSettings = {
-  url: 'http://localhost:8080/index.html',
+  url: 'https://pohoapp.web.app/index.html',
   handleCodeInApp: true
 }
 

@@ -1,35 +1,36 @@
 import { LiteElement, customElement, html, property } from '@vandeurenglenn/lite'
 import { StyleList, css } from '@vandeurenglenn/lite/element'
 import '@vandeurenglenn/lite-elements/icon.js'
+import { Member } from '../../types.js'
 
 @customElement('presence-element')
 export class PresenceElement extends LiteElement {
   @property() accessor group
   @property() accessor date
   @property() accessor presence
+  @property({ type: Object, consumer: true })
+  accessor calendar
+  @property({ type: Array, consumer: true })
+  accessor members
   
 
   static styles?: StyleList = [
     css`
       :host {
         display: flex;
-        align-items: center;
-        height: 74px;
         border-radius: var(--md-sys-shape-corner-extra-large);
-        min-width: max-content;
         pointer-events: auto !important;
         cursor: pointer;
         align-items: center;
         box-sizing: border-box;
         padding: 12px;
+        gap: 12px;
         flex: 1;
+        flex-wrap: wrap;
+        height: auto;
       }
       custom-icon {
         pointer-events: none;
-      }
-
-      custom-typography {
-        display: flex;
       }
       span {
         flex-grow: 1;
@@ -38,7 +39,7 @@ export class PresenceElement extends LiteElement {
         display: flex;
         flex-wrap: nowrap;
         flex-direction: row;
-        width: 40%;
+        flex-grow: 1;
       }
       .presence-toggle {
         background-color: var(--md-sys-color-surface-container-highest);
@@ -78,6 +79,36 @@ export class PresenceElement extends LiteElement {
       .presence-toggle {
         border-radius: 25px;
       }
+      .attending {
+        gap: 12px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+      .chips {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        grid-auto-rows: min-content;
+        gap: 12px;
+        height: auto;
+        width: 100%;
+        margin-top: 6px;
+      }
+      .attendees .title {
+        width: 100%;
+        font-size: 1.1em;
+      }
+      .attendees {
+        background-color: var(--md-sys-color-surface-container-highest);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        padding: 12px;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .alert {
+        color:var(--md-sys-color-on-error-container);
+        background-color:var(--md-sys-color-error-container);
+      }
     `
   ]
 
@@ -91,12 +122,12 @@ export class PresenceElement extends LiteElement {
       let presence:any = Array.from(this.shadowRoot.querySelectorAll('input[type=checkbox]:checked'))
       if (presence.length === 0) (this.shadowRoot.getElementById('no') as HTMLInputElement).checked = true
       if (event.target.getAttribute('id') === 'no') {
-        presence.forEach((checkbox) => {
+        presence?.forEach((checkbox) => {
           (checkbox.id !== 'no') ? checkbox.checked = false : ''
         }
         )
       } else {
-        presence.forEach((checkbox) => {
+        presence?.forEach((checkbox) => {
           (checkbox.id === 'no') ? checkbox.checked = false : ''
         }
         )
@@ -117,9 +148,111 @@ export class PresenceElement extends LiteElement {
   }
 
   async onChange(propertyKey): Promise<any> {
-    if (propertyKey === 'presence') {
-      this.presence.forEach(i => this.shadowRoot.getElementById(i).checked = true)
+    if (propertyKey === 'presence' && this.presence !== '') {
+      this.presence.forEach(i => (this.shadowRoot.getElementById(i) as HTMLInputElement).checked = true)
     }
+  }
+
+  renderPresence() {
+    let [year, month, day] = this.date.split('-')
+    month -= 1
+    let no = Object.entries(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)])
+      .filter(([key, attendance]) => attendance.includes('no'))
+        .map(([key, attendance]) => html`
+          <span class='chip'>
+            ${Object.values(this.members as Member[]).filter((member) => member.key === key)[0].name 
+              + ' '
+              + Object.values(this.members as Member[]).filter((member) => member.key === key)[0].lastname.split(" ").map((n)=>n[0]).join(".")
+            }
+          </span>
+        `
+      )
+    let yes = Object.entries(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)])
+    .filter(([key, attendance]) => attendance.includes('yes'))
+      .map(([key, attendance]) => html`
+        <span class='chip'>
+          ${Object.values(this.members as Member[]).filter((member) => member.key === key)[0].name 
+            + ' '
+            + Object.values(this.members as Member[]).filter((member) => member.key === key)[0].lastname.split(" ").map((n)=>n[0]).join(".")
+          }
+        </span>
+      `
+    )
+    let open = Object.entries(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)])
+      .filter(([key, attendance]) => attendance.includes('open'))
+        .map(([key, attendance]) => html`
+          <span class='chip'>
+            ${Object.values(this.members as Member[]).filter((member) => member.key === key)[0].name 
+              + ' '
+              + Object.values(this.members as Member[]).filter((member) => member.key === key)[0].lastname.split(" ").map((n)=>n[0]).join(".")
+            }
+          </span>
+        `
+      )
+    let close = Object.entries(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)])
+    .filter(([key, attendance]) => attendance.includes('close'))
+      .map(([key, attendance]) => html`
+        <span class='chip'>
+          ${Object.values(this.members as Member[]).filter((member) => member.key === key)[0].name 
+            + ' '
+            + Object.values(this.members as Member[]).filter((member) => member.key === key)[0].lastname.split(" ").map((n)=>n[0]).join(".")
+          }
+        </span>
+      `
+    )
+    let reply = Object.values(this.members)
+    .filter((member) => !(Object.keys(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)]).includes(member.key)))
+      .map((member) => html`
+        <span class='chip'>
+          ${member.name 
+            + ' '
+            + member.lastname.split(" ").map((n)=>n[0]).join(".")
+          }
+        </span>
+      `
+    )
+      return [html`
+      <span class='attending'>
+        ${yes ? html`
+          <span class='attendees'>
+            <span class='title'>Aanwezig</span>
+            <span class='chips'>${yes}</span>
+          </span>
+        ` : ''}
+        ${open.length > 0 ? html`
+          <span class='attendees'>
+            <span class='title'>Opening</span>
+            <span class='chips'>${open}</span>
+          </span>
+        ` : html`
+        <span class='attendees alert'>
+            <span class='title alert'>Niemand voor opening!</span>
+          </span>
+        `}
+        ${close.length > 0 ? html`
+          <span class='attendees'>
+            <span class='title'>Sluiting</span>
+            <span class='chips'>${close}</span>
+          </span>
+        ` : html`
+        <span class='attendees alert'>
+            <span class='title alert'>Niemand voor sluiting!</span>
+          </span>
+        `}
+        ${no.length > 0 ? html`
+          <span class='attendees'>
+            <span class='title'>Afwezig</span>
+            <span class='chips'>${no}</span>
+          </span>
+        ` : ''}
+        ${reply.length > 0 ? html`
+          <span class='attendees'>
+            <span class='title'>Nog niet geantwoord</span>
+            <span class='chips'>${reply}</span>
+          </span>
+        ` : ''}
+      </span>`
+      ]
   }
 
   render() {
@@ -145,6 +278,7 @@ export class PresenceElement extends LiteElement {
         <input type="checkbox" name="presence" id="close" />
       </label>` : '' }
     </div>
+    ${this.presence ? this.renderPresence() : ''}
     `
   }
 }

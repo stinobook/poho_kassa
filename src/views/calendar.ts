@@ -5,6 +5,7 @@ import '@vandeurenglenn/lite-elements/tabs.js'
 import '@vandeurenglenn/lite-elements/selector.js'
 import { Member } from '../types.js'
 import './../components/presence/presence.js'
+import { scrollbar } from '../mixins/styles.js'
 
 @customElement('calendar-view')
 export class CalendarView extends LiteElement {
@@ -29,17 +30,41 @@ export class CalendarView extends LiteElement {
         height: 100%;
         display: flex;
         flex-direction: column;
+        overflow-y: auto;
       }
+
+      ${scrollbar}
+      
       presence-element {
         background-color: var(--md-sys-color-surface-container-high);
         color: var(--md-sys-color-on-surface-container-high);
-        width: 100%;
       }
       .attendance {
         display: flex;
         flex-direction: column;
-        min-width: 100%;
         gap: 12px;
+        width: 100%;
+      }
+
+      custom-tab.custom-selected {
+        background: var(--md-sys-color-tertiary);
+        border: none;
+      }
+      custom-tab.custom-selected {
+        color: var(--md-sys-color-on-tertiary);
+      }
+
+      custom-tab {
+        gap: 8px;
+        height: 40px;
+        padding: 0 12px;
+        box-sizing: border-box;
+        width: auto;
+        border-radius: 20px;
+      }
+
+      custom-tabs {
+        height: 40px;
       }
     `
   ]
@@ -54,9 +79,9 @@ export class CalendarView extends LiteElement {
   renderTabs() {
     return Object.entries(this.planning).map(([year, months]) =>
       Object.entries(months).map(([month, days]) =>
-        (Number(month) === (new Date().getMonth())) ?
-          html`<custom-tab class="custom-selected" plandate=${year + '-' + month}>${new Date(Number(year), Number(month)).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
-          : html`<custom-tab plandate=${year + '-' + month}>${new Date(Number(year), Number(month)).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
+        (Number(year) >= (new Date().getFullYear()) && Number(month) >= (new Date().getMonth())) ?
+          html`<custom-tab plandate=${year + '-' + month}>${new Date(Number(year), Number(month)).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
+          : ''
       )
     )
   }
@@ -71,7 +96,11 @@ export class CalendarView extends LiteElement {
               <presence-element
                 .date=${year + '-' + (Number(month) + 1) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
                 .group=${this.userGroup}
-                .presence=${Object.keys(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)]).includes(this.user.member) ? this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)][this.user.member] : ''}
+                .presence=${(this.calendar?.[Number(year) +'-' + Number(month) + '-' + Number(day)]) 
+                  ? Object.keys(this.calendar?.[Number(year) +'-' + Number(month) + '-' + Number(day)]).includes(this.user.member) 
+                    ? this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)][this.user.member] 
+                    : '' 
+                  : ''}
               ></presence-element>
             `
             )
@@ -82,8 +111,9 @@ export class CalendarView extends LiteElement {
   )
   }
   async onChange(propertyKey: any, value: any) {
+    console.log(propertyKey, value)
     if ((propertyKey === 'members' || propertyKey === 'user') && this.user) {
-      this.userGroup = Object.values(this.members).filter((member) => member.key === this.user.member)[0].group
+      this.userGroup = Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].group
     }
   }
 
