@@ -100,11 +100,12 @@ export class CalendarView extends LiteElement {
               <presence-element
                 .date=${year + '-' + (((Number(month) +1) <= 9) ? '0' + (Number(month) +1).toString() : (Number(month) +1)) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
                 .group=${this.userGroup}
-                .presence=${(this.calendar?.[Number(year) +'-' + Number(month) + '-' + Number(day)]) 
-                  ? Object.keys(this.calendar?.[Number(year) +'-' + Number(month) + '-' + Number(day)]).includes(this.user.member) 
-                    ? this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)][this.user.member] 
+                .presence=${(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]) 
+                  ? Object.keys(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]).includes(this.user.member) 
+                    ? this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)][this.user.member] 
                     : '' 
                   : ''}
+                .ownkey=${this.user.member}
               ></presence-element>
             `
             )
@@ -122,12 +123,14 @@ export class CalendarView extends LiteElement {
 
   async connectedCallback(): Promise<void> {
     this.user = await firebase.get('users/' + firebase.auth.currentUser.uid)
-   
     document.addEventListener('presence-change', this.#presenceChange.bind(this))
+    let date = new Date()
+    this.year = date.getFullYear().toString()
+    this.month = date.getMonth().toString()
   }
 
   async #presenceChange({detail}) {
-    await firebase.set(`calendar/${Number(detail.year)}-${Number(detail.month) - 1}-${Number(detail.day)}/${this.user.member}`,detail.presence)
+    await firebase.set(`calendar/${Number(detail.year)}/${Number(detail.month)}/${Number(detail.day)}/${this.user.member}`,detail.presence)
   }
 
   render() {
