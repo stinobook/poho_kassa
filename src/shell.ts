@@ -299,6 +299,11 @@ export class PoHoShell extends LiteElement {
           .remove()
       }
     }
+    let dividers = this.shadowRoot.querySelectorAll('custom-divider')
+    if (!(firebase.userRoles.includes('sales') || firebase.userRoles.includes('checkout') || firebase.userRoles.includes('attendance'))) dividers[0].remove()
+    if (!(firebase.userRoles.includes('products') || firebase.userRoles.includes('categories'))) dividers[1].remove()
+    if (!(firebase.userRoles.includes('bookkeeping'))) dividers[2].remove()
+    if (!(firebase.userRoles.includes('calendar'))) dividers[3].remove()
   }
 
   render() {
