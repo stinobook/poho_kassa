@@ -5,6 +5,7 @@ import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/lite-elements/button.js'
 import '@vandeurenglenn/lite-elements/dialog.js'
 import { Member, User } from '../types.js'
+import { scrollbar } from '../mixins/styles.js'
 
 @customElement('users-view')
 export class UsersView extends LiteElement {
@@ -31,7 +32,12 @@ export class UsersView extends LiteElement {
       flex-container {
         gap: 24px;
         align-items: stretch;
+        overflow-y: auto;
+        max-width: 100%;
+        min-width: 100%;
+        width: 100%;
       }
+      ${scrollbar}
       flex-row {
         background-color: var(--md-sys-color-surface-container-high);
         color: var(--md-sys-color-on-surface-container-high);
