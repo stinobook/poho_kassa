@@ -408,15 +408,15 @@ export class PoHoShell extends LiteElement {
         <span slot="top-app-bar-title">Menu</span>
         <span slot="top-app-bar-end">${this.renderSearch()}</span>
         <span slot="drawer-headline"> 
-        ${(this.user) ? 
+        ${(this.user && this.members) ? 
           (this.user.member === 'kassa') ? html`<span>PoHo App Kassa </span>`:
           html`<chip-element
-          .avatar=${Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].userphotoURL}
+          .avatar=${Object.values(this.members as Member[])?.filter((member) => member.key === this.user.member)[0]?.userphotoURL}
           .name=${
-            ((new Date().getHours()) < 12) ? 'Goeiemorgen, ' + Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].name
+            ((new Date().getHours()) < 12) ? 'Goeiemorgen, ' + Object.values(this.members as Member[])?.filter((member) => member.key === this.user.member)[0]?.name
             + '!' :
-            ((new Date().getHours()) <= 18) ? 'Goeiedag, ' + Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].name
-            + '!': 'Goeieavond, ' + Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].name
+            ((new Date().getHours()) <= 18) ? 'Goeiedag, ' + Object.values(this.members as Member[])?.filter((member) => member.key === this.user.member)[0]?.name
+            + '!': 'Goeieavond, ' + Object.values(this.members as Member[])?.filter((member) => member.key === this.user.member)[0]?.name
             + '!'
           }>
         </chip-element>`
