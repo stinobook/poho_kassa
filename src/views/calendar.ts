@@ -15,7 +15,7 @@ export class CalendarView extends LiteElement {
   accessor calendar
   @property({ type: Array, consumer: true })
   accessor members
-  @property() accessor user
+  @property({ consumer: true}) accessor user 
   @property() accessor userGroup
   @property() accessor selected
   @property() accessor year
@@ -125,7 +125,6 @@ export class CalendarView extends LiteElement {
   }
 
   async connectedCallback(): Promise<void> {
-    this.user = await firebase.get('users/' + firebase.auth.currentUser.uid)
     document.addEventListener('presence-change', this.#presenceChange.bind(this))
     let date = new Date()
     this.year = date.getFullYear().toString()

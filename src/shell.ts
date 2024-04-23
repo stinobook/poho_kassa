@@ -7,13 +7,14 @@ import '@vandeurenglenn/lite-elements/theme.js'
 import '@vandeurenglenn/lite-elements/selector.js'
 import '@vandeurenglenn/lite-elements/pages.js'
 import '@vandeurenglenn/lite-elements/divider.js'
+import './components/chip/chip.js'
 import './components/search.js'
 import icons from './icons.js'
 import Router from './routing.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
 // import default page
 import './views/loading.js'
-import { Evenement } from './types.js'
+import { Evenement, Member } from './types.js'
 
 @customElement('po-ho-shell')
 export class PoHoShell extends LiteElement {
@@ -30,6 +31,7 @@ export class PoHoShell extends LiteElement {
   @query('sales-view') accessor salesView
 
   @property() accessor selected
+  @property({ provider: true}) accessor user
 
   @property({ provider: true, batches: true, batchDelay: 70 }) accessor products
 
@@ -202,7 +204,7 @@ export class PoHoShell extends LiteElement {
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
-
+    this.user = await firebase.get('users/' + firebase.auth.currentUser.uid)
     this.shadowRoot.addEventListener('click', event => {
       if (event.target.hasAttribute('input-tap')) {
         this.salesView.inputTap({ detail: event.target.getAttribute('input-tap') })
@@ -365,6 +367,12 @@ export class PoHoShell extends LiteElement {
         custom-selector {
           margin-bottom: 125px;
         }
+        chip-element {
+          pointer-events: none;
+          margin: 12px;
+          border-radius: var(--md-sys-shape-corner-extra-large);
+          box-shadow: unset;
+        }
       </style>
       <!-- just cleaner -->
       ${icons}
@@ -378,9 +386,23 @@ export class PoHoShell extends LiteElement {
       <custom-drawer-layout
         appBarType="small"
         mobile-trigger="(max-width: 1200px)">
-        <span slot="top-app-bar-title">Poho</span>
+        <span slot="top-app-bar-title">Menu</span>
         <span slot="top-app-bar-end">${this.renderSearch()}</span>
-        <span slot="drawer-headline"> menu </span>
+        <span slot="drawer-headline"> 
+        ${(this.user) ? 
+          (this.user.member === 'kassa') ? html`<span>PoHo App Kassa </span>`:
+          html`<chip-element
+          .avatar=${Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].userphotoURL}
+          .name=${
+            ((new Date().getHours()) < 12) ? 'Goeiemorgen, ' + Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].name
+            + '!' :
+            ((new Date().getHours()) <= 18) ? 'Goeiedag, ' + Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].name
+            + '!': 'Goeieavond, ' + Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].name
+            + '!'
+          }>
+        </chip-element>`
+          : ''
+        }</span>
         <custom-selector
           attr-for-selected="route"
           slot="drawer-content"

@@ -47,7 +47,7 @@ if (env.NODE_ENV === 'development') {
                 if (navigator.serviceWorker.controller) {
                   // new update available
                   alert('Update beschikbaar, App zal verversen')
-                  self.skipWaiting();
+                  installingWorker.postMessage({ type: 'SKIP_WAITING' });
                   location.reload()
                 }
                 break;
