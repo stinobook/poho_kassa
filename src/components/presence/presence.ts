@@ -65,6 +65,9 @@ export class PresenceElement extends LiteElement {
       .presence-toggle label.no:has(input[type=checkbox]:checked) {
         background-color: var(--md-sys-color-on-surface-variant);
       }
+      .presence-toggle label.no:has(input[type=checkbox]:checked) custom-icon {
+        --custom-icon-color: var(--md-sys-color-surface-variant);
+      }
       .presence-toggle label:first-child:has(input:checked), 
       .presence-toggle label:has(input:not(:checked)) + label:has(input:checked) {
         background: lightgreen;

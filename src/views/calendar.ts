@@ -59,16 +59,15 @@ export class CalendarView extends LiteElement {
       }
 
       custom-tab {
-        gap: 8px;
-        height: 40px;
-        padding: 0 12px;
+        height: 45px;
+        padding: 6px 12px;
         box-sizing: border-box;
         width: auto;
-        border-radius: 20px;
+        border-radius: 25px;
+        min-width: 100px;
       }
-
       custom-tabs {
-        height: 40px;
+        gap: 8px;
       }
     `
   ]
@@ -83,9 +82,12 @@ export class CalendarView extends LiteElement {
   renderTabs() {
     return Object.entries(this.planning).map(([year, months]) =>
       Object.entries(months).map(([month, days]) =>
-        (Number(year) >= (new Date().getFullYear()) && Number(month) >= (new Date().getMonth())) ?
+        (Number(year) === (new Date().getFullYear()) && Number(month) >= (new Date().getMonth()) && days.length !== 0) ?
           html`<custom-tab plandate=${year + '-' + month}>${new Date(Number(year), Number(month)).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
-          : ''
+          : 
+            (Number(year) > (new Date().getFullYear()) && days.length !== 0) ?
+            html`<custom-tab plandate=${year + '-' + month}>${new Date(Number(year), Number(month)).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
+            : ''          
       )
     )
   }
@@ -96,19 +98,20 @@ export class CalendarView extends LiteElement {
         Object.entries(months).map(([month, days]) =>
           (this.month === month) ?
             days.sort(function (a, b) {  return a - b;  }).map((day) =>
-            html `
-              <presence-element
-                .date=${year + '-' + (((Number(month) +1) <= 9) ? '0' + (Number(month) +1).toString() : (Number(month) +1)) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
-                .group=${this.userGroup}
-                .presence=${(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]) 
-                  ? Object.keys(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]).includes(this.user.member) 
-                    ? this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)][this.user.member] 
-                    : '' 
-                  : ''}
-                .ownkey=${this.user.member}
-              ></presence-element>
-            `
-            )
+              (Number(month) === (new Date().getMonth()) && day < (new Date().getDate())) ? '' :            
+                html `
+                  <presence-element
+                    .date=${year + '-' + (((Number(month) +1) <= 9) ? '0' + (Number(month) +1).toString() : (Number(month) +1)) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
+                    .group=${this.userGroup}
+                    .presence=${(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]) 
+                      ? Object.keys(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]).includes(this.user.member) 
+                        ? this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)][this.user.member] 
+                        : '' 
+                      : ''}
+                    .ownkey=${this.user.member}
+                  ></presence-element>
+                `
+                )
           : ''
         )
       : ''

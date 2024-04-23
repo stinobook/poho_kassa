@@ -46,7 +46,8 @@ if (env.NODE_ENV === 'development') {
               case "installed":
                 if (navigator.serviceWorker.controller) {
                   // new update available
-                  alert('click ok to update app')
+                  alert('Update beschikbaar, App zal verversen')
+                  self.skipWaiting();
                   location.reload()
                 }
                 break;
