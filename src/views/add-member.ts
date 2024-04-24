@@ -29,9 +29,9 @@ export class AddMemberView extends LiteElement {
 
   editing
 
-  userphotoURL
+  @property() accessor userphotoURL
 
-  userphotobgURL
+  @property() accessor userphotobgURL
 
   async firstRender() {
     if (this.params) {
@@ -101,7 +101,7 @@ export class AddMemberView extends LiteElement {
     user['group'] = this.shadowRoot.querySelector('md-outlined-select').value.toLowerCase()
     if (this.userphotoURL) {
       // check if link
-      if (typeof this['userphotoURL'] === 'string') {
+      if (this['userphotoURL'].includes('https') || this['userphotoURL'].includes('http')) {
         user['userphotoURL'] = this.userphotoURL
       } else {
         let uploadUserphoto = await firebase.uploadBytes(
@@ -111,10 +111,10 @@ export class AddMemberView extends LiteElement {
         user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
       }
     } else {
-      user['userphotoURL'] = this.shadowRoot.querySelector(`img[name="userphotoURL"]`).src
+      user['userphotoURL'] = this.shadowRoot.querySelector(`img[name="userphotoURL"]`)?.src
     }
     if (this.userphotobgURL) {
-      if (typeof this['userphotobgURL'] === 'string') {
+      if (this['userphotobgURL'].includes('https') || this['userphotobgURL'].includes('http')) {
         user['userphotobgURL'] = this.userphotobgURL
       } else {
         let uploadUserphotobg = await firebase.uploadBytes(
@@ -124,7 +124,7 @@ export class AddMemberView extends LiteElement {
         user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
       }
     } else {
-      user['userphotobgURL'] = this.shadowRoot.querySelector(`img[name="userphotobgURL"]`).src
+      user['userphotobgURL'] = this.shadowRoot.querySelector(`img[name="userphotobgURL"]`)?.src
     }
     if (this.editing) {
       await firebase.set(`members/${this.params.edit}`, user)
@@ -196,8 +196,8 @@ export class AddMemberView extends LiteElement {
     const result = await this.dialog.addImage()
     if (result.fields.url.length > 0) {
       this[target] = result.fields.url
-      this.shadowRoot.querySelector(`img[name="${target}"]`).src = this[target]
     } else {
+      this[target] = result.image.data[0]
       this.shadowRoot.querySelector(`img[name="${target}"]`).src = result.image.data[0].data
     }
   }
