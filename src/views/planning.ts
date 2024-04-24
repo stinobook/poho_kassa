@@ -1,7 +1,7 @@
 import { html, css, LiteElement, property, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
-
+import { scrollbar } from '../mixins/styles.js'
 import './../components/calendar/calendar-year.js'
 
 @customElement('planning-view')
@@ -28,8 +28,16 @@ export class PlanningView extends LiteElement {
         height: 100%;
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
       }
+
+      flex-container {
+        overflow-y: auto;
+        max-width: 100%;
+        min-width: 100%;
+        width: 100%;
+      }
+
+      ${scrollbar}
 
       select {
         border: none;
@@ -40,6 +48,7 @@ export class PlanningView extends LiteElement {
         color: var(--md-sys-color-on-background);
         background: transparent;
       }
+      
 
       @media (min-width: 874px) {
         .selector {

@@ -5,13 +5,17 @@ import { Member } from '../../types.js'
 
 @customElement('presence-element')
 export class PresenceElement extends LiteElement {
+  @property() accessor ownkey
   @property() accessor group
   @property() accessor date
   @property() accessor presence
+  @property({type: Boolean}) accessor presenceCheck = false
   @property({ type: Object, consumer: true })
   accessor calendar
   @property({ type: Array, consumer: true })
   accessor members
+  @property({ type: Object, consumer: true })
+  accessor planning
   
 
   static styles?: StyleList = [
@@ -32,7 +36,8 @@ export class PresenceElement extends LiteElement {
       custom-icon {
         pointer-events: none;
       }
-      span {
+      .date {
+        width: 30%;
         flex-grow: 1;
       }
       .presence-toggle {
@@ -59,6 +64,9 @@ export class PresenceElement extends LiteElement {
       }
       .presence-toggle label.no:has(input[type=checkbox]:checked) {
         background-color: var(--md-sys-color-on-surface-variant);
+      }
+      .presence-toggle label.no:has(input[type=checkbox]:checked) custom-icon {
+        --custom-icon-color: var(--md-sys-color-surface-variant);
       }
       .presence-toggle label:first-child:has(input:checked), 
       .presence-toggle label:has(input:not(:checked)) + label:has(input:checked) {
@@ -114,6 +122,9 @@ export class PresenceElement extends LiteElement {
 
   connectedCallback() {
     this.shadowRoot.addEventListener('click', this.#clickHandler)
+    if (this.presenceCompleted()) {
+      this.presenceCheck = true
+    }
   }
   
   #clickHandler = event => {
@@ -138,7 +149,6 @@ export class PresenceElement extends LiteElement {
         month,
         presence: Array.from(this.shadowRoot.querySelectorAll('input[type=checkbox]:checked')).map(checked => checked.id)
       }
-      console.log(detail)
       document.dispatchEvent(
         new CustomEvent('presence-change', {
           detail
@@ -147,17 +157,19 @@ export class PresenceElement extends LiteElement {
     }
   }
 
-  async onChange(propertyKey): Promise<any> {
+  async onChange(propertyKey) {
     if (propertyKey === 'presence' && this.presence !== '') {
       this.presence.forEach(i => (this.shadowRoot.getElementById(i) as HTMLInputElement).checked = true)
+      if (this.presenceCompleted()) {
+        this.presenceCheck = true
+      }
     }
   }
 
   renderPresence() {
-    let [year, month, day] = this.date.split('-')
-    month -= 1
-    let no = Object.entries(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)])
-      .filter(([key, attendance]) => attendance.includes('no'))
+    const [year, month, day] = this.date.split('-')
+    let no = Object.entries(this.calendar?.[Number(year)]?.[(Number(month))]?.[Number(day)])
+      .filter(([key, attendance]) => (attendance as Array<string>).includes('no'))
         .map(([key, attendance]) => html`
           <span class='chip'>
             ${Object.values(this.members as Member[]).filter((member) => member.key === key)[0].name 
@@ -167,8 +179,8 @@ export class PresenceElement extends LiteElement {
           </span>
         `
       )
-    let yes = Object.entries(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)])
-    .filter(([key, attendance]) => attendance.includes('yes'))
+    let yes = Object.entries(this.calendar?.[Number(year)]?.[(Number(month))]?.[Number(day)])
+    .filter(([key, attendance]) => (attendance as Array<string>).includes('yes'))
       .map(([key, attendance]) => html`
         <span class='chip'>
           ${Object.values(this.members as Member[]).filter((member) => member.key === key)[0].name 
@@ -178,8 +190,8 @@ export class PresenceElement extends LiteElement {
         </span>
       `
     )
-    let open = Object.entries(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)])
-      .filter(([key, attendance]) => attendance.includes('open'))
+    let open = Object.entries(this.calendar?.[Number(year)]?.[(Number(month))]?.[Number(day)])
+      .filter(([key, attendance]) => (attendance as Array<string>).includes('open'))
         .map(([key, attendance]) => html`
           <span class='chip'>
             ${Object.values(this.members as Member[]).filter((member) => member.key === key)[0].name 
@@ -189,8 +201,8 @@ export class PresenceElement extends LiteElement {
           </span>
         `
       )
-    let close = Object.entries(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)])
-    .filter(([key, attendance]) => attendance.includes('close'))
+    let close = Object.entries(this.calendar?.[Number(year)]?.[(Number(month))]?.[Number(day)])
+    .filter(([key, attendance]) => (attendance as Array<string>).includes('close'))
       .map(([key, attendance]) => html`
         <span class='chip'>
           ${Object.values(this.members as Member[]).filter((member) => member.key === key)[0].name 
@@ -201,8 +213,8 @@ export class PresenceElement extends LiteElement {
       `
     )
     let reply = Object.values(this.members)
-    .filter((member) => !(Object.keys(this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)]).includes(member.key)))
-      .map((member) => html`
+    .filter((member:Member) => !(Object.keys(this.calendar?.[Number(year)]?.[(Number(month))]?.[Number(day)]).includes(member.key)))
+      .map((member:Member) => html`
         <span class='chip'>
           ${member.name 
             + ' '
@@ -255,9 +267,22 @@ export class PresenceElement extends LiteElement {
       ]
   }
 
+  presenceCompleted() {
+    let [year, month, day] = this.date.split('-')
+    let check: Boolean = true
+    if (this.calendar?.[Number(year)][Number(month)]) {
+      for (const day of Object.values(this.planning?.[Number(year)]?.[(Number(month)-1)])) {
+        if (!(Object.keys(this.calendar?.[Number(year)]?.[Number(month)][day.toString()] || [])).includes(this.ownkey)) check=false
+      }
+    } else {
+      check = false
+    }
+    return check
+  }
+
   render() {
     return html`
-    <span>${new Date(this.date).toLocaleString('nl-BE', { weekday: 'long', day: 'numeric' })}</span>
+    <span class='date'>${new Date(this.date).toLocaleString('nl-BE', { weekday: 'long', day: 'numeric' })}</span>
     <div class="presence-toggle">
       <label class="no">
         <custom-icon icon="location_off"></custom-icon>
@@ -278,7 +303,6 @@ export class PresenceElement extends LiteElement {
         <input type="checkbox" name="presence" id="close" />
       </label>` : '' }
     </div>
-    ${this.presence ? this.renderPresence() : ''}
-    `
+    ${this.presenceCheck ? this.renderPresence() : ''}    `
   }
 }

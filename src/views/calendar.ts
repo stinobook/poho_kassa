@@ -15,7 +15,7 @@ export class CalendarView extends LiteElement {
   accessor calendar
   @property({ type: Array, consumer: true })
   accessor members
-  @property() accessor user
+  @property({ consumer: true}) accessor user 
   @property() accessor userGroup
   @property() accessor selected
   @property() accessor year
@@ -25,12 +25,16 @@ export class CalendarView extends LiteElement {
     css`
       :host {
         align-items: center;
-        justify-content: flex-start;
-        width: 100%;
         height: 100%;
+        width: 100%;
         display: flex;
         flex-direction: column;
+      }
+      flex-container {
         overflow-y: auto;
+        max-width: 100%;
+        min-width: 100%;
+        width: 100%;
       }
 
       ${scrollbar}
@@ -55,16 +59,15 @@ export class CalendarView extends LiteElement {
       }
 
       custom-tab {
-        gap: 8px;
-        height: 40px;
-        padding: 0 12px;
+        height: 45px;
+        padding: 6px 12px;
         box-sizing: border-box;
         width: auto;
-        border-radius: 20px;
+        border-radius: 25px;
+        min-width: 100px;
       }
-
       custom-tabs {
-        height: 40px;
+        gap: 8px;
       }
     `
   ]
@@ -79,9 +82,12 @@ export class CalendarView extends LiteElement {
   renderTabs() {
     return Object.entries(this.planning).map(([year, months]) =>
       Object.entries(months).map(([month, days]) =>
-        (Number(year) >= (new Date().getFullYear()) && Number(month) >= (new Date().getMonth())) ?
+        (Number(year) === (new Date().getFullYear()) && Number(month) >= (new Date().getMonth()) && days.length !== 0) ?
           html`<custom-tab plandate=${year + '-' + month}>${new Date(Number(year), Number(month)).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
-          : ''
+          : 
+            (Number(year) > (new Date().getFullYear()) && days.length !== 0) ?
+            html`<custom-tab plandate=${year + '-' + month}>${new Date(Number(year), Number(month)).toLocaleString('nl-BE', { month: 'long' })}</custom-tab>`
+            : ''          
       )
     )
   }
@@ -92,18 +98,20 @@ export class CalendarView extends LiteElement {
         Object.entries(months).map(([month, days]) =>
           (this.month === month) ?
             days.sort(function (a, b) {  return a - b;  }).map((day) =>
-            html `
-              <presence-element
-                .date=${year + '-' + (((Number(month) +1) <= 9) ? '0' + (Number(month) +1).toString() : (Number(month) +1)) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
-                .group=${this.userGroup}
-                .presence=${(this.calendar?.[Number(year) +'-' + Number(month) + '-' + Number(day)]) 
-                  ? Object.keys(this.calendar?.[Number(year) +'-' + Number(month) + '-' + Number(day)]).includes(this.user.member) 
-                    ? this.calendar[Number(year) +'-' + Number(month) + '-' + Number(day)][this.user.member] 
-                    : '' 
-                  : ''}
-              ></presence-element>
-            `
-            )
+              (Number(month) === (new Date().getMonth()) && day < (new Date().getDate())) ? '' :            
+                html `
+                  <presence-element
+                    .date=${year + '-' + (((Number(month) +1) <= 9) ? '0' + (Number(month) +1).toString() : (Number(month) +1)) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
+                    .group=${this.userGroup}
+                    .presence=${(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]) 
+                      ? Object.keys(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]).includes(this.user.member) 
+                        ? this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)][this.user.member] 
+                        : '' 
+                      : ''}
+                    .ownkey=${this.user.member}
+                  ></presence-element>
+                `
+                )
           : ''
         )
       : ''
@@ -117,13 +125,14 @@ export class CalendarView extends LiteElement {
   }
 
   async connectedCallback(): Promise<void> {
-    this.user = await firebase.get('users/' + firebase.auth.currentUser.uid)
-   
     document.addEventListener('presence-change', this.#presenceChange.bind(this))
+    let date = new Date()
+    this.year = date.getFullYear().toString()
+    this.month = date.getMonth().toString()
   }
 
   async #presenceChange({detail}) {
-    await firebase.set(`calendar/${Number(detail.year)}-${Number(detail.month) - 1}-${Number(detail.day)}/${this.user.member}`,detail.presence)
+    await firebase.set(`calendar/${Number(detail.year)}/${Number(detail.month)}/${Number(detail.day)}/${this.user.member}`,detail.presence)
   }
 
   render() {

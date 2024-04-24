@@ -14,7 +14,7 @@ export class AttendanceView extends LiteElement {
   accessor members: { [group: string]: Member[] }
 
   @property({ consumer: true, renders: false })
-  accessor promo: { [key: string]: Boolean }
+  accessor promo: { [key: string]: Boolean } = {}
 
   @queryAll('.custom-selected')
   accessor currentAttendance
@@ -105,16 +105,16 @@ export class AttendanceView extends LiteElement {
   }
 
   onChange(propertyKey: string, value: any): void {
-    console.log({ propertyKey })
-    console.log({ value })
+    console.log( {propertyKey})
+    console.log( {value} )
 
-    if (propertyKey === 'attendance' && Object.keys(this.members)?.length > 0) {
+    if (propertyKey === 'attendance' && Object.keys(this.members)?.length > 0 && Object.keys(value).length === 1) {
       this.selectors.forEach(element => {
         element.select(value)
       })
-    } else if (propertyKey === 'members' && this.attendance && Object.keys(this.attendance)?.length > 0) {
+    } else if (propertyKey === 'members' && this.attendance && Object.keys(this.attendance)?.includes(this.attendanceDate)) {
       this.selectors.forEach(element => {
-        element.select(this.attendance)
+        element.select(this.attendance[this.attendanceDate])
       })
     }
   }
