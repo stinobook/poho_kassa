@@ -66,6 +66,7 @@ const login = async () => {}
 
 const logout = async () => {}
 
+let userDetails
 let userRoles
 
 const auth = await getAuth(app)
@@ -77,7 +78,9 @@ auth.onAuthStateChanged(async user => {
     }
     location.hash = Router.bang('login')
   } else if (!location.hash || location.hash === '#!/login') {
-    userRoles = Object.keys(await get('users/' + user.uid + '/roles'))
+    userDetails = await get('users/' + auth.currentUser.uid)
+    userRoles = Object.keys(userDetails['roles'])
+    userDetails['group'] = await get('members/' + userDetails.member + '/group')
     location.hash = Router.bang(userRoles[0])
   }
 })
@@ -86,7 +89,9 @@ await auth.authStateReady()
 if (!auth.currentUser) {
   location.hash = Router.bang('login')
 } else {
-  userRoles = Object.keys(await get('users/' + auth.currentUser.uid + '/roles'))
+  userDetails = await get('users/' + auth.currentUser.uid)
+  userRoles = Object.keys(userDetails['roles'])
+  userDetails['group'] = await get('members/' + userDetails.member + '/group')
 }
 
 const onChildAdded = (target, cb) => {
@@ -113,6 +118,7 @@ const _firebase = {
   get,
   push,
   set,
+  userDetails,
   userRoles,
   remove,
   update,

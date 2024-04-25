@@ -15,8 +15,6 @@ export class CalendarView extends LiteElement {
   accessor calendar
   @property({ type: Array, consumer: true })
   accessor members
-  @property({ consumer: true}) accessor user 
-  @property() accessor userGroup
   @property() accessor selected
   @property() accessor year
   @property() accessor month
@@ -102,13 +100,13 @@ export class CalendarView extends LiteElement {
                 html `
                   <presence-element
                     .date=${year + '-' + (((Number(month) +1) <= 9) ? '0' + (Number(month) +1).toString() : (Number(month) +1)) + '-' + ((day <= 9) ? day = '0' + day.toString() : day)}
-                    .group=${this.userGroup}
+                    .group=${firebase.userDetails.group}
                     .presence=${(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]) 
-                      ? Object.keys(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]).includes(this.user.member) 
-                        ? this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)][this.user.member] 
+                      ? Object.keys(this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)]).includes(firebase.userDetails.member) 
+                        ? this.calendar?.[Number(year)]?.[(Number(month) + 1)]?.[Number(day)][firebase.userDetails.member] 
                         : '' 
                       : ''}
-                    .ownkey=${this.user.member}
+                    .ownkey=${firebase.userDetails.member}
                   ></presence-element>
                 `
                 )
@@ -118,11 +116,7 @@ export class CalendarView extends LiteElement {
     
   )
   }
-  async onChange(propertyKey: any, value: any) {
-    if ((propertyKey === 'members' || propertyKey === 'user') && this.user) {
-      this.userGroup = Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].group
-    }
-  }
+  
 
   async connectedCallback(): Promise<void> {
     document.addEventListener('presence-change', this.#presenceChange.bind(this))
@@ -132,7 +126,7 @@ export class CalendarView extends LiteElement {
   }
 
   async #presenceChange({detail}) {
-    await firebase.set(`calendar/${Number(detail.year)}/${Number(detail.month)}/${Number(detail.day)}/${this.user.member}`,detail.presence)
+    await firebase.set(`calendar/${Number(detail.year)}/${Number(detail.month)}/${Number(detail.day)}/${firebase.userDetails.member}`,detail.presence)
   }
 
   render() {

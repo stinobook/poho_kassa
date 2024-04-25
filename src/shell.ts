@@ -32,7 +32,6 @@ export class PoHoShell extends LiteElement {
 
   @property() accessor selected
   @property() accessor userPhoto
-  @property({ provider: true}) accessor user
 
   @property({ provider: true, batches: true, batchDelay: 70 }) accessor products
 
@@ -202,11 +201,11 @@ export class PoHoShell extends LiteElement {
 
   async updatePhoto() {
     let uploadUserphoto = await firebase.uploadBytes(
-      `members/${Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].lastname + Object.values(this.members as Member[]).filter((member) => member.key === this.user.member)[0].name}avatar`,
+      `members/${Object.values(this.members as Member[]).filter((member) => member.key === firebase.userDetails.member)[0].lastname + Object.values(this.members as Member[]).filter((member) => member.key === firebase.userDetails.member)[0].name}avatar`,
       this.userPhoto.files[0]
     )
     let userphotoURL = await firebase.getDownloadURL(uploadUserphoto.ref)
-    await firebase.set('members/' + this.user.member + '/userphotoURL', userphotoURL.replace('avatar', 'avatar_300x300'))
+    await firebase.set('members/' + firebase.userDetails.member + '/userphotoURL', userphotoURL.replace('avatar', 'avatar_300x300'))
 
   }
 
@@ -215,7 +214,6 @@ export class PoHoShell extends LiteElement {
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
-    if (firebase.auth.currentUser) this.user = await firebase.get('users/' + firebase.auth.currentUser.uid)
     this.shadowRoot.addEventListener('click', event => {
       if (event.target instanceof Element) if (event.target.tagName ===  'CHIP-ELEMENT') {
         this.userPhoto = document.createElement("input")
@@ -408,15 +406,15 @@ export class PoHoShell extends LiteElement {
         <span slot="top-app-bar-title">Menu</span>
         <span slot="top-app-bar-end">${this.renderSearch()}</span>
         <span slot="drawer-headline"> 
-        ${(this.user && this.members) ? 
-          (this.user.member === 'kassa') ? html`<span>PoHo App Kassa </span>`:
+        ${(this.members) ? 
+          (firebase.userDetails.member === 'kassa') ? html`<span>PoHo App Kassa </span>`:
           html`<chip-element
-          .avatar=${Object.values(this.members as Member[])?.filter((member) => member.key === this.user.member)[0]?.userphotoURL}
+          .avatar=${Object.values(this.members as Member[])?.filter((member) => member.key === firebase.userDetails.member)[0]?.userphotoURL}
           .name=${
-            ((new Date().getHours()) < 12) ? 'Goeiemorgen, ' + Object.values(this.members as Member[])?.filter((member) => member.key === this.user.member)[0]?.name
+            ((new Date().getHours()) < 12) ? 'Goeiemorgen, ' + Object.values(this.members as Member[])?.filter((member) => member.key === firebase.userDetails.member)[0]?.name
             + '!' :
-            ((new Date().getHours()) <= 18) ? 'Goeiedag, ' + Object.values(this.members as Member[])?.filter((member) => member.key === this.user.member)[0]?.name
-            + '!': 'Goeieavond, ' + Object.values(this.members as Member[])?.filter((member) => member.key === this.user.member)[0]?.name
+            ((new Date().getHours()) <= 18) ? 'Goeiedag, ' + Object.values(this.members as Member[])?.filter((member) => member.key === firebase.userDetails.member)[0]?.name
+            + '!': 'Goeieavond, ' + Object.values(this.members as Member[])?.filter((member) => member.key === firebase.userDetails.member)[0]?.name
             + '!'
           }>
         </chip-element>`
