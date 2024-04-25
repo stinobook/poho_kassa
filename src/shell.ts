@@ -147,8 +147,8 @@ export class PoHoShell extends LiteElement {
         this[propertyProvider] = { ...this[propertyProvider] }
       }
 
-      if (task === 'replace' && events.onChildChanged) events.onChildChanged(val)
-      else events.onChildRemoved(val)
+      if (task === 'replace') events?.onChildChanged(val)
+      else events?.onChildRemoved(val)
     }
 
     firebase.onChildAdded(propertyProvider, async snap => {
@@ -166,7 +166,7 @@ export class PoHoShell extends LiteElement {
         this[propertyProvider][snap.key] = val
         this[propertyProvider] = { ...this[propertyProvider] }
       }
-      if (events.onChildAdded) events.onChildAdded(val)
+      events?.onChildAdded(val)
     })
 
     firebase.onChildChanged(propertyProvider, snap => deleteOrReplace(propertyProvider, snap, 'replace'))
@@ -426,6 +426,7 @@ export class PoHoShell extends LiteElement {
       <md-dialog></md-dialog>
       <custom-theme
         loadFont="false"
+        loadSymbols="false"
         mobile-trigger="(max-width: 1200px)"></custom-theme>
       <!-- see https://vandeurenglenn.github.io/custom-elements/ -->
       ${this.renderPayBar()}
