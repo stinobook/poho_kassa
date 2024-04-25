@@ -80,8 +80,8 @@ export enum Group {
 }
 
 export type User = {
-  member?: string,
-  email: string,
+  member?: string
+  email: string
   key: string
   roles?: string[]
 }
@@ -143,4 +143,10 @@ export type Notification = {
   description: string
   image?: string
   actions?: any[]
+}
+
+export type PropertyProviderEvents = {
+  onChildChanged: (val) => void
+  onChildRemoved: (val) => void
+  onChildAdded: (val) => void
 }

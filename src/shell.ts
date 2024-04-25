@@ -14,7 +14,7 @@ import Router from './routing.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
 // import default page
 import './views/loading.js'
-import { Evenement, Member } from './types.js'
+import { Evenement, Member, PropertyProviderEvents } from './types.js'
 
 @customElement('po-ho-shell')
 export class PoHoShell extends LiteElement {
@@ -99,9 +99,20 @@ export class PoHoShell extends LiteElement {
   /**
    * collection of the views and there desired providers
    */
-  static propertyProviders = {
+  propertyProviders = {
     products: ['products', 'categories'],
-    sales: ['products', 'categories', 'payconiqTransactions', { name: 'promo', type: 'object' }, 'members', 'tabs'],
+    sales: [
+      'products',
+      'categories',
+      {
+        name: 'payconiqTransactions',
+        type: 'array',
+        events: { onChildChanged: val => this.salesView.payconiqPaymentChange(val) }
+      },
+      { name: 'promo', type: 'object' },
+      'members',
+      'tabs'
+    ],
     checkout: ['transactions', 'members'],
     attendance: [{ name: 'attendance', type: 'object' }, 'members', { name: 'promo', type: 'object' }],
     categories: ['categories'],
@@ -113,7 +124,7 @@ export class PoHoShell extends LiteElement {
     calendar: ['members', { name: 'planning', type: 'object' }, { name: 'calendar', type: 'object' }]
   }
 
-  setupPropertyProvider(propertyProvider, type = 'array') {
+  setupPropertyProvider(propertyProvider, type = 'array', events?: PropertyProviderEvents) {
     this.#propertyProviders.push(propertyProvider)
 
     const deleteOrReplace = async (propertyProvider, snap, task = 'replace') => {
@@ -135,6 +146,9 @@ export class PoHoShell extends LiteElement {
         else delete this[propertyProvider][snap.key]
         this[propertyProvider] = { ...this[propertyProvider] }
       }
+
+      if (task === 'replace' && events.onChildChanged) events.onChildChanged(val)
+      else events.onChildRemoved(val)
     }
 
     firebase.onChildAdded(propertyProvider, async snap => {
@@ -152,6 +166,7 @@ export class PoHoShell extends LiteElement {
         this[propertyProvider][snap.key] = val
         this[propertyProvider] = { ...this[propertyProvider] }
       }
+      if (events.onChildAdded) events.onChildAdded(val)
     })
 
     firebase.onChildChanged(propertyProvider, snap => deleteOrReplace(propertyProvider, snap, 'replace'))
@@ -159,12 +174,13 @@ export class PoHoShell extends LiteElement {
   }
 
   handlePropertyProvider(propertyProvider) {
-    for (const input of PoHoShell.propertyProviders[propertyProvider]) {
+    for (const input of this.propertyProviders[propertyProvider]) {
       let propertyKey
       if (typeof input === 'object') propertyKey = input.name
       else propertyKey = input
 
-      if (!this.#propertyProviders.includes(propertyKey)) this.setupPropertyProvider(propertyKey, input?.type)
+      if (!this.#propertyProviders.includes(propertyKey))
+        this.setupPropertyProvider(propertyKey, input?.type, input?.events)
     }
   }
 
@@ -216,7 +232,7 @@ export class PoHoShell extends LiteElement {
   }
 
   async connectedCallback() {
-    this.roles = Object.keys(PoHoShell.propertyProviders)
+    this.roles = Object.keys(this.propertyProviders)
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
@@ -323,6 +339,7 @@ export class PoHoShell extends LiteElement {
       }
     }
     let dividers = this.shadowRoot.querySelectorAll('custom-divider')
+
     if (
       !(
         firebase.userRoles.includes('sales') ||
@@ -331,6 +348,7 @@ export class PoHoShell extends LiteElement {
       )
     )
       dividers[0].remove()
+
     if (!(firebase.userRoles.includes('products') || firebase.userRoles.includes('categories'))) dividers[1].remove()
     if (!firebase.userRoles.includes('bookkeeping')) dividers[2].remove()
     if (!firebase.userRoles.includes('calendar')) dividers[3].remove()
