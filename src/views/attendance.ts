@@ -97,22 +97,17 @@ export class AttendanceView extends LiteElement {
       }
       return members
     }
-    if (propertyKey === 'attendance') {
-      const attendance = value[this.attendanceDate]
-      return attendance
-    }
     return value
   }
 
   onChange(propertyKey: string, value: any): void {
-    console.log( {propertyKey})
-    console.log( {value} )
-
-    if (propertyKey === 'attendance' && Object.keys(this.members)?.length > 0 && Object.keys(value).length === 1) {
-      this.selectors.forEach(element => {
-        element.select(value)
-      })
-    } else if (propertyKey === 'members' && this.attendance && Object.keys(this.attendance)?.includes(this.attendanceDate)) {
+    if (propertyKey === 'attendance' && Object.keys(this.members || [])?.length > 0) {
+      if (value[this.attendanceDate]) {
+        this.selectors.forEach(element => {
+          element.select(value[this.attendanceDate])
+        })
+      }
+    } else if (propertyKey === 'members' && this.attendance && Object.keys(this.attendance || [])?.includes(this.attendanceDate)) {
       this.selectors.forEach(element => {
         element.select(this.attendance[this.attendanceDate])
       })
