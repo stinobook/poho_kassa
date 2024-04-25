@@ -67,9 +67,9 @@ export class PoHoShell extends LiteElement {
 
   @query('custom-drawer-layout') accessor drawerLayout: CustomDrawerLayout
 
-  selectorSelected({ detail }: CustomEvent) {
+  async selectorSelected({ detail }: CustomEvent) {
     if (detail === 'logout') {
-      this.logout()
+      await firebase.signOut()
     } else {
       this.drawerLayout.drawerOpen = false
       if (firebase.auth.currentUser) {
@@ -201,12 +201,18 @@ export class PoHoShell extends LiteElement {
 
   async updatePhoto() {
     let uploadUserphoto = await firebase.uploadBytes(
-      `members/${Object.values(this.members as Member[]).filter((member) => member.key === firebase.userDetails.member)[0].lastname + Object.values(this.members as Member[]).filter((member) => member.key === firebase.userDetails.member)[0].name}avatar`,
+      `members/${
+        Object.values(this.members as Member[]).filter(member => member.key === firebase.userDetails.member)[0]
+          .lastname +
+        Object.values(this.members as Member[]).filter(member => member.key === firebase.userDetails.member)[0].name
+      }avatar`,
       this.userPhoto.files[0]
     )
     let userphotoURL = await firebase.getDownloadURL(uploadUserphoto.ref)
-    await firebase.set('members/' + firebase.userDetails.member + '/userphotoURL', userphotoURL.replace('avatar', 'avatar_300x300'))
-
+    await firebase.set(
+      'members/' + firebase.userDetails.member + '/userphotoURL',
+      userphotoURL.replace('avatar', 'avatar_300x300')
+    )
   }
 
   async connectedCallback() {
@@ -215,17 +221,19 @@ export class PoHoShell extends LiteElement {
       await import('./firebase.js')
     }
     this.shadowRoot.addEventListener('click', event => {
-      if (event.target instanceof Element) if (event.target.tagName ===  'CHIP-ELEMENT') {
-        this.userPhoto = document.createElement("input")
-        this.userPhoto.setAttribute('type', 'file')
-        this.userPhoto.click()
-        this.userPhoto.addEventListener('change', event => {
-          this.updatePhoto()
-        })
-      }
-      if (event.target instanceof Element) if (event.target.hasAttribute('input-tap')) {
-        this.salesView.inputTap({ detail: event.target.getAttribute('input-tap') })
-      }
+      if (event.target instanceof Element)
+        if (event.target.tagName === 'CHIP-ELEMENT') {
+          this.userPhoto = document.createElement('input')
+          this.userPhoto.setAttribute('type', 'file')
+          this.userPhoto.click()
+          this.userPhoto.addEventListener('change', event => {
+            this.updatePhoto()
+          })
+        }
+      if (event.target instanceof Element)
+        if (event.target.hasAttribute('input-tap')) {
+          this.salesView.inputTap({ detail: event.target.getAttribute('input-tap') })
+        }
     })
     this.drawerLayout.drawerOpen = false
     document.addEventListener('search', this.#onSearch)
@@ -263,10 +271,6 @@ export class PoHoShell extends LiteElement {
         this.currentEvent = undefined
       }
     }, 5000)
-  }
-
-  async logout() {
-    await firebase.signOut()
   }
 
   renderSearch() {
@@ -319,10 +323,17 @@ export class PoHoShell extends LiteElement {
       }
     }
     let dividers = this.shadowRoot.querySelectorAll('custom-divider')
-    if (!(firebase.userRoles.includes('sales') || firebase.userRoles.includes('checkout') || firebase.userRoles.includes('attendance'))) dividers[0].remove()
+    if (
+      !(
+        firebase.userRoles.includes('sales') ||
+        firebase.userRoles.includes('checkout') ||
+        firebase.userRoles.includes('attendance')
+      )
+    )
+      dividers[0].remove()
     if (!(firebase.userRoles.includes('products') || firebase.userRoles.includes('categories'))) dividers[1].remove()
-    if (!(firebase.userRoles.includes('bookkeeping'))) dividers[2].remove()
-    if (!(firebase.userRoles.includes('calendar'))) dividers[3].remove()
+    if (!firebase.userRoles.includes('bookkeeping')) dividers[2].remove()
+    if (!firebase.userRoles.includes('calendar')) dividers[3].remove()
   }
 
   render() {
@@ -405,21 +416,34 @@ export class PoHoShell extends LiteElement {
         mobile-trigger="(max-width: 1200px)">
         <span slot="top-app-bar-title">Menu</span>
         <span slot="top-app-bar-end">${this.renderSearch()}</span>
-        <span slot="drawer-headline"> 
-        ${(this.members) ? 
-          (firebase.userDetails.member === 'kassa') ? html`<span>PoHo App Kassa </span>`:
-          html`<chip-element
-          .avatar=${Object.values(this.members as Member[])?.filter((member) => member.key === firebase.userDetails.member)[0]?.userphotoURL}
-          .name=${
-            ((new Date().getHours()) < 12) ? 'Goeiemorgen, ' + Object.values(this.members as Member[])?.filter((member) => member.key === firebase.userDetails.member)[0]?.name
-            + '!' :
-            ((new Date().getHours()) <= 18) ? 'Goeiedag, ' + Object.values(this.members as Member[])?.filter((member) => member.key === firebase.userDetails.member)[0]?.name
-            + '!': 'Goeieavond, ' + Object.values(this.members as Member[])?.filter((member) => member.key === firebase.userDetails.member)[0]?.name
-            + '!'
-          }>
-        </chip-element>`
-          : ''
-        }</span>
+        <span slot="drawer-headline">
+          ${this.members
+            ? firebase.userDetails.member === 'kassa'
+              ? html`<span>PoHo App Kassa </span>`
+              : html`<chip-element
+                  .avatar=${Object.values(this.members as Member[])?.filter(
+                    member => member.key === firebase.userDetails.member
+                  )[0]?.userphotoURL}
+                  .name=${new Date().getHours() < 12
+                    ? 'Goeiemorgen, ' +
+                      Object.values(this.members as Member[])?.filter(
+                        member => member.key === firebase.userDetails.member
+                      )[0]?.name +
+                      '!'
+                    : new Date().getHours() <= 18
+                    ? 'Goeiedag, ' +
+                      Object.values(this.members as Member[])?.filter(
+                        member => member.key === firebase.userDetails.member
+                      )[0]?.name +
+                      '!'
+                    : 'Goeieavond, ' +
+                      Object.values(this.members as Member[])?.filter(
+                        member => member.key === firebase.userDetails.member
+                      )[0]?.name +
+                      '!'}>
+                </chip-element>`
+            : ''}</span
+        >
         <custom-selector
           attr-for-selected="route"
           slot="drawer-content"
