@@ -2,7 +2,6 @@ import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@material/web/list/list-item.js'
 import '@material/web/button/filled-button.js'
-import '@vandeurenglenn/flex-elements/wrap-between.js'
 import { Product } from '../../../types.js'
 
 @customElement('sales-grid')
@@ -26,7 +25,7 @@ export class SalesGrid extends LiteElement {
     return value
   }
   connectedCallback() {
-    this.addEventListener('click', (event) => {
+    this.addEventListener('click', event => {
       const paths = event.composedPath() as HTMLElement[]
       const key = paths[2]?.hasAttribute ? paths[2].getAttribute('key') : paths[3].getAttribute('key')
       if (key != null) {
@@ -47,13 +46,12 @@ export class SalesGrid extends LiteElement {
       }
       md-filled-button {
         pointer-events: auto;
-        height: 86.33px;
-        min-width: 86.33px;
-        font-size: 1.3em;
+        height: var(--sales-input-height, 86.33px);
+        font-size: var(--sales-input-font-size, 1.3em);
         text-wrap: wrap;
         line-height: normal;
       }
-      flex-wrap-between {
+      .grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-auto-rows: min-content;
@@ -77,7 +75,7 @@ export class SalesGrid extends LiteElement {
         md-filled-button {
           font-size: 1em;
         }
-        flex-wrap-between {
+        .grid {
           grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
         }
       }
@@ -91,13 +89,15 @@ export class SalesGrid extends LiteElement {
             <flex-container>
               <flex-row width="100%">
                 <custom-typography><h4>${category}</h4></custom-typography> </flex-row
-              ><flex-wrap-between>
-                ${[...products].map((product) => {
-                  return html`<md-filled-button key=${product.key} label=${product.name}
+              ><span class="grid">
+                ${[...products].map(product => {
+                  return html`<md-filled-button
+                    key=${product.key}
+                    label=${product.name}
                     >${product.name}</md-filled-button
                   >`
                 })}
-              </flex-wrap-between>
+              </span>
             </flex-container>
           `
         : ''

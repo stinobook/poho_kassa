@@ -23,6 +23,8 @@ export default html`
       <span name="check">@symbol-check</span>
       <span name="close">@symbol-close</span>
       <span name="crop">@symbol-crop</span>
+      <span name="check_box_outline_blank">@symbol-check_box_outline_blank</span>
+      <span name="check_box">@symbol-check_box</span>
       <span name="delete">@symbol-delete</span>
       <span name="done">@symbol-done</span>
       <span name="edit">@symbol-edit</span>

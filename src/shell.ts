@@ -174,13 +174,15 @@ export class PoHoShell extends LiteElement {
   }
 
   handlePropertyProvider(propertyProvider) {
-    for (const input of this.propertyProviders[propertyProvider]) {
-      let propertyKey
-      if (typeof input === 'object') propertyKey = input.name
-      else propertyKey = input
+    if (this.propertyProviders[propertyProvider]) {
+      for (const input of this.propertyProviders[propertyProvider]) {
+        let propertyKey
+        if (typeof input === 'object') propertyKey = input.name
+        else propertyKey = input
 
-      if (!this.#propertyProviders.includes(propertyKey))
-        this.setupPropertyProvider(propertyKey, input?.type, input?.events)
+        if (!this.#propertyProviders.includes(propertyKey))
+          this.setupPropertyProvider(propertyKey, input?.type, input?.events)
+      }
     }
   }
 
@@ -233,6 +235,7 @@ export class PoHoShell extends LiteElement {
 
   async connectedCallback() {
     this.roles = Object.keys(this.propertyProviders)
+    this.roles.push('settings')
     if (!globalThis.firebase) {
       await import('./firebase.js')
     }
@@ -352,6 +355,7 @@ export class PoHoShell extends LiteElement {
     if (!(firebase.userRoles.includes('products') || firebase.userRoles.includes('categories'))) dividers[1].remove()
     if (!firebase.userRoles.includes('bookkeeping')) dividers[2].remove()
     if (!firebase.userRoles.includes('calendar')) dividers[3].remove()
+    if (!firebase.userRoles.includes('settings')) dividers[4].remove()
   }
 
   render() {
@@ -482,6 +486,8 @@ export class PoHoShell extends LiteElement {
           <custom-drawer-item route="members"> Leden </custom-drawer-item>
           <custom-drawer-item route="planning"> Planning </custom-drawer-item>
           <custom-drawer-item route="users"> Gebruikers </custom-drawer-item>
+          <custom-divider middle-inset></custom-divider>
+          <custom-drawer-item route="settings"> instellingen </custom-drawer-item>
           <custom-drawer-item
             route="logout"
             class="logout">
@@ -502,6 +508,7 @@ export class PoHoShell extends LiteElement {
           <products-view route="products"> </products-view>
           <calendar-view route="calendar"> </calendar-view>
           <planning-view route="planning"> </planning-view>
+          <settings-view route="settings"> </settings-view>
           <users-view route="users"> </users-view>
           <add-product-view route="add-product"> </add-product-view>
           <add-member-view route="add-member"> </add-member-view>
