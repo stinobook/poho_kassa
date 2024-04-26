@@ -380,6 +380,9 @@ export class PoHoShell extends LiteElement {
           color: var(--md-sys-color-on-error);
           width: auto;
         }
+        .logout custom-icon {
+          --custom-icon-color: var(--md-sys-color-on-error);
+        }
         [slot='top-app-bar-end'] {
           padding-right: 32px;
         }
@@ -471,27 +474,100 @@ export class PoHoShell extends LiteElement {
           attr-for-selected="route"
           slot="drawer-content"
           @selected=${this.selectorSelected.bind(this)}>
-          <custom-drawer-item route="sales"> Verkoop </custom-drawer-item>
-          <custom-drawer-item route="checkout"> Afsluit </custom-drawer-item>
-          <custom-drawer-item route="attendance"> Aanwezigheidslijst </custom-drawer-item>
+          <custom-drawer-item route="sales">
+            Verkoop
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="point_of_sale"></custom-icon
+          ></custom-drawer-item>
+          <custom-drawer-item route="checkout">
+            Afsluit<flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="price_check"></custom-icon>
+          </custom-drawer-item>
+          <custom-drawer-item route="attendance">
+            Aanwezigheidslijst<flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="patient_list"></custom-icon>
+          </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
-          <custom-drawer-item route="products"> Producten </custom-drawer-item>
-          <custom-drawer-item route="categories"> Categorieën </custom-drawer-item>
+          <custom-drawer-item route="products">
+            Producten <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="inventory"></custom-icon
+          ></custom-drawer-item>
+          <custom-drawer-item route="categories">
+            Categorieën
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="category"></custom-icon>
+          </custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
-          <custom-drawer-item route="bookkeeping"> Boekhouding </custom-drawer-item>
+          <custom-drawer-item route="bookkeeping">
+            Boekhouding <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="checkbook"></custom-icon
+          ></custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
-          <custom-drawer-item route="calendar"> Kalender </custom-drawer-item>
+          <custom-drawer-item route="calendar">
+            Kalender
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="calendar_month"></custom-icon
+          ></custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
-          <custom-drawer-item route="events"> Evenementinstellingen </custom-drawer-item>
-          <custom-drawer-item route="members"> Leden </custom-drawer-item>
-          <custom-drawer-item route="planning"> Planning </custom-drawer-item>
-          <custom-drawer-item route="users"> Gebruikers </custom-drawer-item>
+          <custom-drawer-item route="events">
+            Evenementinstellingen
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="event"></custom-icon
+          ></custom-drawer-item>
+          <custom-drawer-item route="members">
+            Leden
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="card_membership"></custom-icon
+          ></custom-drawer-item>
+          <custom-drawer-item route="planning">
+            Planning
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="view_agenda"></custom-icon
+          ></custom-drawer-item>
+          <custom-drawer-item route="users">
+            Gebruikers
+
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="groups"></custom-icon
+          ></custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
-          <custom-drawer-item route="settings"> instellingen </custom-drawer-item>
+          <custom-drawer-item route="settings">
+            instellingen
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="settings"></custom-icon>
+          </custom-drawer-item>
           <custom-drawer-item
             route="logout"
             class="logout">
             Uitloggen
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="logout"></custom-icon>
           </custom-drawer-item>
         </custom-selector>
         <custom-pages attr-for-selected="route">
