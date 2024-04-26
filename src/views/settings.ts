@@ -7,21 +7,31 @@ import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/it.js'
 import '@vandeurenglenn/flex-elements/row.js'
 
+const defaultSalesInputSizes = {
+  height: 64,
+  minmax: '196px',
+  fontSize: 0.95
+}
+
+const maxSalesInputSizes = {
+  height: 86,
+  minmax: '250px',
+  fontSize: 1.3
+}
+
+const calculateSalesInputButtonSize = value => {
+  const heightRange = maxSalesInputSizes.height - defaultSalesInputSizes.height
+  const fontSizeRange = maxSalesInputSizes.fontSize - defaultSalesInputSizes.fontSize
+
+  const height = heightRange * (value / 100)
+  const fontSize = fontSizeRange * (value / 100)
+
+  return { height, fontSize }
+}
+
 @customElement('settings-view')
 export class SettingsView extends LiteElement {
-  @property({ type: Number }) accessor salesInputButtonSize = 0
-
-  defaultSalesInputSizes = {
-    height: 64,
-    minmax: '196px',
-    fontSize: 0.95
-  }
-
-  maxSalesInputSizes = {
-    height: 86,
-    minmax: '250px',
-    fontSize: 1.3
-  }
+  @property({ type: Number }) accessor salesInputButtonSize
 
   static styles?: StyleList = [
     css`
@@ -57,35 +67,25 @@ export class SettingsView extends LiteElement {
 
   onChange(propertyKey) {
     if (propertyKey === 'salesInputButtonSize') {
-      this.onSalesInputButtonSizeInput()
+      this.onSalesInputButtonSizeChange()
     }
-  }
-
-  calculateSalesInputButtonSize(value) {
-    const heightRange = this.maxSalesInputSizes.height - this.defaultSalesInputSizes.height
-    const fontSizeRange = this.maxSalesInputSizes.fontSize - this.defaultSalesInputSizes.fontSize
-
-    const height = heightRange * (value / 100)
-    const fontSize = fontSizeRange * (value / 100)
-
-    return { height, fontSize }
   }
 
   onSalesInputButtonSizeChange() {
     const value = this.shadowRoot.querySelector('md-slider').value
-    const { height, fontSize } = this.calculateSalesInputButtonSize(value)
+    const { height, fontSize } = calculateSalesInputButtonSize(value)
 
-    document.body.style.setProperty('--sales-input-height', `${this.defaultSalesInputSizes.height + height}px`)
-    document.body.style.setProperty('--sales-input-font-size', `${this.defaultSalesInputSizes.fontSize + fontSize}em`)
+    document.body.style.setProperty('--sales-input-height', `${defaultSalesInputSizes.height + height}px`)
+    document.body.style.setProperty('--sales-input-font-size', `${defaultSalesInputSizes.fontSize + fontSize}em`)
     localStorage.setItem('settings', JSON.stringify({ salesInputButtonSize: value }))
   }
 
   onSalesInputButtonSizeInput() {
     const value = this.shadowRoot.querySelector('md-slider').value
-    const { height, fontSize } = this.calculateSalesInputButtonSize(value)
+    const { height, fontSize } = calculateSalesInputButtonSize(value)
 
-    this.style.setProperty('--sales-input-height', `${this.defaultSalesInputSizes.height + height}px`)
-    this.style.setProperty('--sales-input-font-size', `${this.defaultSalesInputSizes.fontSize + fontSize}em`)
+    this.style.setProperty('--sales-input-height', `${defaultSalesInputSizes.height + height}px`)
+    this.style.setProperty('--sales-input-font-size', `${defaultSalesInputSizes.fontSize + fontSize}em`)
   }
 
   render(): TemplateResult<1> {

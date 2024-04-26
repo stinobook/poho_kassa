@@ -24,7 +24,40 @@ export class SalesGrid extends LiteElement {
     }
     return value
   }
+  calculateSalesInputButtonSize(value) {
+    const heightRange = this.maxSalesInputSizes.height - this.defaultSalesInputSizes.height
+    const fontSizeRange = this.maxSalesInputSizes.fontSize - this.defaultSalesInputSizes.fontSize
+
+    const height = heightRange * (value / 100)
+    const fontSize = fontSizeRange * (value / 100)
+
+    return { height, fontSize }
+  }
+  defaultSalesInputSizes = {
+    height: 64,
+    minmax: '196px',
+    fontSize: 0.95
+  }
+
+  maxSalesInputSizes = {
+    height: 86,
+    minmax: '250px',
+    fontSize: 1.3
+  }
   connectedCallback() {
+    let settings = localStorage.getItem('settings')
+    if (settings) {
+      settings = JSON.parse(settings)
+      if (settings.salesInputButtonSize !== undefined) {
+        const { height, fontSize } = this.calculateSalesInputButtonSize(settings.salesInputButtonSize)
+
+        document.body.style.setProperty('--sales-input-height', `${this.defaultSalesInputSizes.height + height}px`)
+        document.body.style.setProperty(
+          '--sales-input-font-size',
+          `${this.defaultSalesInputSizes.fontSize + fontSize}em`
+        )
+      }
+    }
     this.addEventListener('click', event => {
       const paths = event.composedPath() as HTMLElement[]
       const key = paths[2]?.hasAttribute ? paths[2].getAttribute('key') : paths[3].getAttribute('key')
@@ -46,8 +79,8 @@ export class SalesGrid extends LiteElement {
       }
       md-filled-button {
         pointer-events: auto;
-        height: var(--sales-input-height, 86.33px);
-        font-size: var(--sales-input-font-size, 1.3em);
+        height: var(--sales-input-height, 64px);
+        font-size: var(--sales-input-font-size, 0.95em);
         text-wrap: wrap;
         line-height: normal;
       }
