@@ -147,8 +147,8 @@ export class PoHoShell extends LiteElement {
         this[propertyProvider] = { ...this[propertyProvider] }
       }
 
-      if (task === 'replace') events?.onChildChanged(val)
-      else events?.onChildRemoved(val)
+      if (task === 'replace') events?.onChildChanged?.(val)
+      else events?.onChildRemoved?.(val)
     }
 
     firebase.onChildAdded(propertyProvider, async snap => {
@@ -166,7 +166,7 @@ export class PoHoShell extends LiteElement {
         this[propertyProvider][snap.key] = val
         this[propertyProvider] = { ...this[propertyProvider] }
       }
-      events?.onChildAdded(val)
+      events?.onChildAdded?.(val)
     })
 
     firebase.onChildChanged(propertyProvider, snap => deleteOrReplace(propertyProvider, snap, 'replace'))
