@@ -198,10 +198,10 @@ export class ImageSelectorDialog extends LiteElement {
             this.shadowRoot.querySelector('section[route="file"]').removeChild(item)
           }
           this.shadowRoot.querySelector('section[route="file"]').appendChild(item)
-          return { name: file.name, data }
+          file.data = data
+          return file
         })
       )
-
       this.#image.data = files as { name: string; data: string }[]
       this.#image.type = 'base64[]'
       input.removeEventListener('change', onchange)

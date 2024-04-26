@@ -38,6 +38,7 @@ export class SalesReceipt extends LiteElement {
         max-height: calc(100% - 272px);
         position: relative;
         border-radius: var(--md-sys-shape-corner-extra-large);
+        background: var(--md-sys-color-surface-variant);
       }
 
       ::-webkit-scrollbar {
@@ -108,7 +109,7 @@ export class SalesReceipt extends LiteElement {
     `
   ]
 
-  removeProduct = (productKey) => {
+  removeProduct = productKey => {
     if (!this.items[productKey]) return
     const amount = this.items[productKey].amount
     const price = this.items[productKey].price
@@ -155,7 +156,7 @@ export class SalesReceipt extends LiteElement {
   }
 
   dialogInput(): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const dialog = this.shadowRoot.querySelector('custom-dialog') as HTMLDialogElement
       const closeAction = () => {
         let inputValue = (this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value') as HTMLInputElement)
@@ -177,7 +178,7 @@ export class SalesReceipt extends LiteElement {
   #lastSelected
   connectedCallback() {
     this.total = 0
-    this.shadowRoot.addEventListener('click', (event) => {
+    this.shadowRoot.addEventListener('click', event => {
       const paths = event.composedPath() as HTMLElement[]
       this.#lastSelected = paths[0].getAttribute('key')
       this.requestRender()
@@ -193,7 +194,9 @@ export class SalesReceipt extends LiteElement {
           ? map(
               Object.values(this.items),
               (item: ReceiptItem) => html`
-                <button key=${item.key} ?active=${item.key === this.#lastSelected}>
+                <button
+                  key=${item.key}
+                  ?active=${item.key === this.#lastSelected}>
                   <md-ripple></md-ripple>
                   <custom-elevation></custom-elevation>
                   <flex-column>
@@ -223,7 +226,9 @@ export class SalesReceipt extends LiteElement {
           : ''}
       </flex-container>
       <flex-it></flex-it>
-      <flex-row center class="total">
+      <flex-row
+        center
+        class="total">
         <strong>${this.textTotalorChange}:</strong>
         <flex-it></flex-it>
         ${Number(this.total).toLocaleString(navigator.language, {
@@ -231,11 +236,21 @@ export class SalesReceipt extends LiteElement {
           currency: 'EUR'
         })}
       </flex-row>
-      <custom-dialog class="dialogInput" has-actions="" has-header="">
+      <custom-dialog
+        class="dialogInput"
+        has-actions=""
+        has-header="">
         <span slot="title">Input required</span>
         <md-filled-text-field class="dialoginput-value"></md-filled-text-field>
-        <flex-row slot="actions" direction="row">
-          <custom-button label="send" action="send" has-label="">Verstuur</custom-button>
+        <flex-row
+          slot="actions"
+          direction="row">
+          <custom-button
+            label="send"
+            action="send"
+            has-label=""
+            >Verstuur</custom-button
+          >
         </flex-row>
       </custom-dialog>
     `

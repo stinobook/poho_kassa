@@ -101,27 +101,33 @@ export class AddMemberView extends LiteElement {
     user['group'] = this.shadowRoot.querySelector('md-outlined-select').value.toLowerCase()
     if (this.userphotoURL) {
       // check if link
-      if (this['userphotoURL'].includes('https') || this['userphotoURL'].includes('http')) {
+      if (this['userphotoURL'].includes?.('https') || this['userphotoURL'].includes?.('http')) {
         user['userphotoURL'] = this.userphotoURL
       } else {
         let uploadUserphoto = await firebase.uploadBytes(
-          `members/${user['lastname'] + user['name']}avatar`,
+          `members/${user['lastname']}${user['name']}avatar`,
           this.userphotoURL
         )
-        user['userphotoURL'] = await firebase.getDownloadURL(uploadUserphoto.ref)
+        user['userphotoURL'] = (await firebase.getDownloadURL(uploadUserphoto.ref)).replace(
+          `${user['name']}avatar`,
+          `${user['name']}avatar_300x300`
+        )
       }
     } else {
       user['userphotoURL'] = this.shadowRoot.querySelector(`img[name="userphotoURL"]`)?.src
     }
     if (this.userphotobgURL) {
-      if (this['userphotobgURL'].includes('https') || this['userphotobgURL'].includes('http')) {
+      if (this['userphotobgURL'].includes?.('https') || this['userphotobgURL'].includes?.('http')) {
         user['userphotobgURL'] = this.userphotobgURL
       } else {
         let uploadUserphotobg = await firebase.uploadBytes(
-          `members/${user['lastname'] + user['name']}background`,
+          `members/${user['lastname']}${user['name']}background`,
           this.userphotobgURL
         )
-        user['userphotobgURL'] = await firebase.getDownloadURL(uploadUserphotobg.ref)
+        user['userphotobgURL'] = (await firebase.getDownloadURL(uploadUserphotobg.ref)).replace(
+          `${user['name']}background`,
+          `${user['name']}background_300x300`
+        )
       }
     } else {
       user['userphotobgURL'] = this.shadowRoot.querySelector(`img[name="userphotobgURL"]`)?.src
