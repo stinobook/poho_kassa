@@ -62,6 +62,8 @@ export class SettingsView extends LiteElement {
       for (const [key, value] of Object.entries(settings)) {
         this[key] = value
       }
+    } else {
+      this.salesInputButtonSize = 0
     }
   }
 
