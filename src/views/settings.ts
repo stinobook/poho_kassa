@@ -6,28 +6,7 @@ import { StyleList, css } from '@vandeurenglenn/lite/element'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/it.js'
 import '@vandeurenglenn/flex-elements/row.js'
-
-const defaultSalesInputSizes = {
-  height: 64,
-  minmax: '196px',
-  fontSize: 0.95
-}
-
-const maxSalesInputSizes = {
-  height: 86,
-  minmax: '250px',
-  fontSize: 1.3
-}
-
-const calculateSalesInputButtonSize = value => {
-  const heightRange = maxSalesInputSizes.height - defaultSalesInputSizes.height
-  const fontSizeRange = maxSalesInputSizes.fontSize - defaultSalesInputSizes.fontSize
-
-  const height = heightRange * (value / 100)
-  const fontSize = fontSizeRange * (value / 100)
-
-  return { height, fontSize }
-}
+import { calculateSalesInputButtonSize, resizeSalesInputButton } from '../utils/resize-sales-input-button.js'
 
 @customElement('settings-view')
 export class SettingsView extends LiteElement {
@@ -75,10 +54,7 @@ export class SettingsView extends LiteElement {
 
   onSalesInputButtonSizeChange() {
     const value = this.shadowRoot.querySelector('md-slider').value
-    const { height, fontSize } = calculateSalesInputButtonSize(value)
-
-    document.body.style.setProperty('--sales-input-height', `${defaultSalesInputSizes.height + height}px`)
-    document.body.style.setProperty('--sales-input-font-size', `${defaultSalesInputSizes.fontSize + fontSize}em`)
+    resizeSalesInputButton(value)
     localStorage.setItem('settings', JSON.stringify({ salesInputButtonSize: value }))
   }
 
@@ -86,8 +62,8 @@ export class SettingsView extends LiteElement {
     const value = this.shadowRoot.querySelector('md-slider').value
     const { height, fontSize } = calculateSalesInputButtonSize(value)
 
-    this.style.setProperty('--sales-input-height', `${defaultSalesInputSizes.height + height}px`)
-    this.style.setProperty('--sales-input-font-size', `${defaultSalesInputSizes.fontSize + fontSize}em`)
+    this.style.setProperty('--sales-input-height', `${height}px`)
+    this.style.setProperty('--sales-input-font-size', `${fontSize}em`)
   }
 
   render(): TemplateResult<1> {

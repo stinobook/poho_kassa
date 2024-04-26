@@ -3,6 +3,7 @@ import { customElement } from 'lit/decorators.js'
 import '@material/web/list/list-item.js'
 import '@material/web/button/filled-button.js'
 import { Product } from '../../../types.js'
+import { calculateSalesInputButtonSize } from '../../../utils/resize-sales-input-button.js'
 
 @customElement('sales-grid')
 export class SalesGrid extends LiteElement {
@@ -24,38 +25,16 @@ export class SalesGrid extends LiteElement {
     }
     return value
   }
-  calculateSalesInputButtonSize(value) {
-    const heightRange = this.maxSalesInputSizes.height - this.defaultSalesInputSizes.height
-    const fontSizeRange = this.maxSalesInputSizes.fontSize - this.defaultSalesInputSizes.fontSize
 
-    const height = heightRange * (value / 100)
-    const fontSize = fontSizeRange * (value / 100)
-
-    return { height, fontSize }
-  }
-  defaultSalesInputSizes = {
-    height: 64,
-    minmax: '196px',
-    fontSize: 0.95
-  }
-
-  maxSalesInputSizes = {
-    height: 86,
-    minmax: '250px',
-    fontSize: 1.3
-  }
   connectedCallback() {
-    let settings = localStorage.getItem('settings')
+    let settings = localStorage.getItem('settings') as string | { salesInputButtonSize }
     if (settings) {
-      settings = JSON.parse(settings)
+      settings = JSON.parse(settings as string) as { salesInputButtonSize }
       if (settings.salesInputButtonSize !== undefined) {
-        const { height, fontSize } = this.calculateSalesInputButtonSize(settings.salesInputButtonSize)
+        const { height, fontSize } = calculateSalesInputButtonSize(settings.salesInputButtonSize)
 
-        document.body.style.setProperty('--sales-input-height', `${this.defaultSalesInputSizes.height + height}px`)
-        document.body.style.setProperty(
-          '--sales-input-font-size',
-          `${this.defaultSalesInputSizes.fontSize + fontSize}em`
-        )
+        document.body.style.setProperty('--sales-input-height', `${height}px`)
+        document.body.style.setProperty('--sales-input-font-size', `${fontSize}em`)
       }
     }
     this.addEventListener('click', event => {
