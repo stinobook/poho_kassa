@@ -181,7 +181,11 @@ export class CategoriesView extends LiteElement {
             : ''}
         </flex-container>
       </main>
-      <md-fab action="add"><custom-icon slot="icon">add</custom-icon></md-fab>
+      <md-fab action="add"
+        ><custom-icon
+          slot="icon"
+          icon="add"></custom-icon
+      ></md-fab>
     `
   }
 }

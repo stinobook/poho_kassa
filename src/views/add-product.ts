@@ -43,7 +43,7 @@ export class AddProductView extends LiteElement {
 
   reset() {
     this.params = undefined
-    for (const label of this.labels.filter((item) => item.label !== 'category')) {
+    for (const label of this.labels.filter(item => item.label !== 'category')) {
       label.reset()
       if (label.placeholder) {
         label.value = label.placeholder
@@ -152,24 +152,44 @@ export class AddProductView extends LiteElement {
     return html`
       <flex-container>
         <md-outlined-text-field label="name"></md-outlined-text-field>
-        <md-outlined-text-field label="price" type="number" placeholder="0"></md-outlined-text-field>
-        <md-outlined-text-field label="vat" type="number" placeholder="0"></md-outlined-text-field>
+        <md-outlined-text-field
+          label="price"
+          type="number"
+          placeholder="0"></md-outlined-text-field>
+        <md-outlined-text-field
+          label="vat"
+          type="number"
+          placeholder="0"></md-outlined-text-field>
         <md-outlined-select label="category">
           ${this.categories
             ? map(
                 this.categories,
-                (category) =>
-                  html` <md-select-option value=${category} headline=${category}>${category}</md-select-option> `
+                category =>
+                  html`
+                    <md-select-option
+                      value=${category}
+                      headline=${category}
+                      >${category}</md-select-option
+                    >
+                  `
               )
             : ''}
         </md-outlined-select>
         <label><md-checkbox id="description"></md-checkbox>Extra gegevens nodig?</label>
       </flex-container>
 
-      <md-fab @click=${this.back.bind(this)} class="back"
-        ><custom-icon slot="icon" icon="arrow_back"></custom-icon
+      <md-fab
+        @click=${this.back.bind(this)}
+        class="back"
+        ><custom-icon
+          slot="icon"
+          icon="arrow_back"></custom-icon
       ></md-fab>
-      <md-fab @click=${this.save.bind(this)}><custom-icon slot="icon">save</custom-icon></md-fab>
+      <md-fab @click=${this.save.bind(this)}
+        ><custom-icon
+          slot="icon"
+          icon="save"></custom-icon
+      ></md-fab>
     `
   }
 }

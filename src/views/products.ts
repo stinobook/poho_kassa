@@ -69,7 +69,7 @@ export class ProductsView extends LiteElement {
     this.shadowRoot.removeEventListener('click', this.#clickHandler)
   }
 
-  #clickHandler = (event) => {
+  #clickHandler = event => {
     const key = event.target.getAttribute('key')
     const name = event.target.getAttribute('name')
     const action = event.target.getAttribute('action')
@@ -106,7 +106,7 @@ export class ProductsView extends LiteElement {
     dialog.open = true
   }
 
-  _edit = (target) => {
+  _edit = target => {
     location.hash = Router.bang(`add-product?edit=${target}`)
   }
 
@@ -116,11 +116,17 @@ export class ProductsView extends LiteElement {
         <flex-container>
           ${this.products
             ? this.products.map(
-                (item) => html`
-                  <md-list-item action="edit" key=${item.key}>
+                item => html`
+                  <md-list-item
+                    action="edit"
+                    key=${item.key}>
                     <span slot="headline">${item.name}</span>
                     <span slot="supporting-text">Prijs: &euro;${item.price} - BTW: ${item.vat}%</span>
-                    <md-icon-button slot="end" action="delete" key=${item.key} name=${item.name}>
+                    <md-icon-button
+                      slot="end"
+                      action="delete"
+                      key=${item.key}
+                      name=${item.name}>
                       <custom-icon icon="delete"></custom-icon>
                     </md-icon-button>
                   </md-list-item>
@@ -129,7 +135,11 @@ export class ProductsView extends LiteElement {
             : ''}
         </flex-container>
       </main>
-      <md-fab action="add"><custom-icon slot="icon">add</custom-icon></md-fab>
+      <md-fab action="add"
+        ><custom-icon
+          slot="icon"
+          icon="add"></custom-icon
+      ></md-fab>
     `
   }
 }
