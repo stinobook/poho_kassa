@@ -9,7 +9,7 @@ import '@vandeurenglenn/lite-elements/typography.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import type { Cashtotal, Transaction, Sales, Member } from '../types.js'
-import { ref, push, getDatabase, set,onValue, query, limitToLast } from 'firebase/database'
+import { ref, push, getDatabase, set, onValue, query, limitToLast } from 'firebase/database'
 import Router from '../routing.js'
 
 @customElement('checkout-view')
@@ -38,9 +38,10 @@ export class CheckoutView extends LiteElement {
     css`
       :host {
         display: flex;
+        flex-direction: column;
         width: 100%;
         height: 100%;
-        position: relative;
+        align-items: center;
         border-radius: var(--md-sys-shape-corner-extra-large);
       }
 
@@ -55,25 +56,25 @@ export class CheckoutView extends LiteElement {
         box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.5) inset;
       }
       flex-container {
-        max-width: none;
         width: -webkit-fill-available;
         position: relative;
         overflow: hidden;
         overflow-y: auto;
         flex-wrap: wrap;
-        align-content:flex-start;
+        align-content: flex-start;
       }
-      .cashtelling, .transactions {
-          background-color: var(--md-sys-color-surface-container-high);
-          color: var(--md-sys-color-on-surface-container-high);
-          border-radius: var(--md-sys-shape-corner-extra-large);
-          gap: 12px;
-          box-sizing: border-box;
-          padding: 12px;
-          margin-top: 12px;
+      .cashtelling,
+      .transactions {
+        background-color: var(--md-sys-color-surface-container-high);
+        color: var(--md-sys-color-on-surface-container-high);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+
+        box-sizing: border-box;
+        padding: 24px;
+        margin-bottom: 12px;
       }
       .currencies {
-        max-width: 250px;
+        max-width: 186px;
       }
       .cash {
         display: flex;
@@ -93,7 +94,7 @@ export class CheckoutView extends LiteElement {
       }
       .cashsub label {
         text-align: end;
-        font-size:1.1em;
+        font-size: 1.1em;
         text-wrap: nowrap;
         float: left;
       }
@@ -116,11 +117,11 @@ export class CheckoutView extends LiteElement {
         display: none;
         float: unset;
       }
-      .cashactions input[type=checkbox]:checked + label {
+      .cashactions input[type='checkbox']:checked + label {
         background-color: lightgreen;
       }
       .cashactions input {
-          display: none;
+        display: none;
       }
       details {
         background-color: var(--md-sys-color-surface-container-highest);
@@ -128,11 +129,11 @@ export class CheckoutView extends LiteElement {
         color: var(--md-sys-color-on-primary-container);
         padding: 12px;
       }
-    
+
       details[open] summary ~ * {
         animation: open 0.3s ease-in-out;
       }
-    
+
       @keyframes open {
         0% {
           opacity: 0;
@@ -144,13 +145,13 @@ export class CheckoutView extends LiteElement {
       details summary::-webkit-details-marker {
         display: none;
       }
-    
+
       details summary {
         position: relative;
         cursor: pointer;
         list-style: none;
       }
-    
+
       details summary:after {
         content: '+';
         height: 0px;
@@ -171,7 +172,8 @@ export class CheckoutView extends LiteElement {
         outline: 0;
       }
       .currencies input {
-        padding: 10px 0 10px 15px;
+        text-align: end;
+        padding: 10px 10px 10px 15px;
         font-size: 1rem;
         color: var(--md-sys-color-on-secondary);
         background: var(--md-sys-color-secondary);
@@ -179,12 +181,12 @@ export class CheckoutView extends LiteElement {
         border-radius: 3px;
         outline: 0;
         margin-left: 24px;
-        margin-right: 4px;
+        margin-right: 8px;
+        box-sizing: border-box;
         width: 50%;
       }
 
       .currencies label {
-        width: 250px;
         text-align: end;
         float: left;
         padding: 4px 0;
@@ -210,7 +212,7 @@ export class CheckoutView extends LiteElement {
     this.cashTotals[inputValue] = inputAmount
     this.cashTotal = 0
     let i = Object.keys(this.cashTotals)
-    i.forEach((key) => {
+    i.forEach(key => {
       let nKey = Number(key)
       this.cashTotal += nKey * this.cashTotals[key]
     })
@@ -218,30 +220,32 @@ export class CheckoutView extends LiteElement {
     this.cashTransfer = Math.round((this.cashTotal - 10000) / 500) * 500
     this.cashStartNew = (this.cashTotal - this.cashTransfer) / 100
     this.cashVaultNew = this.cashVault + this.cashTransfer / 100
-    this.cashTotal = this.cashTotal/100
-    this.cashDifference = this.cashDifference/100
-    this.cashTransfer = this.cashTransfer/100
+    this.cashTotal = this.cashTotal / 100
+    this.cashDifference = this.cashDifference / 100
+    this.cashTransfer = this.cashTransfer / 100
   }
-
-  
 
   async connectedCallback(): Promise<void> {
     this.shadowRoot.addEventListener('input', ({ target }: CustomEvent) => {
       // @ts-ignore
-      if (target.id !== "banktransfer") {
-      let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
-      this.inputCash(inputValue, target)
+      if (target.id !== 'banktransfer') {
+        let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
+        this.inputCash(inputValue, target)
       }
     })
     this.shadowRoot.addEventListener('click', this.#clickHandler)
     const db = getDatabase()
-    const dbQ = query(ref(db,'sales'), limitToLast(1))
-    onValue(dbQ, (snapshot) => {
-      let lastCheckout = snapshot.val() as Sales
-      this.cashStart = Object.values(lastCheckout)[0].cashStartCheckout
-      this.cashVault = Object.values(lastCheckout)[0].cashVaultCheckout
-      if (!this.cashVault) this.cashVault = 0
-      }, { onlyOnce: false })
+    const dbQ = query(ref(db, 'sales'), limitToLast(1))
+    onValue(
+      dbQ,
+      snapshot => {
+        let lastCheckout = snapshot.val() as Sales
+        this.cashStart = Object.values(lastCheckout)[0].cashStartCheckout
+        this.cashVault = Object.values(lastCheckout)[0].cashVaultCheckout
+        if (!this.cashVault) this.cashVault = 0
+      },
+      { onlyOnce: false }
+    )
   }
 
   disconnectedCallback() {
@@ -291,13 +295,13 @@ export class CheckoutView extends LiteElement {
         }
 
         this.transactionsByCategory = transactionsByCategory
-      } else { 
-        this.requestRender() 
+      } else {
+        this.requestRender()
       }
     }
   }
 
-  #clickHandler = (event) => {
+  #clickHandler = event => {
     const key = event.target.getAttribute('key')
     const action = event.target.getAttribute('action')
     if (!action) return
@@ -316,7 +320,8 @@ export class CheckoutView extends LiteElement {
       alert('Niets om af te boeken')
     } else {
       if (this.cashVaultNew > 500 && !(this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
-        if (!confirm('Opgelet, bedrag in kluis te hoog, overdragen!\n Duw OK om toch af te sluiten ZONDER overdracht.')) return
+        if (!confirm('Opgelet, bedrag in kluis te hoog, overdragen!\n Duw OK om toch af te sluiten ZONDER overdracht.'))
+          return
       }
       if (confirm('Geen verschil?') === true) {
         const salesDB = ref(getDatabase(), 'sales')
@@ -364,7 +369,7 @@ export class CheckoutView extends LiteElement {
         await firebase.set('promo', null)
         this.transactionsByCategory = {}
         this.cashExpected = this.cashStartNew
-        this.shadowRoot.querySelectorAll('input').forEach((input) => (input.value = ''))
+        this.shadowRoot.querySelectorAll('input').forEach(input => (input.value = ''))
         location.hash = Router.bang('bookkeeping')
       }
     }
@@ -373,51 +378,129 @@ export class CheckoutView extends LiteElement {
   render() {
     if (!this.transactions || this.transactions?.length === 0) {
       return html`<flex-container>
-                    <custom-typography><h1>Niets om af te boeken</h1></custom-typography>
-                  </flex-container>`
+        <custom-typography><h1>Niets om af te boeken</h1></custom-typography>
+      </flex-container>`
     } else {
       return html`
         <flex-container direction="row">
-          <flex-container direction="row" class="cashtelling">
+          <flex-container
+            direction="row"
+            class="cashtelling">
             <custom-typography>Cash</custom-typography>
             <div class="currencies">
-              <span><label>&euro;100<input class="cashInputfield" type="text" input-cash="100" /></label></span>
-              <span><label>&euro;50<input class="cashInputfield" type="text" input-cash="50" /></label></span>
-              <span><label>&euro;20<input class="cashInputfield" type="text" input-cash="20" /></label></span>
-              <span><label>&euro;10<input class="cashInputfield" type="text" input-cash="10" /></label></span>
-              <span><label>&euro;5<input class="cashInputfield" type="text" input-cash="5" /></label></span>
-              <span><label>&euro;2<input class="cashInputfield" type="text" input-cash="2" /></label></span>
-              <span><label>&euro;1<input class="cashInputfield" type="text" input-cash="1" /></label></span>
-              <span><label>&euro;0.50<input class="cashInputfield" type="text" input-cash="0.50" /></label></span>
-              <span><label>&euro;0.20<input class="cashInputfield" type="text" input-cash="0.20" /></label></span>
-              <span><label>&euro;0.10<input class="cashInputfield" type="text" input-cash="0.10" /></label></span>
-              <span><label>&euro;0.05<input class="cashInputfield" type="text" input-cash="0.05" /></label></span>
+              <label
+                >&euro;100<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="100"
+              /></label>
+              <label
+                >&euro;50<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="50"
+              /></label>
+              <label
+                >&euro;20<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="20"
+              /></label>
+              <label
+                >&euro;10<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="10"
+              /></label>
+              <label
+                >&euro;5<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="5"
+              /></label>
+              <label
+                >&euro;2<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="2" /></label
+              ><label
+                >&euro;1<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="1" /></label
+              ><label
+                >&euro;0.50<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="0.50" /></label
+              ><label
+                >&euro;0.20<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="0.20" /></label
+              ><label
+                >&euro;0.10<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="0.10"
+              /></label>
+              <label
+                >&euro;0.05<input
+                  class="cashInputfield"
+                  type="text"
+                  input-cash="0.05"
+              /></label>
             </div>
             <div class="cash">
               <div class="cashsub">
                 <custom-typography>Kassa</custom-typography>
-                <label><span>Totaal:</span>&euro;${this.cashTotal}</label>
-                <label><span>Verwacht:</span> &euro;${this.cashExpected}</label>
-                <label><span>Verschil:</span> &euro;${this.cashDifference}</label>
+                <flex-row>
+                  <label>Totaal:</label>
+                  <flex-it></flex-it> &euro;${this.cashTotal}
+                </flex-row>
+
+                <flex-row>
+                  <label>Verwacht:</label>
+                  <flex-it></flex-it> &euro;${this.cashExpected}
+                </flex-row>
+
+                <flex-row>
+                  <label>Verschil:</label>
+                  <flex-it></flex-it> &euro;${this.cashDifference}
+                </flex-row>
               </div>
               <div class="cashsub">
-              <custom-typography>Kluis</custom-typography>
-                <label><span>Kasoverdracht naar kluis:</span> &euro;${this.cashTransfer}</label>
-                <label><span>Totaal in kluis:</span> &euro;${this.cashVaultNew}</label>
-                <label><span>Nieuw startgeld kassa:</span> &euro;${this.cashStartNew}</label>
+                <custom-typography>Kluis</custom-typography>
+                <flex-row>
+                  <label>Kasoverdracht naar kluis::</label>
+                  <flex-it></flex-it> &euro;${this.cashTransfer}
+                </flex-row>
+                <flex-row>
+                  <label>Totaal in kluis::</label>
+                  <flex-it></flex-it> &euro;${this.cashVaultNew}
+                </flex-row>
+                <flex-row>
+                  <label>Nieuw startgeld kassa::</label>
+                  <flex-it></flex-it> &euro;${this.cashStartNew}
+                </flex-row>
               </div>
               <div class="cashsub cashactions">
-                <input id="banktransfer" class="banktransfer" type="checkbox"/>
+                <input
+                  id="banktransfer"
+                  class="banktransfer"
+                  type="checkbox" />
                 <label for="banktransfer">Bankoverdracht uitvoeren?</label>
                 <md-filled-button action="checkout"> Bevestig Afsluit </md-filled-button>
               </div>
             </div>
           </flex-container>
-          <flex-container class="transactions" direction="column">
+          <flex-container
+            class="transactions"
+            direction="column">
             <custom-typography>Transacties</custom-typography>
             ${this.transactions
               ? this.transactions.map(
-                  (transaction) => html`
+                  transaction => html`
                     <md-list>
                       <details>
                         <summary>
@@ -440,8 +523,8 @@ export class CheckoutView extends LiteElement {
                                   ? html`
                                       <span slot="headline"
                                         >${Object.values(this.members)
-                                          .filter((member) => member.key === transaction.member)
-                                          .map((member) => member.name + ' ' + member.lastname)}</span
+                                          .filter(member => member.key === transaction.member)
+                                          .map(member => member.name + ' ' + member.lastname)}</span
                                       >
                                     `
                                   : ''}
@@ -455,7 +538,11 @@ export class CheckoutView extends LiteElement {
                             `
                         )}
                         ${transaction.paymentMethod === 'cash'
-                          ? html`<md-filled-button action="delete" key=${transaction.key}>Verwijder</md-filled-button>`
+                          ? html`<md-filled-button
+                              action="delete"
+                              key=${transaction.key}
+                              >Verwijder</md-filled-button
+                            >`
                           : ''}
                       </details>
                     </md-list>
