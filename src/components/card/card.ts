@@ -15,10 +15,19 @@ export class CardElement extends LiteElement {
   @property()
   accessor subline
 
+  @property()
+  accessor paydate
+
   onChange(propertyKey: string, value: any): void {
     if (propertyKey === 'avatar') {
       if (value) this.setAttribute('has-avatar', '')
       else this.removeAttribute('has-avatar')
+    }
+    if (propertyKey === 'paydate') {
+      let expirationDate = new Date()
+      expirationDate.setFullYear(expirationDate.getFullYear() -1)
+      let oldDate = new Date(this.paydate)
+      if (oldDate < expirationDate) this.shadowRoot.querySelector('span').classList.add('expired')
     }
   }
 
@@ -35,6 +44,11 @@ export class CardElement extends LiteElement {
           0 0 40px rgba(0, 0, 0, 0.1) inset;
         background: var(--md-sys-color-surface-variant);
         color: var(--md-sys-color-on-surface-variant);
+      }
+      .expired {
+        background: var(--md-sys-color-on-error-container);
+        color: var(--md-sys-color-error-container);
+        border-radius: 0 0 var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-extra-large);
       }
 
       img {

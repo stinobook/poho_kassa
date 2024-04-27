@@ -104,6 +104,9 @@ export type Member = {
   dograce?: string
   pedigree?: string
   chipnumber?: string
+  paydate?: string
+  status?: string
+  extra?: string
 }
 export type Members = Member[]
 

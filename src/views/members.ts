@@ -64,6 +64,10 @@ export class MembersView extends LiteElement {
       custom-typography {
         text-transform: capitalize;
       }
+      card-element span {
+        width: 100%;
+        display: block;
+      }
     `
   ]
   async willChange(propertyKey: string, value: any): Promise<any> {
@@ -114,11 +118,23 @@ export class MembersView extends LiteElement {
                       .image=${member.userphotobgURL}
                       .avatar=${member.userphotoURL}
                       .headline=${member.name + ' ' + member.lastname}
-                      .subline=${member.title}>
+                      .subline=${member.title}
+                      .paydate=${member.paydate}
+                      >
                       <flex-it></flex-it>
                       <div class="content">
-                        <h3></h3>
-                        <p>extra info to be coded</p>
+                      ${(group === 'leden') ? html`
+                        <span>Status: ${member.status}</span>
+                        <span>Betaald op: ${member.paydate}</span>
+                        ${member.extra ? html`
+                          <span>Hoofdlid: 
+                            ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
+                            this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
+                            } 
+                          </span>
+                        ` : ''}
+                      `
+                      : ''}
                       </div>
                     </card-element>
                   `
