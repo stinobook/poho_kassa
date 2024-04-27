@@ -29,7 +29,22 @@ export class LoginView extends LiteElement {
       await firebase.update('users/' + firebase.auth.currentUser.uid, { email: email })
       location.href = location.href.split('index')[0]
     } else {
-      await firebase.signInWithEmailAndPassword(email, password)
+      await firebase.signInWithEmailAndPassword(email, password).then((userCredential) => {
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        switch(errorCode) {
+          case 'auth/invalid-credential':
+            alert('Ongeldige gebruikersnaam/wachtwoord')
+            break;
+          case 'undefined':
+            console.log(errorCode + ' ' + errorMessage)
+            break;
+          default:
+            alert(errorCode + ' ' + errorMessage)
+        }
+      })
     }
   }
 

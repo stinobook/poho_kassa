@@ -11,6 +11,7 @@ import './components/chip/chip.js'
 import './components/search.js'
 import icons from './icons.js'
 import Router from './routing.js'
+import { scrollbar } from './mixins/styles.js'
 import type { CustomDrawerLayout, CustomPages, CustomSelector } from './component-types.js'
 // import default page
 import './views/loading.js'
@@ -373,6 +374,9 @@ export class PoHoShell extends LiteElement {
           height: 100%;
           display: flex;
         }
+
+      ${scrollbar}
+
         .logout {
           position: absolute;
           bottom: 24px;
@@ -418,7 +422,7 @@ export class PoHoShell extends LiteElement {
           }
         }
         custom-selector {
-          margin-bottom: 125px;
+          max-height: calc(100vh - 200px);
         }
         chip-element {
           pointer-events: none;
@@ -443,8 +447,8 @@ export class PoHoShell extends LiteElement {
         <span slot="top-app-bar-title">Menu</span>
         <span slot="top-app-bar-end">${this.renderSearch()}</span>
         <span slot="drawer-headline">
-          ${this.members
-            ? firebase.userDetails.member === 'kassa'
+          ${this.members && firebase.userDetails
+            ? firebase.userDetails?.member === 'kassa'
               ? html`<span>PoHo App Kassa </span>`
               : html`<chip-element
                   .avatar=${Object.values(this.members as Member[])?.filter(
@@ -554,7 +558,7 @@ export class PoHoShell extends LiteElement {
           ></custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="settings">
-            instellingen
+            Instellingen
             <flex-it></flex-it>
             <custom-icon
               slot="end"
