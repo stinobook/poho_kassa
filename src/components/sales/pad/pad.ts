@@ -19,6 +19,8 @@ export class SalesPad extends LiteElement {
   accessor members: { Type: Member }
   @property({ type: Array, consumer: true })
   accessor tabs: Tab[]
+  @property({ type: Object, consumer: true })
+  accessor expiredMembersList: { Type: Member }
   currentSelectedProduct: string
   currentProductAmount: string = ''
 
@@ -163,7 +165,8 @@ export class SalesPad extends LiteElement {
       this.receipt.items[this.currentSelectedProduct]?.description ||
       detail === 'cash' ||
       detail === 'payconiq' ||
-      detail === 'promo'
+      detail === 'promo' ||
+      detail === 'members'
     ) {
       switch (detail) {
         case 'cash':
@@ -219,6 +222,17 @@ export class SalesPad extends LiteElement {
             this.requestRender()
             let dialogPromo = this.shadowRoot.querySelector('custom-dialog.dialogPromo') as HTMLDialogElement
             dialogPromo.open = true
+            break
+          }
+        case 'members':
+          if (Object.keys(this.receipt.items).length !== 0) {
+            alert('Item op de lijst!')
+            break
+          } else {
+            this.renderExpired()
+            this.requestRender()
+            let dialogExpired = this.shadowRoot.querySelector('custom-dialog.dialogExpired') as HTMLDialogElement
+            dialogExpired.open = true
             break
           }
         default:
@@ -371,6 +385,18 @@ export class SalesPad extends LiteElement {
           `
       )
   }
+  renderExpired() {
+    return Object.values(this.expiredMembersList).map(
+        expiredMember =>
+          html`
+            <custom-button
+              action=${expiredMember.key}
+              .label=${expiredMember.name + ' ' + expiredMember.lastname}
+              >${expiredMember.name + ' ' + expiredMember.lastname}</custom-button
+            >
+          `
+      )
+  }
 
   render() {
     return html`
@@ -442,6 +468,10 @@ export class SalesPad extends LiteElement {
       <custom-dialog class="dialogPromo">
         <span slot="title">Promo Ontvangst</span>
         <flex-wrap-between slot="actions"> ${this.promo ? this.renderPromo() : ''} </flex-wrap-between>
+      </custom-dialog>
+      <custom-dialog class="dialogExpired">
+        <span slot="title">Vervallen lidmaadschap</span>
+        <flex-wrap-between slot="actions"> ${this.expiredMembersList ? this.renderExpired() : ''} </flex-wrap-between>
       </custom-dialog>
 
       <sales-receipt @selection=${event => this.onReceiptSelection(event)}></sales-receipt>

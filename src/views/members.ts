@@ -127,7 +127,7 @@ export class MembersView extends LiteElement {
                         <span>Status: ${member.status}</span>
                         <span>Betaald op: ${member.paydate}</span>
                         ${member.extra ? html`
-                          <span>Hoofdlid: 
+                          <span>2e Lid: 
                             ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
                             this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
                             } 

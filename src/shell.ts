@@ -33,6 +33,7 @@ export class PoHoShell extends LiteElement {
 
   @property() accessor selected
   @property() accessor userPhoto
+  @property({ provider: true}) accessor expiredMembersList
 
   @property({ provider: true, batches: true, batchDelay: 70 }) accessor products
 
@@ -262,6 +263,7 @@ export class PoHoShell extends LiteElement {
     this.setupPropertyProvider('events')
     this.eventsinterval()
     this.renderMenu()
+    if (this.members) this.expiredMembers()
   }
 
   stylePaybar() {
@@ -324,11 +326,20 @@ export class PoHoShell extends LiteElement {
               ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>`
               : ''
             : ''}
+          ${this.expiredMembersList ? html`<md-filled-button class="expired" input-tap="members">Leden</md-filled-button>` : ''}
         </flex-row>`
 
       default:
         return ''
     }
+  }
+
+  async expiredMembers() {
+    let expirationDate = new Date()
+    expirationDate.setFullYear(expirationDate.getFullYear() -1)
+    this.expiredMembersList = await Object.values(this.members).filter((member: Member) => 
+      member.group === 'leden' && new Date(member.paydate) < expirationDate
+    )
   }
 
   renderMenu() {
@@ -357,6 +368,17 @@ export class PoHoShell extends LiteElement {
     if (!firebase.userRoles.includes('bookkeeping')) dividers[2].remove()
     if (!firebase.userRoles.includes('calendar')) dividers[3].remove()
     if (!firebase.userRoles.includes('settings')) dividers[4].remove()
+  }
+
+  onChange(propertyKey: string, value: any): void {
+    if (propertyKey === 'members' || propertyKey === 'promo') {
+      this.expiredMembers()
+      this.renderPayBar()
+    }
+    if (propertyKey === 'roles') {
+      if (this.members) this.renderMenu()
+    }
+
   }
 
   render() {
@@ -429,6 +451,10 @@ export class PoHoShell extends LiteElement {
           margin: 12px;
           border-radius: var(--md-sys-shape-corner-extra-large);
           box-shadow: unset;
+        }
+        .expired {
+          --md-filled-button-container-color: var(--md-sys-color-on-error-container);
+          --md-filled-button-label-text-color: var(--md-sys-color-on-error);
         }
       </style>
       <!-- just cleaner -->

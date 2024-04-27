@@ -73,12 +73,6 @@ export type Evenement = {
   key: string
 }
 
-export enum Group {
-  bestuur,
-  instructeurs,
-  leden
-}
-
 export type User = {
   member?: string
   email: string
@@ -92,7 +86,7 @@ export type Member = {
   userphotobgURL: string
   name: string
   lastname: string
-  group: Group
+  group: string
   title: string
   birthday?: string
   street?: string
