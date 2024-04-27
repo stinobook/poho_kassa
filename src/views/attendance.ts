@@ -137,7 +137,7 @@ export class AttendanceView extends LiteElement {
 
   renderMembers() {
     return Object.entries(this.members).map(([group, members]) =>
-      members?.length > 0
+      (members?.length > 0 && group !== 'leden')
         ? html`
             <custom-typography><h4>${group}</h4></custom-typography>
             <custom-selector

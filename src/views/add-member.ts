@@ -9,12 +9,15 @@ import '@material/web/checkbox/checkbox.js'
 import '@vandeurenglenn/flex-elements/wrap-between.js'
 import '@vandeurenglenn/flex-elements/it.js'
 import '@vandeurenglenn/lite-elements/icon.js'
+import '@vandeurenglenn/lite-elements/button.js'
 import Router from '../routing.js'
 import { MdFilledTextField } from '@material/web/textfield/filled-text-field.js'
 import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
 import { scrollbar } from '../mixins/styles.js'
 import './../components/image-selector-dialog.js'
 import './../components/image-editor.js'
+import '@vandeurenglenn/lite-elements/dialog.js'
+import { Member } from '../types.js'
 
 @customElement('add-member-view')
 export class AddMemberView extends LiteElement {
@@ -26,6 +29,9 @@ export class AddMemberView extends LiteElement {
 
   @query('image-selector-dialog')
   accessor dialog
+  
+  @property({ type: Array, consumer: true })
+  accessor members: { [group: string]: Member[] }
 
   editing
 
@@ -37,6 +43,18 @@ export class AddMemberView extends LiteElement {
     if (this.params) {
       await this.updateView(this.params)
     }
+  }
+
+  async willChange(propertyKey: string, value: any): Promise<any> {
+    if (propertyKey === 'members') {
+      const members = {}
+      for (const member of value) {
+        if (!members[member.group]) members[member.group] = []
+        members[member.group].push(member)
+      }
+      return members
+    }
+    return value
   }
 
   @queryAll('[label]') accessor labels
@@ -69,6 +87,11 @@ export class AddMemberView extends LiteElement {
     for (const [key, value] of Object.entries(member)) {
       if (key === 'userphotoURL' || key === 'userphotobgURL') {
         this[key] = value
+      } else if (key === 'extra') {
+        let extra = this.shadowRoot.querySelector('[name="extra"]') as HTMLInputElement
+        extra.setAttribute('key', value)
+        let member = await this.members['leden'].filter(member => member.key === value)[0]
+        extra.value = member.name + ' ' + member.lastname
       } else {
         const field = this.shadowRoot.querySelector(`[name=${key}]`) as
           | MdFilledTextField
@@ -77,6 +100,7 @@ export class AddMemberView extends LiteElement {
         field.value = value as string
       }
     }
+    this.memberCheck()
     this.requestRender()
   }
 
@@ -98,7 +122,10 @@ export class AddMemberView extends LiteElement {
     for (const field of fields) {
       if (field.value) user[field.name] = field.value
     }
-    user['group'] = this.shadowRoot.querySelector('md-outlined-select').value.toLowerCase()
+    user['group'] = (this.shadowRoot.querySelector('[name="group"]') as HTMLOptionElement).value.toLowerCase()
+    if (user['group'] === 'leden') user['paydate'] = (this.shadowRoot.querySelector('[name="paydate"]') as HTMLOptionElement).value.toLowerCase()
+    if (user['group'] === 'leden') user['status'] = (this.shadowRoot.querySelector('[name="status"]') as HTMLOptionElement).value.toLowerCase()
+    if (user['group'] === 'leden' && (this.shadowRoot.querySelector('[name="extra"]') as HTMLOptionElement).value) user['extra'] = (this.shadowRoot.querySelector('[name="extra"]') as HTMLOptionElement).getAttribute('key')
     if (this.userphotoURL) {
       // check if link
       if (this['userphotoURL'].includes?.('https') || this['userphotoURL'].includes?.('http')) {
@@ -139,7 +166,7 @@ export class AddMemberView extends LiteElement {
       this.back()
     } else {
       if (!user['userphotobgURL'] || !user['userphotoURL']) {
-        alert('Picture missing!')
+         alert('Picture missing!')
         return
       }
       firebase.push(`members`, user)
@@ -192,6 +219,34 @@ export class AddMemberView extends LiteElement {
         width: 200px;
         height: 200px;
       }
+
+      .extra label {
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        background-color: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        padding: 10px 24px;
+        font-size: 1em;
+        display: none;
+        float: unset;
+      }
+      .extra input[type='checkbox']:checked + label {
+        background-color: lightgreen;
+      }
+      .extra input {
+        display: none;
+      }
+      custom-dialog {
+        z-index: 1005;
+      }
+      .hidden {
+        visibility: hidden;
+      }
+      custom-button {
+        background-color: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        height: 75px;
+        width: 98px;
+      }
     `
   ]
   add() {
@@ -216,6 +271,59 @@ export class AddMemberView extends LiteElement {
     if (result?.action === 'done') {
       this.shadowRoot.querySelector(`img[name="${target}"]`).src = result.image
     }
+  }
+  memberCheck() {
+    let memberCheck = this.shadowRoot.querySelector('[name="group"]') as HTMLOptionElement
+    memberCheck.addEventListener('change', event => {
+      if (memberCheck.value === 'leden') {
+        (this.shadowRoot.querySelector('[name="extra"]') as HTMLElement).classList.remove('hidden');
+        (this.shadowRoot.querySelector('[name="status"]') as HTMLElement).classList.remove('hidden');
+        (this.shadowRoot.querySelector('[name="paydate"]') as HTMLElement).classList.remove('hidden');
+        (this.shadowRoot.querySelector('[name="title"]') as HTMLElement).classList.add('hidden');
+      } else {
+        (this.shadowRoot.querySelector('[name="extra"]') as HTMLElement).classList.add('hidden');
+        (this.shadowRoot.querySelector('[name="status"]') as HTMLElement).classList.add('hidden');
+        (this.shadowRoot.querySelector('[name="paydate"]') as HTMLElement).classList.add('hidden');
+        (this.shadowRoot.querySelector('[name="title"]') as HTMLElement).classList.remove('hidden');
+      }
+    })
+  }
+  connectedCallback() {
+    this.shadowRoot.addEventListener('click', event => {
+      if (event.target instanceof Element)
+        if (event.target.getAttribute('name') === 'extra') {
+          let dialogMembers = this.shadowRoot.querySelector('custom-dialog.dialogMembers') as HTMLDialogElement
+          dialogMembers.open = true
+        }
+    })
+    this.memberCheck()
+
+    let dialogMembers = this.shadowRoot.querySelector('custom-dialog.dialogMembers') as HTMLDialogElement
+    dialogMembers.addEventListener('close', event => {
+      this.updateExtra({ event })
+    })
+  }
+
+  updateExtra({ event }) {
+    let extra = this.shadowRoot.querySelector('[name="extra"]') as HTMLInputElement
+    extra.setAttribute('key', event.detail)
+    let member = this.members['leden'].filter(member => member.key === event.detail)[0]
+    extra.value = member.name + ' ' + member.lastname
+  }
+
+  renderMembers() {
+    return Object.entries(this.members).map(([group, members]) =>
+      (members?.length > 0 && group === 'leden')
+        ? members.map( member =>
+          html`
+            <custom-button
+              action=${member.key}
+              .label=${member.name + ' ' + member.lastname}
+              >${member.name + ' ' + member.lastname}</custom-button
+            >
+          `
+        ) : ''
+      )
   }
 
   render() {
@@ -281,7 +389,12 @@ export class AddMemberView extends LiteElement {
                     slot="icon"></custom-icon
                 ></custom-button>`}
           </flex-column>
-
+          <md-outlined-text-field
+            label="Extra lid"
+            name="extra"
+            readOnly
+            class="leden"
+            ></md-outlined-text-field>
           <flex-wrap-between>
             <md-outlined-text-field
               label="Voornaam"
@@ -315,7 +428,35 @@ export class AddMemberView extends LiteElement {
             <md-outlined-text-field
               label="Functie"
               name="title"
-              required></md-outlined-text-field>
+              ></md-outlined-text-field>
+            <md-outlined-select
+              label="Status"
+              name="status"
+              class="leden"
+              >
+              <md-select-option
+                value="ingeschreven"
+                headline="ingeschreven"
+                >Ingeschreven</md-select-option
+              >
+              <md-select-option
+                value="betaald"
+                headline="betaald"
+                >Betaald</md-select-option
+              >
+              <md-select-option
+                value="inactief"
+                headline="inactief"
+                >Inactief</md-select-option
+              >
+            </md-outlined-select>
+            <md-outlined-text-field 
+              label="Betaaldatum" 
+              name="paydate"
+              type="date" 
+              class="leden"
+              >
+            </md-outlined-text-field>
             <md-outlined-text-field
               label="Straat + huisnummer"
               name="street"></md-outlined-text-field>
@@ -351,6 +492,11 @@ export class AddMemberView extends LiteElement {
       ></md-fab>
 
       <image-editor></image-editor>
+
+      <custom-dialog class="dialogMembers">
+        <span slot="title">Selecteer hoofdlid</span>
+        <flex-wrap-between slot="actions"> ${this.members ? this.renderMembers() : ''} </flex-wrap-between>
+      </custom-dialog>
     `
   }
 }
