@@ -29,38 +29,11 @@ export class SalesPad extends LiteElement {
   @property()
   accessor cancelPayment
 
-  @property({ consumes: 'payconiqTransactions' })
-  accessor payconiqTransactions
-
   @query('.dialogPayconiq')
   accessor payconiqDialog: CustomDialog
 
   get notifications(): CustomNotifications {
     return document.querySelector('custom-notifications')
-  }
-
-  async willChange(propertyKey: string, value: PayconiqPayment[]) {
-    if (propertyKey === 'payconiqTransactions') {
-      value = value.filter(
-        (transaction: PayconiqPayment) => this.#currentPayconiqTransaction?.paymentId === transaction.paymentId
-      )
-
-      if (value[0]) {
-        if (value[0].status === 'PENDING' || value[0].status === 'AUTHORIZED' || value[0].status === 'IDENTIFIED')
-          return
-
-        this.notifications.createNotification({
-          title: 'Poho',
-          message: `${this.#currentPayconiqTransaction.paymentId} ${value[0].status}!`
-        })
-
-        this.payconiqDialog.open = false
-        this.cancelPayment = undefined
-        this.#currentPayconiqTransaction = undefined
-        this.qrcode = undefined
-      }
-    }
-    return value
   }
 
   async payconiqPaymentChange(payment: PayconiqPayment) {
@@ -76,7 +49,7 @@ export class SalesPad extends LiteElement {
       this.#currentPayconiqTransaction = payment
 
       if (payment.status === 'SUCCEEDED') {
-        await this.writeTransaction({ event: { detail: 'accepted' } })
+        await this.writeTransaction({ event: { detail: 'accepted' } }, true)
       }
 
       this.payconiqDialog.open = false
@@ -387,15 +360,15 @@ export class SalesPad extends LiteElement {
   }
   renderExpired() {
     return Object.values(this.expiredMembersList).map(
-        expiredMember =>
-          html`
-            <custom-button
-              action=${expiredMember.key}
-              .label=${expiredMember.name + ' ' + expiredMember.lastname}
-              >${expiredMember.name + ' ' + expiredMember.lastname}</custom-button
-            >
-          `
-      )
+      expiredMember =>
+        html`
+          <custom-button
+            action=${expiredMember.key}
+            .label=${expiredMember.name + ' ' + expiredMember.lastname}
+            >${expiredMember.name + ' ' + expiredMember.lastname}</custom-button
+          >
+        `
+    )
   }
 
   render() {
