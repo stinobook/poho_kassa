@@ -5,9 +5,9 @@ const defaultSalesInputSizes = {
 }
 
 const maxSalesInputSizes = {
-  height: 86,
+  height: 138,
   minmax: '250px',
-  fontSize: 1.3
+  fontSize: 1.8
 }
 
 export const calculateSalesInputButtonSize = value => {

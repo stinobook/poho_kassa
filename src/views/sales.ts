@@ -12,7 +12,7 @@ import { CustomIcon } from '@vandeurenglenn/lite-elements/icon'
 export class SalesView extends LiteElement {
   fabIcon = 'shopping_cart_checkout'
 
-  @property({ type: Array, consumer: true }) 
+  @property({ type: Array, consumer: true })
   accessor tabs: Tab[]
 
   @query('sales-pad')
@@ -24,10 +24,9 @@ export class SalesView extends LiteElement {
   @query('tabs-grid')
   accessor tabsGrid
 
-
   inputTap(event) {
-    if (event.detail === 'tabs') { 
-      this.toggleTabs() 
+    if (event.detail === 'tabs') {
+      this.toggleTabs()
     } else {
       this.salesPad.inputTap(event)
     }
@@ -52,7 +51,8 @@ export class SalesView extends LiteElement {
         opacity: 0;
         pointer-events: none;
       }
-      sales-grid, tabs-grid {
+      sales-grid,
+      tabs-grid {
         transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
         transform: translateX(0%);
         z-index: 0;
@@ -159,12 +159,12 @@ export class SalesView extends LiteElement {
     }
   }
 
-  addProductToReceipt = (event) => {
+  addProductToReceipt = event => {
     this.salesPad.addProduct(event.detail)
   }
 
   dialogInput(): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const dialog = this.shadowRoot.querySelector('custom-dialog.dialogInput') as HTMLDialogElement
       const closeAction = () => {
         let inputValue = (this.shadowRoot.querySelector('md-filled-text-field.dialoginput-value') as HTMLInputElement)
@@ -184,11 +184,11 @@ export class SalesView extends LiteElement {
   }
 
   dialogKey(): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const dialog = this.shadowRoot.querySelector('custom-dialog.dialogTabs') as HTMLDialogElement
-      const closeAction = (event) => {
-          resolve(event.detail)
-          dialog.removeEventListener('close', closeAction)
+      const closeAction = event => {
+        resolve(event.detail)
+        dialog.removeEventListener('close', closeAction)
       }
       dialog.addEventListener('close', closeAction)
       dialog.open = true
@@ -196,18 +196,18 @@ export class SalesView extends LiteElement {
   }
 
   dialogPay(): Promise<CustomEvent> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const dialog = this.shadowRoot.querySelector('custom-dialog.dialogPay') as HTMLDialogElement
-      const closeAction = (event) => {
-          resolve(event)
-          dialog.removeEventListener('close', closeAction)
+      const closeAction = event => {
+        resolve(event)
+        dialog.removeEventListener('close', closeAction)
       }
       dialog.addEventListener('close', closeAction)
       dialog.open = true
     })
   }
 
-  handleTabs = async (event) => {
+  handleTabs = async event => {
     switch (event.detail) {
       case 'tabNew':
         if (Object.keys(this.salesPad.receipt.items).length === 0) {
@@ -219,7 +219,7 @@ export class SalesView extends LiteElement {
           name: name,
           transactionItems: this.salesPad.receipt.items
         }
-        await firebase.push('tabs',tab)
+        await firebase.push('tabs', tab)
         this.salesPad.receipt.items = {}
         this.salesPad.receipt.textTotalorChange = 'Rekening'
         break
@@ -228,12 +228,12 @@ export class SalesView extends LiteElement {
           alert('Geen items om op een rekening te plaatsen')
           break
         }
-        let tabKey = await this.dialogKey()    
+        let tabKey = await this.dialogKey()
         if (tabKey === 'cancel' || tabKey === 'close') {
           break
         }
         let tabAdd: Tab
-        tabAdd = Object.values(this.tabs).filter((tab) => tab.key === tabKey)[0]
+        tabAdd = Object.values(this.tabs).filter(tab => tab.key === tabKey)[0]
         for (const [key, item] of Object.entries(this.salesPad.receipt.items)) {
           if (Object.keys(tabAdd.transactionItems).includes(key)) {
             tabAdd.transactionItems[key].amount += item.amount
@@ -252,9 +252,9 @@ export class SalesView extends LiteElement {
         }
         let tabPay = ''
         tabPay = await this.dialogKey()
-        if (tabPay === 'close' || tabPay === 'cancel' ) break
+        if (tabPay === 'close' || tabPay === 'cancel') break
         let paymentMethod = await this.dialogPay()
-        if (paymentMethod.detail === 'close' || paymentMethod.detail === 'cancel' ) break
+        if (paymentMethod.detail === 'close' || paymentMethod.detail === 'cancel') break
         firebase.set('tabPay', tabPay)
         this.salesPad.inputTap(paymentMethod)
         break
@@ -263,45 +263,82 @@ export class SalesView extends LiteElement {
     }
   }
 
-
   async connectedCallback() {
-  if (firebase.auth.currentUser) await firebase.set('tabPay', null)
+    if (firebase.auth.currentUser) await firebase.set('tabPay', null)
   }
 
   renderTabs() {
-    return this.tabs.map(tab =>
-        html `
-          <custom-button action=${tab.key} .label=${tab.name}>${tab.name}</custom-button>
+    return this.tabs.map(
+      tab =>
+        html`
+          <custom-button
+            action=${tab.key}
+            .label=${tab.name}
+            >${tab.name}</custom-button
+          >
         `
-      )
+    )
   }
 
   render() {
     return html`
       <sales-pad></sales-pad>
-      <sales-grid @product-click=${(event) => this.addProductToReceipt(event)}></sales-grid>
-      <tabs-grid class="toggle" @tabs-click=${(event) => this.handleTabs(event)}></tabs-grid>
+      <sales-grid @product-click=${event => this.addProductToReceipt(event)}></sales-grid>
+      <tabs-grid
+        class="toggle"
+        @tabs-click=${event => this.handleTabs(event)}></tabs-grid>
       <md-fab @click=${() => this.togglePad()}>
-        <custom-icon icon="shopping_cart_checkout" class="fabicon" slot="icon"></custom-icon>
+        <custom-icon
+          icon="shopping_cart_checkout"
+          class="fabicon"
+          slot="icon"></custom-icon>
       </md-fab>
-      <custom-dialog class="dialogInput" has-actions="" has-header="">
+      <custom-dialog
+        class="dialogInput"
+        has-actions=""
+        has-header="">
         <span slot="title">Naam rekening?</span>
         <md-filled-text-field class="dialoginput-value"></md-filled-text-field>
-        <flex-row slot="actions" direction="row">
-          <custom-button label="send" action="send" has-label="">Accepteer</custom-button>
+        <flex-row
+          slot="actions"
+          direction="row">
+          <custom-button
+            label="send"
+            action="send"
+            has-label=""
+            >Accepteer</custom-button
+          >
         </flex-row>
       </custom-dialog>
-      <custom-dialog class="dialogTabs" has-actions="" has-header="">
+      <custom-dialog
+        class="dialogTabs"
+        has-actions=""
+        has-header="">
         <span slot="title">Selecteer een rekening</span>
-        <flex-wrap-between slot="actions" direction="row">
+        <flex-wrap-between
+          slot="actions"
+          direction="row">
           ${this.tabs ? this.renderTabs() : ''}
         </flex-wrap-between>
       </custom-dialog>
-      <custom-dialog class="dialogPay" has-actions="" has-header="">
+      <custom-dialog
+        class="dialogPay"
+        has-actions=""
+        has-header="">
         <span slot="title">Betaalmethode</span>
-        <flex-wrap-between slot="actions" direction="row">
-          <custom-button action='cash' label='cash'>Cash</custom-button>
-          <custom-button action='payconiq' label='payconiq'>Payconiq</custom-button>
+        <flex-wrap-between
+          slot="actions"
+          direction="row">
+          <custom-button
+            action="cash"
+            label="cash"
+            >Cash</custom-button
+          >
+          <custom-button
+            action="payconiq"
+            label="payconiq"
+            >Payconiq</custom-button
+          >
         </flex-wrap-between>
       </custom-dialog>
     `
