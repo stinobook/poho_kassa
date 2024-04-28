@@ -1,8 +1,11 @@
 {
   "name": "poho-kassa",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": "^22.0.0"
+  },
   "scripts": {
     "watch": "cross-env NODE_ENV=development rollup -c -w",
     "build": "cross-env NODE_ENV=production rollup -c",
@@ -22,6 +25,7 @@
     "rimraf": "^5.0.5",
     "rollup": "^4.12.1",
     "rollup-plugin-material-symbols": "^2.1.5",
+    "rollup-plugin-modify": "^3.0.0",
     "tslib": "^2.6.2",
     "typescript": "^5.4.2",
     "websocket": "^1.0.34"

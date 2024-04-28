@@ -62,6 +62,7 @@ export class SalesGrid extends LiteElement {
         font-size: var(--sales-input-font-size, 0.95em);
         text-wrap: wrap;
         line-height: normal;
+        text-transform: uppercase;
       }
       .grid {
         display: grid;

@@ -35,6 +35,7 @@ export class SalesView extends LiteElement {
   payconiqPaymentChange(payment) {
     this.salesPad.payconiqPaymentChange(payment)
   }
+
   static styles = [
     css`
       :host {

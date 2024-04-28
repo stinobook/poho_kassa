@@ -7,6 +7,8 @@ import * as rm from 'rimraf'
 import { execSync } from 'child_process'
 import { env } from 'process'
 import { rimraf } from 'rimraf'
+import modify from 'rollup-plugin-modify'
+import pkgJSON from './package.json' with {type: 'json'}
 
 try {
   await opendir('./www/themes')
@@ -15,6 +17,8 @@ try {
 }
 
 const views = await glob(['./src/views/**/*'])
+
+const date = new Date()
 
 let index = await readFile('./src/index.html', 'utf-8')
 if (env.NODE_ENV === 'development') {
@@ -105,6 +109,9 @@ export default [
       cleanBuild(),
       resolve(),
       typescript(),
+      modify({
+        '@version': `${pkgJSON.version}-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}_${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+      }),
       generateServiceWorker()
     ]
   }

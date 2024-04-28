@@ -403,8 +403,6 @@ export class PoHoShell extends LiteElement {
         }
 
         .logout {
-          position: absolute;
-          bottom: 24px;
           background: var(--md-sys-color-on-error-container);
           color: var(--md-sys-color-on-error);
           width: auto;
@@ -414,6 +412,9 @@ export class PoHoShell extends LiteElement {
         }
         [slot='top-app-bar-end'] {
           padding-right: 32px;
+        }
+        flex-row {
+          width: 100%;
         }
         .pay-bar {
           z-index: 1;
@@ -433,6 +434,9 @@ export class PoHoShell extends LiteElement {
         .pay-bar custom-elevation {
           border-radius: var(--md-sys-shape-corner-extra-large);
         }
+        custom-selector {
+          margin-bottom: 12px;
+        }
         @media (max-width: 689px) {
           .pay-bar {
             position: absolute;
@@ -445,9 +449,6 @@ export class PoHoShell extends LiteElement {
           sales-view {
             margin-bottom: var(--paybarheight);
           }
-        }
-        custom-selector {
-          max-height: calc(100vh - 200px);
         }
         chip-element {
           pointer-events: none;
@@ -595,6 +596,7 @@ export class PoHoShell extends LiteElement {
               slot="end"
               icon="settings"></custom-icon>
           </custom-drawer-item>
+          <flex-it></flex-it>
           <custom-drawer-item
             route="logout"
             class="logout">
@@ -605,6 +607,11 @@ export class PoHoShell extends LiteElement {
               icon="logout"></custom-icon>
           </custom-drawer-item>
         </custom-selector>
+        <flex-row slot="drawer-footer">
+          <small>version</small>
+          <flex-it></flex-it>
+          <small>@version</small>
+        </flex-row>
         <custom-pages attr-for-selected="route">
           <loading-view route="loading"> </loading-view>
           <sales-view route="sales"> </sales-view>
