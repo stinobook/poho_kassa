@@ -33,7 +33,7 @@ export class PoHoShell extends LiteElement {
 
   @property() accessor selected
   @property() accessor userPhoto
-  @property({ provider: true}) accessor expiredMembersList
+  @property({ provider: true }) accessor expiredMembersList
 
   @property({ provider: true, batches: true, batchDelay: 70 }) accessor products
 
@@ -326,7 +326,13 @@ export class PoHoShell extends LiteElement {
               ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>`
               : ''
             : ''}
-          ${this.expiredMembersList ? html`<md-filled-button class="expired" input-tap="members">Leden</md-filled-button>` : ''}
+          ${this.expiredMembersList
+            ? html`<md-filled-button
+                class="expired"
+                input-tap="members"
+                >Leden</md-filled-button
+              >`
+            : ''}
         </flex-row>`
 
       default:
@@ -336,9 +342,9 @@ export class PoHoShell extends LiteElement {
 
   async expiredMembers() {
     let expirationDate = new Date()
-    expirationDate.setFullYear(expirationDate.getFullYear() -1)
-    this.expiredMembersList = await Object.values(this.members).filter((member: Member) => 
-      member.group === 'leden' && new Date(member.paydate) < expirationDate
+    expirationDate.setFullYear(expirationDate.getFullYear() - 1)
+    this.expiredMembersList = await Object.values(this.members).filter(
+      (member: Member) => member.group === 'leden' && new Date(member.paydate) < expirationDate
     )
   }
 
@@ -378,7 +384,6 @@ export class PoHoShell extends LiteElement {
     if (propertyKey === 'roles') {
       if (this.members) this.renderMenu()
     }
-
   }
 
   render() {
@@ -396,8 +401,6 @@ export class PoHoShell extends LiteElement {
           height: 100%;
           display: flex;
         }
-
-      ${scrollbar}
 
         .logout {
           position: absolute;
@@ -456,6 +459,8 @@ export class PoHoShell extends LiteElement {
           --md-filled-button-container-color: var(--md-sys-color-on-error-container);
           --md-filled-button-label-text-color: var(--md-sys-color-on-error);
         }
+
+        ${scrollbar}
       </style>
       <!-- just cleaner -->
       ${icons}
