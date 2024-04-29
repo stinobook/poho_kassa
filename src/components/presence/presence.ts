@@ -214,14 +214,15 @@ export class PresenceElement extends LiteElement {
     )
     let reply = Object.values(this.members)
     .filter((member:Member) => !(Object.keys(this.calendar?.[Number(year)]?.[(Number(month))]?.[Number(day)]).includes(member.key)))
-      .map((member:Member) => html`
+      .map((member:Member) => 
+        (member.group !== 'leden' ) ? html`
         <span class='chip'>
           ${member.name 
             + ' '
             + member.lastname.split(" ").map((n)=>n[0]).join(".")
           }
         </span>
-      `
+      ` : ''
     )
       return [html`
       <span class='attending'>

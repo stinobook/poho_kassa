@@ -349,7 +349,7 @@ export class CheckoutView extends LiteElement {
           this.cashVaultNew = 100
         }
 
-        let sales: Sales = {
+        let sales = {
           date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
           cashDifferenceCheckout: this.cashDifference,
           cashStartCheckout: this.cashStartNew,
@@ -472,11 +472,11 @@ export class CheckoutView extends LiteElement {
               <div class="cashsub">
                 <custom-typography>Kluis</custom-typography>
                 <flex-row>
-                  <label>Kasoverdracht naar kluis::</label>
+                  <label>Kasoverdracht naar kluis:</label>
                   <flex-it></flex-it> &euro;${this.cashTransfer}
                 </flex-row>
                 <flex-row>
-                  <label>Totaal in kluis::</label>
+                  <label>Totaal in kluis:</label>
                   <flex-it></flex-it> &euro;${this.cashVaultNew}
                 </flex-row>
                 <flex-row>

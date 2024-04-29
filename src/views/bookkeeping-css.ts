@@ -162,4 +162,74 @@ export default css`
   #card-sub-wide:not(:has(md-list)) {
     display: none;
   }
+  .wide {
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+
+  custom-tab.custom-selected {
+    background: var(--md-sys-color-tertiary);
+    border: none;
+  }
+  custom-tab.custom-selected {
+    color: var(--md-sys-color-on-tertiary);
+  }
+
+  custom-tab {
+    height: 45px;
+    padding: 6px 12px;
+    box-sizing: border-box;
+    width: auto;
+    border-radius: 25px;
+    min-width: 100px;
+  }
+  custom-tabs {
+    gap: 8px;
+  }
+
+  .books,
+  .cash {
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    transform: translateY(0%);
+    z-index: 0;
+    opacity: 1;
+    position: absolute;
+    top: 60px;
+  }
+  .toggle {
+    transform: translateY(1000%);
+    z-index: 1;
+    opacity: 0;
+    position: absolute;
+  }
+  .cash #card-sub {
+    width: 100%
+  }
+  .cash input {
+    padding: 10px 10px 10px 15px;
+    font-size: 1rem;
+    color: var(--md-sys-color-on-secondary);
+    background: var(--md-sys-color-secondary);
+    border: 0;
+    border-radius: 3px;
+    outline: 0;
+    margin-left: 24px;
+    box-sizing: border-box;
+    float:right;
+    width: 70%;
+  }
+  .readonly {
+    color: var(--md-sys-color-background) !important;
+    background: var(--md-sys-color-on-background) !important;
+  }
+
+  .cash label {
+    float: left;
+    width: 100%;
+    padding: 4px 12px;
+    margin-right: 12px;
+    font-size: 1rem;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+  }
 `

@@ -3,7 +3,6 @@ import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/lite-elements/tabs.js'
 import '@vandeurenglenn/lite-elements/selector.js'
-import { Member } from '../types.js'
 import './../components/presence/presence.js'
 import { scrollbar } from '../mixins/styles.js'
 

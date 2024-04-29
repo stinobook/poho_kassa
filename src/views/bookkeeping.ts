@@ -6,9 +6,12 @@ import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
-import { get, ref, getDatabase } from 'firebase/database'
+import '@vandeurenglenn/lite-elements/tabs.js'
+import '@vandeurenglenn/lite-elements/selector.js'
+import '@material/web/button/filled-button.js'
 import { Sales, Member } from '../types.js'
 import style from './bookkeeping-css.js'
+import { get, ref, push, getDatabase, set, onValue, query, limitToLast } from 'firebase/database'
 
 const formatDate = () => {
   const date = new Date().toLocaleDateString('fr-CA').split('-')
@@ -19,8 +22,10 @@ const formatDate = () => {
 
 @customElement('bookkeeping-view')
 export class BookkeepingView extends LiteElement {
-  @property({ type: Array, consumer: true }) accessor members: { Type: Member }
-  @property() accessor books: { [key: string]: Sales[] }
+  @property({ type: Array, consumer: true }) accessor members: { Type: Member[] }
+  @property() accessor books: { [key: string]: Sales }
+  @property({ type: Number }) accessor cashVault: number
+  @property({ type: Number }) accessor cashStart: number
 
   static styles = [style]
 
@@ -28,7 +33,67 @@ export class BookkeepingView extends LiteElement {
     this.shadowRoot.addEventListener('input', ({ detail }: CustomEvent) => {
       this.loadBooks()
     })
+    this.shadowRoot.addEventListener('click', this.#clickHandler)
     this.loadBooks()
+  }
+
+
+  async select(selected) {
+    let read = this.shadowRoot.querySelector('.books') as HTMLElement
+    let write = this.shadowRoot.querySelector('.cash') as HTMLElement
+    if (selected.detail === 'read') {
+      read.classList.remove('toggle')
+      write.classList.add('toggle')
+      this.loadBooks()
+    } else {
+      read.classList.add('toggle')
+      write.classList.remove('toggle')
+      this.books = null
+      this.latestSales()
+    }
+  }
+
+  
+  #clickHandler = event => {
+    const action = event.target.getAttribute('action')
+    if (action === 'book') this.book()
+  }
+
+  book() {
+    let cashTransfer = this.shadowRoot.querySelector('[name="amount"]') as HTMLInputElement
+    this.cashVault -= Number(cashTransfer.value)
+    let transferDescription = this.shadowRoot.querySelector('[name="reason"]') as HTMLInputElement
+    let name = Object.values(this.members)?.filter(
+      member => member.key === firebase.userDetails.member
+    )[0]?.name + ' ' + Object.values(this.members)?.filter(
+      member => member.key === firebase.userDetails.member
+    )[0]?.lastname
+    let sales = {
+      date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
+      cashStartCheckout: this.cashStart,
+      cashVaultCheckout: this.cashVault,
+      transferDescription: transferDescription.value,
+      transferAmount: cashTransfer.value,
+      user: name
+    }
+    firebase.push('sales',sales)
+    cashTransfer.value = ''
+    transferDescription.value = ''
+  }
+
+  latestSales() {
+    const db = getDatabase()
+    const dbQ = query(ref(db, 'sales'), limitToLast(1))
+    onValue(
+      dbQ,
+      snapshot => {
+        let lastCheckout = snapshot.val() as Sales
+        this.cashVault = Object.values(lastCheckout)[0].cashVaultCheckout
+        this.cashStart = Object.values(lastCheckout)[0].cashStartCheckout
+        if (!this.cashVault) this.cashVault = 0
+      },
+      { onlyOnce: false }
+    )
   }
 
   async loadBooks() {
@@ -48,48 +113,57 @@ export class BookkeepingView extends LiteElement {
       })
     let filteredData = Object.fromEntries(
       Object.entries(dbData).filter(
-        ([key, value]) =>
-          new Date(value.date.slice(0, 10)).toISOString() >= fromDate.toISOString() &&
-          new Date(value.date.slice(0, 10)).toISOString() <= toDate.toISOString()
+        ([key, value])  =>
+          new Date((value as Sales).date.slice(0, 10)).toISOString() >= fromDate.toISOString() &&
+          new Date((value as Sales).date.slice(0, 10)).toISOString() <= toDate.toISOString()
       )
     )
-    this.books = filteredData
+    this.books = filteredData as { [key:string]: Sales }
   }
 
   renderBooks() {
     return Object.entries(this.books).map(([key, value]) =>
-      this.books
+      this.books as { [key:string]: Sales }
         ? html`
             <div id="card-main">
               <span class="date">${value.date}</span>
-              <div id="card-sub">
-                <span>Kassa</span>
-                <div id="card-sub-sub">
-                  <span>Verschil: &euro;${value.cashDifferenceCheckout}</span>
-                  <span>Naar kluis: &euro;${value.cashTransferCheckout}</span>
+              ${(value.cashDifferenceCheckout) ? html`
+                <div id="card-sub">
+                  <span>Kassa</span>
+                  <div id="card-sub-sub">
+                    <span>Verschil: &euro;${value.cashDifferenceCheckout}</span>
+                    <span>Naar kluis: &euro;${value.cashTransferCheckout}</span>
+                  </div>
                 </div>
-              </div>
-              <div id="card-sub">
-                <span>Kluis & Bank</span>
-                <div id="card-sub-sub">
-                  <span>In kluis: &euro;${value.cashVaultCheckout}</span>
-                  <span>Naar bank: &euro;${value.cashBank}</span>
+                `: ''}
+              ${(value.cashVaultCheckout) ? html`
+                <div id="card-sub">
+                  <span>Kluis & Bank</span>
+                  <div id="card-sub-sub">
+                    <span>In kluis: &euro;${value.cashVaultCheckout}</span>
+                    <span>Naar bank: &euro;${value.cashBank}</span>
+                  </div>
                 </div>
-              </div>
-              <div id="card-sub">
-                <span>Kantine</span>
-                <div id="card-sub-sub">
-                  <span>Cash: &euro;${value.cashKantine}</span>
-                  <span>Payconiq: &euro;${value.payconiqKantine}</span>
+              `: ''}
+              ${(value.cashKantine) ? html`
+                <div id="card-sub">
+                  <span>Kantine</span>
+                  <div id="card-sub-sub">
+                    <span>Cash: &euro;${value.cashKantine}</span>
+                    <span>Payconiq: &euro;${value.payconiqKantine}</span>
+                  </div>
                 </div>
-              </div>
-              <div id="card-sub">
-                <span>Winkel</span>
-                <div id="card-sub-sub">
-                  <span>Cash: &euro;${value.cashWinkel}</span>
-                  <span>Payconiq: &euro;${value.payconiqWinkel}</span>
+                `: ''}
+              ${(value.cashWinkel) ? html`
+                <div id="card-sub">
+                  <span>Winkel</span>
+                  <div id="card-sub-sub">
+                    <span>Cash: &euro;${value.cashWinkel}</span>
+                    <span>Payconiq: &euro;${value.payconiqWinkel}</span>
+                  </div>
                 </div>
-              </div>
+                `: ''}
+              ${(value.cashLidgeld) ? html`
               <div id="card-sub">
                 <span>Lidgeld</span>
                 <div id="card-sub-sub">
@@ -97,10 +171,21 @@ export class BookkeepingView extends LiteElement {
                   <span>Payconiq: &euro;${value.payconiqLidgeld}</span>
                 </div>
               </div>
+              `: ''}
+              ${(value.transferDescription) ? html`
+              <div id="card-sub" class="wide">
+                <span>Cashbetaling</span>
+                <div id="card-sub-details">
+                  <span>Bedrag: &euro;${value.transferAmount}</span>
+                  <span>Reden: ${value.transferDescription}</span>
+                  <span>Door: ${value.user}</span>
+                </div>
+              </div>
+              `: ''}
               <div id="card-sub-wide">
                 <span>Payconiq betalingen</span>
                 <div id="card-sub-details">
-                  ${value.transactions.map((transaction) => {
+                  ${value.transactions?.map((transaction) => {
                     if (transaction.paymentMethod === 'payconiq') {
                       let items = Object.entries(transaction.transactionItems).map(
                         ([key, transactionItem]) =>
@@ -130,7 +215,7 @@ export class BookkeepingView extends LiteElement {
               <div id="card-sub-wide">
                 <span>Lidgeld betalingen</span>
                 <div id="card-sub-details">
-                  ${value.transactions.map((transaction) => {
+                  ${value.transactions?.map((transaction) => {
                     let paymentAmount = transaction.paymentAmount
                     let paymentMethod = transaction.paymentMethod
                     let transactionItemLidgeld = Object.entries(transaction.transactionItems)
@@ -163,7 +248,7 @@ export class BookkeepingView extends LiteElement {
                   <summary>
                     <span>Details Promotransacties</span>
                   </summary>
-                  ${value.transactions.map((transaction) => {
+                  ${value.transactions?.map((transaction) => {
                     if (transaction.paymentMethod === 'promo') {
                       let name = Object.values(this.members)
                         .filter((member) => member.key === transaction.member)
@@ -193,18 +278,47 @@ export class BookkeepingView extends LiteElement {
   render() {
     return html`
       <flex-container>
-        <flex-row class="card-input">
-          <flex-row width="auto" center>
-            <label for="fromDate">van</label>
-            <input type="date" id="fromDate" value=${formatDate()} />
+        <custom-tabs attr-for-selected="page" 
+          @selected=${this.select.bind(this)}>
+          <custom-tab page="read">Uitlezen</custom-tab>
+          <custom-tab page="write">Cashhandeling</custom-tab>
+        </custom-tabs>
+        <flex-container class="books">
+          <flex-row class="card-input">
+            <flex-row width="auto" center>
+              <label for="fromDate">van</label>
+              <input type="date" id="fromDate" value=${formatDate()} />
+            </flex-row>
+            <flex-it></flex-it>
+            <flex-row width="auto" center>
+              <label for="toDate">tot</label>
+              <input type="date" id="toDate" value=${formatDate()} />
+            </flex-row>
           </flex-row>
-          <flex-it></flex-it>
-          <flex-row width="auto" center>
-            <label for="toDate">tot</label>
-            <input type="date" id="toDate" value=${formatDate()} />
+          ${this.books ? this.renderBooks() : ''}
+        </flex-container>
+        <flex-container class="cash toggle">
+          <flex-row id="card-sub">
+            <label>Beschikbaar<input 
+              class="readonly"
+              class="cashInputfield"
+              type="text"
+              value=${this.cashVault}
+              readonly/></label
+            >
+            <label>Bedrag<input
+              class="cashInputfield"
+              type="text"
+              name="amount"/></label
+            >
+            <label>Reden<input
+              class="cashInputfield"
+              type="text"
+              name="reason"/></label
+            >
+            <md-filled-button action="book">Afboeken</md-filled-button>
           </flex-row>
-        </flex-row>
-        ${this.books ? this.renderBooks() : ''}
+        </flex-container>
       </flex-container>
     `
   }

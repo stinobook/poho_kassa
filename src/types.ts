@@ -48,18 +48,21 @@ export interface Cashtotal {
 export interface Sales extends Transaction {
   key?: string
   date: string
-  cashDifferenceCheckout: number
+  cashDifferenceCheckout?: number
   cashStartCheckout: number
-  cashTransferCheckout: number
-  cashKantine: number
-  cashWinkel: number
-  cashLidgeld: number
-  payconiqKantine: number
-  payconiqWinkel: number
-  payconiqLidgeld: number
-  cashVaultCheckout: Number
-  cashBank?: Number
-  transactions: Transaction[]
+  cashTransferCheckout?: number
+  cashKantine?: number
+  cashWinkel?: number
+  cashLidgeld?: number
+  payconiqKantine?: number
+  payconiqWinkel?: number
+  payconiqLidgeld?: number
+  cashVaultCheckout: number
+  cashBank?: number
+  transferDescription?: string
+  transferAmount?: number
+  user?: string
+  transactions?: Transaction[]
 }
 
 export type Evenement = {
