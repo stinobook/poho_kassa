@@ -17,6 +17,9 @@ import {
   update as _update,
   getDatabase,
   ref,
+  query as _query,
+  onValue,
+  limitToLast as _limitToLast,
   onChildAdded as _onChildAdded,
   onChildRemoved as _onChildRemoved,
   onChildChanged as _onChildChanged
@@ -114,6 +117,12 @@ const sendSignInLinkToEmail = email => _sendSignInLinkToEmail(auth, email, actio
 const isSignInWithEmailLink = link => _isSignInWithEmailLink(auth, link)
 const signInWithEmailLink = (email, link) => _signInWithEmailLink(auth, email, link)
 const updatePassword = password => _updatePassword(auth.currentUser, password)
+
+const limitToLast = (target: string, amount: number = 1, cb) => {
+  const dbQ = _query(ref(database, 'sales'), _limitToLast(amount))
+  onValue(dbQ, snapshot => cb(snapshot), { onlyOnce: false })
+}
+
 const _firebase = {
   get,
   push,
@@ -135,6 +144,7 @@ const _firebase = {
   sendSignInLinkToEmail,
   signInWithEmailAndPassword,
   updatePassword,
+  limitToLast,
   signOut: () => signOut(auth)
 }
 
