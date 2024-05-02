@@ -6,7 +6,7 @@ import '@vandeurenglenn/lite-elements/dialog.js'
 import '@vandeurenglenn/flex-elements/wrap-between.js'
 import './receipt.js'
 import './input.js'
-import { Transaction, ReceiptItem, PayconiqPayment, Member, Tab } from '../../../types.js'
+import { Transaction, ReceiptItem, PayconiqPayment, Member, Tab, Product } from '../../../types.js'
 import { CustomDialog } from '@vandeurenglenn/lite-elements/dialog.js'
 import { CustomNotifications } from '@vandeurenglenn/lite-elements/notifications'
 
@@ -28,6 +28,8 @@ export class SalesPad extends LiteElement {
 
   @property()
   accessor cancelPayment
+  @property({type: Boolean})
+  accessor expirationPayment = false
 
   @query('.dialogPayconiq')
   accessor payconiqDialog: CustomDialog
@@ -36,6 +38,25 @@ export class SalesPad extends LiteElement {
     return document.querySelector('custom-notifications')
   }
 
+  productsByCategory: { [index: string]: Product[] } = {}
+
+  @property({ consumer: true })
+  accessor products: { [index: string]: Product[] }
+
+  async willChange(propertyKey: any, value: any) {
+    if (propertyKey === 'products') {
+      const productsByCategory = {}
+      for (const product of value) {
+        if (!productsByCategory[product.category]) {
+          productsByCategory[product.category] = []
+        }
+        productsByCategory[product.category].push(product)
+      }
+      return productsByCategory
+    }
+    return value
+  }
+  
   async payconiqPaymentChange(payment: PayconiqPayment) {
     if (this.#currentPayconiqTransaction?.paymentId === payment.paymentId) {
       if (payment.status === 'PENDING' || payment.status === 'AUTHORIZED' || payment.status === 'IDENTIFIED') return
@@ -277,9 +298,38 @@ export class SalesPad extends LiteElement {
     dialogPromo.addEventListener('close', event => {
       this.writeTransaction({ event }, '', true)
     })
+    let dialogExpired = this.shadowRoot.querySelector('custom-dialog.dialogExpired') as HTMLDialogElement
+    dialogExpired.addEventListener('close', event => {
+      this.expirationTransaction({event})
+    })
   }
 
-  async writeTransaction({ event }, payconiq?, promo?) {
+  async expirationTransaction({event}) {
+    let member: Member = Object.values(this.expiredMembersList).filter(member => member.key === event.detail)[0]
+    let paymentMethod = await this.dialogPay()
+    let ReceiptItem: ReceiptItem 
+    if (member.extra) {
+      ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price > 100)[0]
+    } else {
+      ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price < 100)[0]
+    }
+    
+    console.log(ReceiptItem)
+  }
+
+  dialogPay(): Promise<CustomEvent> {
+    return new Promise(resolve => {
+      const dialog = this.shadowRoot.querySelector('custom-dialog.dialogPay') as HTMLDialogElement
+      const closeAction = event => {
+        resolve(event)
+        dialog.removeEventListener('close', closeAction)
+      }
+      dialog.addEventListener('close', closeAction)
+      dialog.open = true
+    })
+  }
+
+  async writeTransaction({ event }, payconiq?, promo?, expiration?) {
     let tabPay = await firebase.get('tabPay')
     if (event.detail === 'cancel' || event.detail === 'close') {
       if (payconiq) {
@@ -445,6 +495,26 @@ export class SalesPad extends LiteElement {
       <custom-dialog class="dialogExpired">
         <span slot="title">Vervallen lidmaadschap</span>
         <flex-wrap-between slot="actions"> ${this.expiredMembersList ? this.renderExpired() : ''} </flex-wrap-between>
+      </custom-dialog>
+      <custom-dialog
+        class="dialogPay"
+        has-actions=""
+        has-header="">
+        <span slot="title">Betaalmethode</span>
+        <flex-wrap-between
+          slot="actions"
+          direction="row">
+          <custom-button
+            action="cash"
+            label="cash"
+            >Cash</custom-button
+          >
+          <custom-button
+            action="payconiq"
+            label="payconiq"
+            >Payconiq</custom-button
+          >
+        </flex-wrap-between>
       </custom-dialog>
 
       <sales-receipt @selection=${event => this.onReceiptSelection(event)}></sales-receipt>
