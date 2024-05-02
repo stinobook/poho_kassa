@@ -28,8 +28,8 @@ export class SalesPad extends LiteElement {
 
   @property()
   accessor cancelPayment
-  @property({type: Boolean})
-  accessor expirationPayment = false
+  @property({type: Array})
+  accessor expirationPayment = []
 
   @query('.dialogPayconiq')
   accessor payconiqDialog: CustomDialog
@@ -305,16 +305,41 @@ export class SalesPad extends LiteElement {
   }
 
   async expirationTransaction({event}) {
-    let member: Member = Object.values(this.expiredMembersList).filter(member => member.key === event.detail)[0]
-    let paymentMethod = await this.dialogPay()
-    let ReceiptItem: ReceiptItem 
-    if (member.extra) {
-      ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price > 100)[0]
-    } else {
-      ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price < 100)[0]
+    if (!(event.detail === 'cancel' || event.detail === 'close')) {
+      let member: Member = Object.values(this.expiredMembersList).filter(member => member.key === event.detail)[0]
+      let ReceiptItem 
+      if (member?.extra) {
+        ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price > 100)[0]
+      } else {
+        ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price < 100)[0]
+      }
+      ReceiptItem['description'] = member.name + ' ' + member.lastname + ' met ' + member.dogname
+      this.receipt.items[ReceiptItem.key] = {...ReceiptItem, amount: 1, key: ReceiptItem.key}
+      this.receipt.total += Number(ReceiptItem.price)
+      this.expirationPayment.push(member.key)
+      if (confirm('2e lid toevoegen?')) {
+        console.log(member)
+        let extraMember: Member = Object.values(this.expiredMembersList).filter(extra => extra.key === member.extra)[0]
+        if (!extraMember) { 
+          alert('Geen lid gevonden!') 
+        } else {
+          let ReceiptItem2 = Object.values(this.products['Lidgeld']).filter((product) => product.price < 100)[0]
+          ReceiptItem2['description'] = extraMember.name + ' ' + extraMember.lastname + ' van ' + member.name + ' ' + member.lastname 
+          this.receipt.items[ReceiptItem2.key] = {...ReceiptItem2, amount: 1, key: ReceiptItem2.key}
+          this.receipt.total += Number(ReceiptItem2.price)
+          this.expirationPayment.push(extraMember.key)
+        }
+      }
+      let paymentMethod = await this.dialogPay()
+      this.inputTap(paymentMethod)
     }
-    
-    console.log(ReceiptItem)
+  }
+
+  async handleExpirationPayment() {
+    this.expirationPayment.forEach(key => {
+      firebase.set('members/' + key + '/paydate', (new Date().toISOString().slice(0, 10)))
+      firebase.set('members/' + key + '/status', 'betaald')
+    })
   }
 
   dialogPay(): Promise<CustomEvent> {
@@ -329,7 +354,7 @@ export class SalesPad extends LiteElement {
     })
   }
 
-  async writeTransaction({ event }, payconiq?, promo?, expiration?) {
+  async writeTransaction({ event }, payconiq?, promo?) {
     let tabPay = await firebase.get('tabPay')
     if (event.detail === 'cancel' || event.detail === 'close') {
       if (payconiq) {
@@ -337,6 +362,11 @@ export class SalesPad extends LiteElement {
       }
       if (tabPay) {
         await firebase.set('tabPay', null)
+        this.receipt.items = {}
+        this.receipt.total = 0
+      }
+      if (this.expirationPayment) {
+        this.expirationPayment = null
         this.receipt.items = {}
         this.receipt.total = 0
       }
@@ -355,6 +385,7 @@ export class SalesPad extends LiteElement {
       await firebase.push('transactions', transaction)
       await firebase.remove('tabs/' + tabPay)
       await firebase.set('tabPay', null)
+      if (this.expirationPayment) this.handleExpirationPayment()
       this.receipt.items = {}
     } else if (promo) {
       this.receipt.textTotalorChange = 'Promo'
@@ -389,6 +420,7 @@ export class SalesPad extends LiteElement {
         await firebase.push('transactions', transaction)
         await firebase.remove('tabs/' + tabPay)
         await firebase.set('tabPay', null)
+        if (this.expirationPayment) this.handleExpirationPayment()
         this.receipt.items = {}
       }
     }

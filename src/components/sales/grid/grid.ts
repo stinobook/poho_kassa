@@ -97,7 +97,7 @@ export class SalesGrid extends LiteElement {
 
   renderGrid(items = this.products) {
     return Object.entries(items).map(([category, products]) =>
-      products
+      products && category !== 'Lidgeld'
         ? html`
             <flex-container>
               <flex-row width="100%">

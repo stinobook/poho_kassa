@@ -9,7 +9,6 @@ import '@vandeurenglenn/lite-elements/typography.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import type { Cashtotal, Transaction, Sales, Member } from '../types.js'
-import { ref, push, getDatabase, set, onValue, query, limitToLast } from 'firebase/database'
 import Router from '../routing.js'
 
 @customElement('checkout-view')
@@ -234,18 +233,12 @@ export class CheckoutView extends LiteElement {
       }
     })
     this.shadowRoot.addEventListener('click', this.#clickHandler)
-    const db = getDatabase()
-    const dbQ = query(ref(db, 'sales'), limitToLast(1))
-    onValue(
-      dbQ,
-      snapshot => {
-        let lastCheckout = snapshot.val() as Sales
-        this.cashStart = Object.values(lastCheckout)[0].cashStartCheckout
-        this.cashVault = Object.values(lastCheckout)[0].cashVaultCheckout
-        if (!this.cashVault) this.cashVault = 0
-      },
-      { onlyOnce: false }
-    )
+    firebase.limitToLast('sales', 1, snapshot => {
+      let lastCheckout = snapshot.val() as Sales
+      this.cashVault = Object.values(lastCheckout)[0].cashVaultCheckout
+      this.cashStart = Object.values(lastCheckout)[0].cashStartCheckout
+      if (!this.cashVault) this.cashVault = 0
+    })
   }
 
   disconnectedCallback() {
@@ -324,8 +317,6 @@ export class CheckoutView extends LiteElement {
           return
       }
       if (confirm('Geen verschil?') === true) {
-        const salesDB = ref(getDatabase(), 'sales')
-        const transactionsDB = ref(getDatabase(), 'transactions')
         this.cashKantine = 0
         this.cashWinkel = 0
         this.cashLidgeld = 0
@@ -364,8 +355,8 @@ export class CheckoutView extends LiteElement {
           cashBank: this.cashBank,
           transactions: this.transactions
         }
-        await push(salesDB, sales)
-        await set(transactionsDB, null)
+        await firebase.push('sales', sales)
+        await firebase.set('transactions', null)
         await firebase.set('promo', null)
         this.transactionsByCategory = {}
         this.cashExpected = this.cashStartNew

@@ -119,7 +119,7 @@ const signInWithEmailLink = (email, link) => _signInWithEmailLink(auth, email, l
 const updatePassword = password => _updatePassword(auth.currentUser, password)
 
 const limitToLast = (target: string, amount: number = 1, cb) => {
-  const dbQ = _query(ref(database, 'sales'), _limitToLast(amount))
+  const dbQ = _query(ref(database, target), _limitToLast(amount))
   onValue(dbQ, snapshot => cb(snapshot), { onlyOnce: false })
 }
 

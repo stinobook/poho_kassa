@@ -326,7 +326,7 @@ export class PoHoShell extends LiteElement {
               ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>`
               : ''
             : ''}
-          ${this.expiredMembersList
+          ${this.expiredMembersList?.length > 0
             ? html`<md-filled-button
                 class="expired"
                 input-tap="members"
@@ -344,7 +344,7 @@ export class PoHoShell extends LiteElement {
     let expirationDate = new Date()
     expirationDate.setFullYear(expirationDate.getFullYear() - 1)
     this.expiredMembersList = await Object.values(this.members).filter(
-      (member: Member) => member.group === 'leden' && new Date(member.paydate) < expirationDate
+      (member: Member) => member.group === 'leden' && (new Date(member.paydate) < expirationDate || member.status === 'nieuw') && member.status !== 'inactief'
     )
   }
 

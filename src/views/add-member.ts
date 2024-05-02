@@ -445,6 +445,11 @@ export class AddMemberView extends LiteElement {
                 >Betaald</md-select-option
               >
               <md-select-option
+                value="nieuw"
+                headline="nieuw"
+                >Nieuw</md-select-option
+              >
+              <md-select-option
                 value="inactief"
                 headline="inactief"
                 >Inactief</md-select-option
