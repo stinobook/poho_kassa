@@ -105,42 +105,169 @@ export class MembersView extends LiteElement {
   renderMembers() {
     return Object.entries(this.members).map(([group, members]) =>
       members?.length > 0
-        ? html`
-            <custom-typography>${group}</custom-typography>
-            <flex-wrap-center>
-              ${members.map(
-                member =>
+        ? (group === 'bestuur' || group === 'instructeurs') ?
+            html`
+              <custom-typography>${group}</custom-typography>
+              <flex-wrap-center>
+                ${members.map(
+                  member =>
+                    html`
+                      <card-element
+                        action="edit"
+                        key=${member.key}
+                        center
+                        .image=${member.userphotobgURL}
+                        .avatar=${member.userphotoURL}
+                        .headline=${member.name + ' ' + member.lastname}
+                        .subline=${member.title}
+                        >
+                        <flex-it></flex-it>
+                        <div class="content">
+                        </div>
+                      </card-element>
+                    `
+                )}
+              </flex-wrap-center>
+            `
+          : 
                   html`
-                    <card-element
-                      action="edit"
-                      key=${member.key}
-                      center
-                      .image=${member.userphotobgURL}
-                      .avatar=${member.userphotoURL}
-                      .headline=${member.name + ' ' + member.lastname}
-                      .subline=${member.title}
-                      .paydate=${member.paydate}
-                      >
-                      <flex-it></flex-it>
-                      <div class="content">
-                      ${(group === 'leden') ? html`
-                        <span>Status: ${member.status}</span>
-                        <span>Betaald op: ${member.paydate}</span>
-                        ${member.extra ? html`
-                          <span>2e Lid: 
-                            ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
-                            this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
-                            } 
-                          </span>
-                        ` : ''}
-                      `
-                      : ''}
-                      </div>
-                    </card-element>
-                  `
-              )}
-            </flex-wrap-center>
-          `
+                  <custom-typography>In te schrijven ${group}</custom-typography>
+                  <flex-wrap-center>
+                    ${members.filter( member => member.status === 'betaald').map(
+                      member =>
+                        html`
+                          <card-element
+                            action="edit"
+                            key=${member.key}
+                            center
+                            .image=${member.userphotobgURL}
+                            .avatar=${member.userphotoURL}
+                            .headline=${member.name + ' ' + member.lastname}
+                            .subline=${member.title}
+                            .paydate=${member.paydate}
+                            >
+                            <flex-it></flex-it>
+                            <div class="content">
+                            ${(group === 'leden') ? html`
+                              <span>Status: ${member.status}</span>
+                              <span>Betaald op: ${member.paydate}</span>
+                              ${member.extra ? html`
+                                <span>2e Lid: 
+                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
+                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
+                                  } 
+                                </span>
+                              ` : ''}
+                            `
+                            : ''}
+                            </div>
+                          </card-element>
+                        `
+                    )}
+                  </flex-wrap-center>
+                  <custom-typography>Nieuwe & Vervallen ${group}</custom-typography>
+                  <flex-wrap-center>
+                    ${members.filter( member => member.status === 'nieuw' || (new Date(member.paydate)) < (new Date(new Date().setFullYear((new Date().getFullYear())-1)))).map(
+                      member =>
+                        html`
+                          <card-element
+                            action="edit"
+                            key=${member.key}
+                            center
+                            .image=${member.userphotobgURL}
+                            .avatar=${member.userphotoURL}
+                            .headline=${member.name + ' ' + member.lastname}
+                            .subline=${member.title}
+                            .paydate=${member.paydate}
+                            >
+                            <flex-it></flex-it>
+                            <div class="content">
+                            ${(group === 'leden') ? html`
+                              <span>Status: ${member.status}</span>
+                              <span>Betaald op: ${member.paydate}</span>
+                              ${member.extra ? html`
+                                <span>2e Lid: 
+                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
+                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
+                                  } 
+                                </span>
+                              ` : ''}
+                            `
+                            : ''}
+                            </div>
+                          </card-element>
+                        `
+                    )}
+                  </flex-wrap-center>
+                  <custom-typography>Actieve ${group}</custom-typography>
+                  <flex-wrap-center>
+                    ${members.filter( member => member.status === 'ingeschreven' && (new Date(member.paydate)) >= (new Date(new Date().setFullYear((new Date().getFullYear())-1)))).map(
+                      member =>
+                        html`
+                          <card-element
+                            action="edit"
+                            key=${member.key}
+                            center
+                            .image=${member.userphotobgURL}
+                            .avatar=${member.userphotoURL}
+                            .headline=${member.name + ' ' + member.lastname}
+                            .subline=${member.title}
+                            .paydate=${member.paydate}
+                            >
+                            <flex-it></flex-it>
+                            <div class="content">
+                            ${(group === 'leden') ? html`
+                              <span>Status: ${member.status}</span>
+                              <span>Betaald op: ${member.paydate}</span>
+                              ${member.extra ? html`
+                                <span>2e Lid: 
+                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
+                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
+                                  } 
+                                </span>
+                              ` : ''}
+                            `
+                            : ''}
+                            </div>
+                          </card-element>
+                        `
+                    )}
+                  </flex-wrap-center>
+                  <custom-typography>Inactieve ${group}</custom-typography>
+                  <flex-wrap-center>
+                    ${members.filter( member => member.status === 'inactief').map(
+                      member =>
+                        html`
+                          <card-element
+                            action="edit"
+                            key=${member.key}
+                            center
+                            .image=${member.userphotobgURL}
+                            .avatar=${member.userphotoURL}
+                            .headline=${member.name + ' ' + member.lastname}
+                            .subline=${member.title}
+                            .paydate=${member.paydate}
+                            >
+                            <flex-it></flex-it>
+                            <div class="content">
+                            ${(group === 'leden') ? html`
+                              <span>Status: ${member.status}</span>
+                              <span>Betaald op: ${member.paydate}</span>
+                              ${member.extra ? html`
+                                <span>2e Lid: 
+                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
+                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
+                                  } 
+                                </span>
+                              ` : ''}
+                            `
+                            : ''}
+                            </div>
+                          </card-element>
+                        `
+                    )}
+                  </flex-wrap-center>
+                `
         : ''
     )
   }
