@@ -185,6 +185,14 @@ export class AddMemberView extends LiteElement {
       flex-column {
         width: auto;
       }
+      flex-wrap-between {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-auto-rows: min-content;
+        height: auto;
+        gap: 16px 8px;
+        width: 100%;
+      }
       flex-column.wrapper {
         overflow-y: auto;
         width: 100%;
@@ -294,6 +302,8 @@ export class AddMemberView extends LiteElement {
         if (event.target.getAttribute('name') === 'extra') {
           let dialogMembers = this.shadowRoot.querySelector('custom-dialog.dialogMembers') as HTMLDialogElement
           dialogMembers.open = true
+        } else if (event.target.getAttribute('action') === 'autofill') {
+          this.autoFill()
         }
     })
     this.memberCheck()
@@ -302,6 +312,50 @@ export class AddMemberView extends LiteElement {
     dialogMembers.addEventListener('close', event => {
       this.updateExtra({ event })
     })
+  }
+  async autoFill() {
+    let paste = (await navigator.clipboard.readText()).split('	')
+    let member = confirm('Is dit het hoofdlid?');
+    (this.shadowRoot.querySelector('[name="extra"]') as HTMLElement).classList.remove('hidden');
+    (this.shadowRoot.querySelector('[name="status"]') as HTMLElement).classList.remove('hidden');
+    (this.shadowRoot.querySelector('[name="paydate"]') as HTMLElement).classList.remove('hidden');
+    (this.shadowRoot.querySelector('[name="title"]') as HTMLElement).classList.add('hidden');
+    (this.shadowRoot.querySelector('[name="group"]') as HTMLInputElement).value = 'leden';
+    (this.shadowRoot.querySelector('[name="status"]') as HTMLInputElement).value = 'nieuw';
+    if (member) {
+      (this.shadowRoot.querySelector('[name="email"]') as HTMLInputElement).value = paste[1];
+      (this.shadowRoot.querySelector('[name="name"]') as HTMLInputElement).value = paste[2];
+      (this.shadowRoot.querySelector('[name="lastname"]') as HTMLInputElement).value = paste[3];
+      (this.shadowRoot.querySelector('[name="birthday"]') as HTMLInputElement).value = new Date(paste[4]).toISOString().slice(0, 10);
+      (this.shadowRoot.querySelector('[name="street"]') as HTMLInputElement).value = paste[5];
+      (this.shadowRoot.querySelector('[name="community"]') as HTMLInputElement).value = paste[6];
+      (this.shadowRoot.querySelector('[name="postalcode"]') as HTMLInputElement).value = paste[7];
+      (this.shadowRoot.querySelector('[name="phone"]') as HTMLInputElement).value = paste[8];
+      (this.shadowRoot.querySelector('[name="dogname"]') as HTMLInputElement).value = paste[12];
+      (this.shadowRoot.querySelector('[name="dograce"]') as HTMLInputElement).value = paste[13];
+      (this.shadowRoot.querySelector('[name="chipnumber"]') as HTMLInputElement).value = paste[14];
+      (this.shadowRoot.querySelector('[name="pedigree"]') as HTMLInputElement).value = paste[15];
+      (this.shadowRoot.querySelector('[name="store"]') as HTMLInputElement).value = paste[16];
+      (this.shadowRoot.querySelector('[name="buyage"]') as HTMLInputElement).value = paste[17];
+      (this.shadowRoot.querySelector('[name="experience"]') as HTMLInputElement).value = paste[18];
+
+    } else {
+      (this.shadowRoot.querySelector('[name="name"]') as HTMLInputElement).value = paste[9];
+      (this.shadowRoot.querySelector('[name="lastname"]') as HTMLInputElement).value = paste[10];
+      (this.shadowRoot.querySelector('[name="birthday"]') as HTMLInputElement).value = paste[11];
+      (this.shadowRoot.querySelector('[name="email"]') as HTMLInputElement).value = paste[1];
+      (this.shadowRoot.querySelector('[name="street"]') as HTMLInputElement).value = paste[5];
+      (this.shadowRoot.querySelector('[name="community"]') as HTMLInputElement).value = paste[6];
+      (this.shadowRoot.querySelector('[name="postalcode"]') as HTMLInputElement).value = paste[7];
+      (this.shadowRoot.querySelector('[name="phone"]') as HTMLInputElement).value = paste[8];
+      (this.shadowRoot.querySelector('[name="dogname"]') as HTMLInputElement).value = paste[12];
+      (this.shadowRoot.querySelector('[name="dograce"]') as HTMLInputElement).value = paste[13];
+      (this.shadowRoot.querySelector('[name="chipnumber"]') as HTMLInputElement).value = paste[14];
+      (this.shadowRoot.querySelector('[name="pedigree"]') as HTMLInputElement).value = paste[15];
+      (this.shadowRoot.querySelector('[name="store"]') as HTMLInputElement).value = paste[16];
+      (this.shadowRoot.querySelector('[name="buyage"]') as HTMLInputElement).value = paste[17];
+      (this.shadowRoot.querySelector('[name="experience"]') as HTMLInputElement).value = paste[18];
+    }
   }
 
   updateExtra({ event }) {
@@ -331,48 +385,10 @@ export class AddMemberView extends LiteElement {
       <image-selector-dialog></image-selector-dialog>
 
       <flex-column class="wrapper">
+      <custom-button action="autofill" label="Automatisch invullen"></custom-button>
         <flex-container>
           <flex-column>
             <label><custom-typography>Lid</custom-typography></label>
-            ${this.userphotobgURL
-              ? html`<img
-                    src=${this.userphotobgURL}
-                    name="userphotobgURL"
-                    @click=${() => this._uploadImage('userphotobgURL')} />
-                  <custom-icon-button
-                    icon="crop"
-                    @click=${() => this._cropImage('userphotobgURL')}></custom-icon-button>`
-              : html`<custom-button
-                  label="upload pet image"
-                  @click=${() => this._uploadImage('userphotobgURL')}
-                  ><custom-icon
-                    icon="upload"
-                    slot="icon"></custom-icon
-                ></custom-button>`}
-          </flex-column>
-          <flex-wrap-between>
-            <md-outlined-text-field
-              label="Geboortedatum"
-              type="date"
-              name="birthday"></md-outlined-text-field>
-
-            <md-outlined-text-field
-              label="naam"
-              name="dogname"></md-outlined-text-field>
-            <md-outlined-text-field
-              label="ras"
-              name="dograce"></md-outlined-text-field>
-
-            <md-outlined-text-field
-              label="Stamboomnummer"
-              name="pedigree"></md-outlined-text-field>
-            <md-outlined-text-field
-              label="Chipnummer"
-              name="chipnumber"></md-outlined-text-field>
-          </flex-wrap-between>
-
-          <flex-column>
-            <label><custom-typography>Baasje</custom-typography></label>
             ${this.userphotoURL
               ? html`<img
                     src=${this.userphotoURL}
@@ -382,7 +398,7 @@ export class AddMemberView extends LiteElement {
                     icon="crop"
                     @click=${() => this._cropImage('userphotoURL')}></custom-icon-button>`
               : html`<custom-button
-                  label="upload owner image"
+                  label="Selecteer foto Lid"
                   @click=${() => this._uploadImage('userphotoURL')}
                   ><custom-icon
                     icon="upload"
@@ -479,7 +495,54 @@ export class AddMemberView extends LiteElement {
             <md-outlined-text-field
               label="E-mail adres"
               name="email"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Geboortedatum"
+              name="birthday" type="date"></md-outlined-text-field>
+            <md-outlined-text-field
+              label="Vorige ervaring?"
+              name="experience"></md-outlined-text-field>
+
           </flex-wrap-between>
+          <flex-column>
+                <label><custom-typography>Hond</custom-typography></label>
+                ${this.userphotobgURL
+                  ? html`<img
+                        src=${this.userphotobgURL}
+                        name="userphotobgURL"
+                        @click=${() => this._uploadImage('userphotobgURL')} />
+                      <custom-icon-button
+                        icon="crop"
+                        @click=${() => this._cropImage('userphotobgURL')}></custom-icon-button>`
+                  : html`<custom-button
+                      label="Selecteer foto hond"
+                      @click=${() => this._uploadImage('userphotobgURL')}
+                      ><custom-icon
+                        icon="upload"
+                        slot="icon"></custom-icon
+                    ></custom-button>`}
+              </flex-column>
+              <flex-wrap-between>
+                <md-outlined-text-field
+                  label="Aangekocht op leeftijd"
+                  name="buyage"></md-outlined-text-field>
+    
+                <md-outlined-text-field
+                  label="naam"
+                  name="dogname"></md-outlined-text-field>
+                <md-outlined-text-field
+                  label="ras"
+                  name="dograce"></md-outlined-text-field>
+    
+                <md-outlined-text-field
+                  label="Stamboomnummer"
+                  name="pedigree"></md-outlined-text-field>
+                <md-outlined-text-field
+                  label="Chipnummer"
+                  name="chipnumber"></md-outlined-text-field>
+                <md-outlined-text-field
+                  label="Winkel"
+                  name="store"></md-outlined-text-field>
+              </flex-wrap-between>
         </flex-container>
       </flex-column>
 
