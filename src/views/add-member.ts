@@ -417,7 +417,7 @@ export class AddMemberView extends LiteElement {
             <label><custom-typography>Lid</custom-typography></label>
             ${this.userphotoURL
               ? html`<img
-                    src=${this.userphotoURL}
+                    src=${(typeof this.userphotoURL === 'string' ? this.userphotoURL : String(this.userphotoURL.data))}
                     name="userphotoURL"
                     @click=${() => this._uploadImage('userphotoURL')} />
                   <custom-icon-button
@@ -533,7 +533,7 @@ export class AddMemberView extends LiteElement {
                 <label><custom-typography>Hond</custom-typography></label>
                 ${this.userphotobgURL
                   ? html`<img
-                        src=${this.userphotobgURL}
+                        src=${(typeof this.userphotobgURL === 'string' ? this.userphotobgURL : String(this.userphotobgURL.data))}
                         name="userphotobgURL"
                         @click=${() => this._uploadImage('userphotobgURL')} />
                       <custom-icon-button
