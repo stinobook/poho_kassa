@@ -120,9 +120,29 @@ export class AddMemberView extends LiteElement {
     const user = {}
 
     const fields = Array.from(this.shadowRoot.querySelectorAll('md-outlined-text-field'))
+    const group = this.shadowRoot.querySelector('[name="group"]') as MdOutlinedSelect
+    let invalid = false
     for (const field of fields) {
+      if (field.validity.valueMissing) {
+        invalid = true
+        field.errorText = `${field.label} ontbreekt!`
+        field.error = true
+      }
       if (field.value) user[field.name] = field.value
     }
+    if (group.validity.valueMissing){
+      invalid = true
+      group.errorText = `${group.label} nog niet gekozen!`
+      group.error = true
+    } 
+    if (group.value === 'leden') {
+      const status = this.shadowRoot.querySelector('[name="status"]') as MdOutlinedSelect
+      if (!status.value)
+        invalid = true
+        status.errorText = `${status.label} nog niet gekozen!`
+        status.error = true
+    }
+    if (invalid) return
     user['group'] = (this.shadowRoot.querySelector('[name="group"]') as HTMLOptionElement).value.toLowerCase()
     if (user['group'] === 'leden') user['paydate'] = (this.shadowRoot.querySelector('[name="paydate"]') as HTMLOptionElement).value.toLowerCase()
     if (user['group'] === 'leden') user['status'] = (this.shadowRoot.querySelector('[name="status"]') as HTMLOptionElement).value.toLowerCase()
