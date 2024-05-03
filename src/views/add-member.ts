@@ -63,6 +63,7 @@ export class AddMemberView extends LiteElement {
     this.params = undefined
     for (const label of this.labels) {
       if (label.value) label.reset()
+      if (label.hasAttribute('error')) label.removeAttribute('error')
       if (label.placeholder) {
         label.value = label.placeholder
       }
