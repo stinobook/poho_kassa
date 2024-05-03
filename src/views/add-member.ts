@@ -62,7 +62,7 @@ export class AddMemberView extends LiteElement {
   reset() {
     this.params = undefined
     for (const label of this.labels) {
-      label.reset()
+      if (label.value) label.reset()
       if (label.placeholder) {
         label.value = label.placeholder
       }
@@ -70,6 +70,7 @@ export class AddMemberView extends LiteElement {
 
     this.userphotoURL = undefined
     this.userphotobgURL = undefined
+    this.editing = undefined
     console.log(this.userphotoURL)
 
     this.requestRender()
@@ -166,8 +167,12 @@ export class AddMemberView extends LiteElement {
       this.back()
     } else {
       if (!user['userphotobgURL'] || !user['userphotoURL']) {
-         alert('Picture missing!')
+         if (confirm('Doorgaan zonder foto?')) {
+          if (!user['userphotoURL']) user['userphotoURL'] = 'https://firebasestorage.googleapis.com/v0/b/poho-app.appspot.com/o/members%2Fundefineddefaultavatar_300x300?alt=media&token=1966b208-796b-4a29-9385-899faceeefe2'
+          if (!user['userphotobgURL']) user['userphotobgURL'] = 'https://firebasestorage.googleapis.com/v0/b/poho-app.appspot.com/o/members%2Fundefineddefaultbackground_300x300?alt=media&token=2a3b7409-4d4a-4cea-9a12-7ee7cc5a7a24'
+         } else {
         return
+         }
       }
       firebase.push(`members`, user)
       this.back()
@@ -267,7 +272,7 @@ export class AddMemberView extends LiteElement {
       this[target] = result.fields.url
     } else {
       this[target] = result.image.data[0]
-      this.shadowRoot.querySelector(`img[name="${target}"]`).src = result.image.data[0].data
+      this.shadowRoot.querySelector(`img[name=${target}]`).setAttribute('src',String(result.image.data[0].data))
     }
   }
 
@@ -562,7 +567,7 @@ export class AddMemberView extends LiteElement {
       <image-editor></image-editor>
 
       <custom-dialog class="dialogMembers">
-        <span slot="title">Selecteer hoofdlid</span>
+        <span slot="title">Selecteer 2e lid</span>
         <flex-wrap-between slot="actions"> ${this.members ? this.renderMembers() : ''} </flex-wrap-between>
       </custom-dialog>
     `
