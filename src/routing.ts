@@ -43,7 +43,7 @@ export default class Router {
   #onhashchange = async () => {
     const { route, params } = Router.parseHash(location.hash)
     this.host.select(route)
-    if (!customElements.get(`./${route}`)) await import(`./${route}.js`)
+    if (!customElements.get(`./${route}-view`)) await import(`./${route}.js`)
     const selected = this.host.pages.querySelector('.custom-selected')
     this.host.selected = selected
     if (Object.keys(params).length > 0) selected.params = params
