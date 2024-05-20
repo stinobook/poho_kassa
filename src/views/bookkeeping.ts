@@ -109,7 +109,7 @@ export class BookkeepingView extends LiteElement {
         ? html`
             <div id="card-main">
               <span class="date">${value.date}</span>
-              ${value.cashDifferenceCheckout
+              ${value.cashDifferenceCheckout || value.cashTransferCheckout
                 ? html`
                     <div id="card-sub">
                       <span>Kassa</span>
@@ -120,7 +120,7 @@ export class BookkeepingView extends LiteElement {
                     </div>
                   `
                 : ''}
-              ${value.cashVaultCheckout
+              ${value.cashVaultCheckout || value.cashBank
                 ? html`
                     <div id="card-sub">
                       <span>Kluis & Bank</span>
@@ -131,7 +131,7 @@ export class BookkeepingView extends LiteElement {
                     </div>
                   `
                 : ''}
-              ${value.cashKantine
+              ${value.cashKantine || value.payconiqKantine
                 ? html`
                     <div id="card-sub">
                       <span>Kantine</span>
@@ -142,7 +142,7 @@ export class BookkeepingView extends LiteElement {
                     </div>
                   `
                 : ''}
-              ${value.cashWinkel
+              ${value.cashWinkel || value.payconiqWinkel
                 ? html`
                     <div id="card-sub">
                       <span>Winkel</span>
@@ -153,7 +153,7 @@ export class BookkeepingView extends LiteElement {
                     </div>
                   `
                 : ''}
-              ${value.cashLidgeld
+              ${value.cashLidgeld || value.payconiqLidgeld
                 ? html`
                     <div id="card-sub">
                       <span>Lidgeld</span>
