@@ -62,9 +62,15 @@ export class CalendarView extends LiteElement {
         width: auto;
         border-radius: 25px;
         min-width: 100px;
+        transform:rotateX(180deg);
       }
       custom-tabs {
         gap: 8px;
+        overflow-x: auto;
+        width: 100%;
+        margin-bottom: 12px;
+        transform:rotateX(180deg);
+        padding-bottom: 6px;
       }
     `
   ]
