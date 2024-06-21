@@ -8,9 +8,9 @@ export default class Router {
 
     globalThis.onhashchange = this.#onhashchange
     console.log(location.hash)
-
-    if (!location.hash) {
-      location.hash = Router.bang(firebase.userRoles[0])
+    if (location.hash !== "") {
+        location.hash = Router.bang(firebase.userDefaultPage)
+        if (!firebase.userDefaultPage) location.hash = Router.bang(firebase.userRoles[0])
     } else this.#onhashchange()
   }
 

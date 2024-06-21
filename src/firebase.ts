@@ -71,6 +71,7 @@ const logout = async () => {}
 
 let userDetails
 let userRoles
+let userDefaultPage
 
 const auth = await getAuth(app)
 
@@ -83,6 +84,7 @@ auth.onAuthStateChanged(async user => {
   } else if (!location.hash || location.hash === '#!/login') {
     userDetails = await get('users/' + auth.currentUser.uid)
     userRoles = Object.keys(userDetails['roles'])
+    userDefaultPage = userDetails['defaultpage']
     userDetails['group'] = await get('members/' + userDetails.member + '/group')
     location.hash = Router.bang(userRoles[0])
   }
@@ -94,6 +96,7 @@ if (!auth.currentUser) {
 } else {
   userDetails = await get('users/' + auth.currentUser.uid)
   userRoles = Object.keys(userDetails['roles'])
+  userDefaultPage = userDetails['defaultpage']
   userDetails['group'] = await get('members/' + userDetails.member + '/group')
 }
 
@@ -129,6 +132,7 @@ const _firebase = {
   set,
   userDetails,
   userRoles,
+  userDefaultPage,
   remove,
   update,
   auth,

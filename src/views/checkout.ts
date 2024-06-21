@@ -31,6 +31,7 @@ export class CheckoutView extends LiteElement {
   @property({ type: Number }) accessor payconiqLidgeld: number = 0
   @property({ type: Number }) accessor cashBank: number = 0
   @property() accessor transactionsByCategory: { [category: string]: Transaction[] }
+  @property() accessor transactionsByName: { [name: string]: Transaction[] }
   @property({ type: Array, consumer: true }) accessor members: { Type: Member }
 
   static styles = [
@@ -286,7 +287,28 @@ export class CheckoutView extends LiteElement {
               transactionItem.amount * transactionItem.price
           }
         }
+        const transactionsByName = {}
+        for (const transaction of this.transactions) {
+          for (const [key, transactionItem] of Object.entries(transaction.transactionItems)) {
+            if (!transactionsByName[transactionItem.name]) {
+              transactionsByName[transactionItem.name] = {
+                paymentAmount: { cash: 0, payconiq: 0 },
+                amount: 0,
+                transactionItems: [{ paymentMethod: transaction.paymentMethod, ...transactionItem }]
+              }
+            } else {
+              transactionsByName[transactionItem.name].transactionItems.push({
+                paymentMethod: transaction.paymentMethod,
+                ...transactionItem
+              })
+            }
+            transactionsByName[transactionItem.name].paymentAmount[transaction.paymentMethod] +=
+              transactionItem.amount * transactionItem.price
+            transactionsByName[transactionItem.name].amount += transactionItem.amount
+          }
+        }
 
+        this.transactionsByName = transactionsByName
         this.transactionsByCategory = transactionsByCategory
       } else {
         this.requestRender()

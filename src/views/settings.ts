@@ -44,6 +44,12 @@ export class SettingsView extends LiteElement {
     } else {
       this.salesInputButtonSize = 0
     }
+    this.shadowRoot.addEventListener('change', (event) => {
+      if ((event.target as HTMLSelectElement).id === "setting.defaultpage") {
+        firebase.set('users/' + firebase.auth.currentUser.uid + '/defaultpage', (event.target as HTMLSelectElement).value)
+      }
+    })
+    if (firebase.userDefaultPage) (this.shadowRoot.getElementById("setting.defaultpage") as HTMLSelectElement).value = firebase.userDefaultPage
   }
 
   onChange(propertyKey) {
@@ -84,6 +90,20 @@ export class SettingsView extends LiteElement {
           </flex-row>
 
           <md-filled-button>neuzeke</md-filled-button>
+        </section>
+        <section>
+          <flex-row center>
+            <strong>Default page</strong>
+            <flex-it></flex-it>
+            <select name="setting.defaultpage" id="setting.defaultpage">
+              ${firebase.userRoles.map(
+                role => 
+                  html`
+                    <option value=${role}>${role}</option>
+                `
+              )}
+            </select>
+          </flex-row>
         </section>
       </flex-container>
     `
