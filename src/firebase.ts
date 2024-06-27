@@ -81,7 +81,7 @@ auth.onAuthStateChanged(async user => {
       await import('./views/login.js')
     }
     location.hash = Router.bang('login')
-  } else if (!location.hash || location.hash === '#!/login') {
+  } else {
     userDetails = await get('users/' + auth.currentUser.uid)
     userRoles = Object.keys(userDetails['roles'])
     userDefaultPage = userDetails['defaultpage']
