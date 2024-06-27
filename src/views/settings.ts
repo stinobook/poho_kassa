@@ -6,6 +6,9 @@ import { StyleList, css } from '@vandeurenglenn/lite/element'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/it.js'
 import '@vandeurenglenn/flex-elements/row.js'
+import '@material/web/select/outlined-select.js'
+import '@material/web/select/select-option.js'
+import '@vandeurenglenn/lite-elements/typography.js'
 import { calculateSalesInputButtonSize, resizeSalesInputButton } from '../utils/resize-sales-input-button.js'
 
 @customElement('settings-view')
@@ -23,7 +26,8 @@ export class SettingsView extends LiteElement {
       h4 {
         margin-bottom: 74px;
       }
-      flex-row {
+      flex-row,
+      section {
         width: 100%;
       }
 
@@ -44,12 +48,16 @@ export class SettingsView extends LiteElement {
     } else {
       this.salesInputButtonSize = 0
     }
-    this.shadowRoot.addEventListener('change', (event) => {
-      if ((event.target as HTMLSelectElement).id === "setting.defaultpage") {
-        firebase.set('users/' + firebase.auth.currentUser.uid + '/defaultpage', (event.target as HTMLSelectElement).value)
+    this.shadowRoot.addEventListener('change', event => {
+      if ((event.target as HTMLSelectElement).id === 'setting.defaultpage') {
+        firebase.set(
+          'users/' + firebase.auth.currentUser.uid + '/defaultpage',
+          (event.target as HTMLSelectElement).value
+        )
       }
     })
-    if (firebase.userDefaultPage) (this.shadowRoot.getElementById("setting.defaultpage") as HTMLSelectElement).value = firebase.userDefaultPage
+    if (firebase.userDefaultPage)
+      (this.shadowRoot.getElementById('setting.defaultpage') as HTMLSelectElement).value = firebase.userDefaultPage
   }
 
   onChange(propertyKey) {
@@ -75,10 +83,10 @@ export class SettingsView extends LiteElement {
   render(): TemplateResult<1> {
     return html`
       <flex-container>
-        <h4>settings</h4>
+        <custom-typography>settings</custom-typography>
         <section>
           <flex-row center>
-            <strong>sales input button size</strong>
+            <custom-typography size="medium">sales input button size</custom-typography>
             <flex-it></flex-it>
             <md-slider
               @change=${this.onSalesInputButtonSizeChange.bind(this)}
@@ -93,16 +101,13 @@ export class SettingsView extends LiteElement {
         </section>
         <section>
           <flex-row center>
-            <strong>Default page</strong>
+            <custom-typography size="medium">Default page</custom-typography>
             <flex-it></flex-it>
-            <select name="setting.defaultpage" id="setting.defaultpage">
-              ${firebase.userRoles.map(
-                role => 
-                  html`
-                    <option value=${role}>${role}</option>
-                `
-              )}
-            </select>
+            <md-outlined-select
+              name="setting.defaultpage"
+              id="setting.defaultpage">
+              ${firebase.userRoles.map(role => html` <md-select-option value=${role}>${role}</md-select-option> `)}
+            </md-outlined-select>
           </flex-row>
         </section>
       </flex-container>
