@@ -3,15 +3,20 @@ import { PoHoShell } from './shell.js'
 export default class Router {
   host: PoHoShell
 
+  #isReady: any
+
   constructor(host: PoHoShell) {
     this.host = host
-
     globalThis.onhashchange = this.#onhashchange
-    console.log(location.hash)
-    if (location.hash !== "") {
-        location.hash = Router.bang(firebase.userDefaultPage)
-        if (!firebase.userDefaultPage) location.hash = Router.bang(firebase.userRoles[0])
-    } else this.#onhashchange()
+    this.#init()
+  }
+
+  ready = new Promise(resolve => (this.#isReady = resolve))
+
+  async #init() {
+    await firebase.userReady
+    this.#onhashchange()
+    this.#isReady(true)
   }
 
   static bang(route: string) {

@@ -73,6 +73,10 @@ let userDetails
 let userRoles
 let userDefaultPage
 
+let isUserReady
+
+const userReady = new Promise(resolve => (isUserReady = resolve))
+
 const auth = await getAuth(app)
 
 auth.onAuthStateChanged(async user => {
@@ -81,12 +85,15 @@ auth.onAuthStateChanged(async user => {
       await import('./views/login.js')
     }
     location.hash = Router.bang('login')
-  } else {
+  } else if (user) {
     userDetails = await get('users/' + auth.currentUser.uid)
     userRoles = Object.keys(userDetails['roles'])
     userDefaultPage = userDetails['defaultpage']
     userDetails['group'] = await get('members/' + userDetails.member + '/group')
-    location.hash = Router.bang(userRoles[0])
+    if (!location.hash || location.hash === '#!/login') {
+      location.hash = Router.bang(userDefaultPage || userRoles[0])
+    }
+    isUserReady(true)
   }
 })
 
@@ -149,6 +156,7 @@ const _firebase = {
   signInWithEmailAndPassword,
   updatePassword,
   limitToLast,
+  userReady,
   signOut: () => signOut(auth)
 }
 
