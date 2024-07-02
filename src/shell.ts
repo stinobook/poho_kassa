@@ -63,6 +63,8 @@ export class PoHoShell extends LiteElement {
 
   @property({ provides: true, batchDelay: 70 }) accessor users
 
+  @property({ provides: 'user', batchDelay: 70 }) accessor user
+
   @property({ provides: true }) accessor roles
 
   @property() accessor attendanceDate = new Date().toISOString().slice(0, 10)
@@ -344,7 +346,10 @@ export class PoHoShell extends LiteElement {
     let expirationDate = new Date()
     expirationDate.setFullYear(expirationDate.getFullYear() - 1)
     this.expiredMembersList = await Object.values(this.members).filter(
-      (member: Member) => member.group === 'leden' && (new Date(member.paydate) < expirationDate || member.status === 'nieuw') && member.status !== 'inactief'
+      (member: Member) =>
+        member.group === 'leden' &&
+        (new Date(member.paydate) < expirationDate || member.status === 'nieuw') &&
+        member.status !== 'inactief'
     )
   }
 

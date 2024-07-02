@@ -10,10 +10,12 @@ import '@material/web/select/outlined-select.js'
 import '@material/web/select/select-option.js'
 import '@vandeurenglenn/lite-elements/typography.js'
 import { calculateSalesInputButtonSize, resizeSalesInputButton } from '../utils/resize-sales-input-button.js'
+import { MdOutlinedSelect } from '@material/web/select/outlined-select.js'
+import { MdSlider } from '@material/web/slider/slider.js'
 
 @customElement('settings-view')
 export class SettingsView extends LiteElement {
-  @property({ type: Number }) accessor salesInputButtonSize
+  @property({ consumes: 'user' }) accessor user
 
   static styles?: StyleList = [
     css`
@@ -38,38 +40,24 @@ export class SettingsView extends LiteElement {
     `
   ]
 
-  connectedCallback() {
-    let settings = localStorage.getItem('settings')
-    if (settings) {
-      settings = JSON.parse(settings)
-      for (const [key, value] of Object.entries(settings)) {
-        this[key] = value
-      }
-    } else {
-      this.salesInputButtonSize = 0
-    }
+  #setSetting(name, value) {
+    firebase.set(`users/${firebase.auth.currentUser.uid}/${name}`, value)
+  }
+
+  firstRender(): void {
     this.shadowRoot.addEventListener('change', event => {
-      if ((event.target as HTMLSelectElement).id === 'setting.defaultpage') {
-        firebase.set(
-          'users/' + firebase.auth.currentUser.uid + '/defaultpage',
-          (event.target as HTMLSelectElement).value
-        )
+      if (event.target instanceof MdOutlinedSelect) {
+        const name = event.target.getAttribute('name')
+        this.#setSetting(name, event.target.value)
+      } else if (event.target instanceof MdSlider) {
+        this.onSalesInputButtonSizeChange(event.target.value)
       }
     })
-    if (firebase.userDefaultPage)
-      (this.shadowRoot.getElementById('setting.defaultpage') as HTMLSelectElement).value = firebase.userDefaultPage
   }
 
-  onChange(propertyKey) {
-    if (propertyKey === 'salesInputButtonSize') {
-      this.onSalesInputButtonSizeChange()
-    }
-  }
-
-  onSalesInputButtonSizeChange() {
-    const value = this.shadowRoot.querySelector('md-slider').value
+  onSalesInputButtonSizeChange(value) {
     resizeSalesInputButton(value)
-    localStorage.setItem('settings', JSON.stringify({ salesInputButtonSize: value }))
+    this.#setSetting('salesInputButtonSize', value)
   }
 
   onSalesInputButtonSizeInput() {
@@ -94,7 +82,7 @@ export class SettingsView extends LiteElement {
               labeled
               ticks
               step="5"
-              value=${this.salesInputButtonSize}></md-slider>
+              value=${this.user?.salesInputButtonSize || 0}></md-slider>
           </flex-row>
 
           <md-filled-button>neuzeke</md-filled-button>
@@ -104,9 +92,9 @@ export class SettingsView extends LiteElement {
             <custom-typography size="medium">Default page</custom-typography>
             <flex-it></flex-it>
             <md-outlined-select
-              name="setting.defaultpage"
-              id="setting.defaultpage">
-              ${firebase.userRoles.map(role => html` <md-select-option value=${role}>${role}</md-select-option> `)}
+              name="defaultpage"
+              value=${this.user?.defaultpage}>
+              ${this.user?.userRoles.map(role => html` <md-select-option value=${role}>${role}</md-select-option> `)}
             </md-outlined-select>
           </flex-row>
         </section>

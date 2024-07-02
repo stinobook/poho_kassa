@@ -26,6 +26,7 @@ import {
 } from 'firebase/database'
 import Router from './routing.js'
 import { getStorage, ref as fileref, uploadBytes as _uploadBytes, getDownloadURL } from 'firebase/storage'
+import { PoHoShell } from './shell.js'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyASfmIWBP0bBdwd3uIWT9cxkaTV6DsncZE',
@@ -69,6 +70,8 @@ const login = async () => {}
 
 const logout = async () => {}
 
+const shell = document.querySelector('po-ho-shell') as PoHoShell
+
 let userDetails
 let userRoles
 let userDefaultPage
@@ -85,11 +88,18 @@ auth.onAuthStateChanged(async user => {
       await import('./views/login.js')
     }
     location.hash = Router.bang('login')
+    shell.user = undefined
   } else if (user) {
-    userDetails = await get('users/' + auth.currentUser.uid)
+    userDetails = (await get('users/' + auth.currentUser.uid)) as { userDefaultPage; salesButtonSize }
     userRoles = Object.keys(userDetails['roles'])
     userDefaultPage = userDetails['defaultpage']
     userDetails['group'] = await get('members/' + userDetails.member + '/group')
+
+    shell.user = {
+      group: await get('members/' + userDetails.member + '/group'),
+      ...userDetails,
+      userRoles
+    }
     if (!location.hash || location.hash === '#!/login') {
       location.hash = Router.bang(userDefaultPage || userRoles[0])
     }
