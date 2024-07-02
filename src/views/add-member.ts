@@ -189,8 +189,8 @@ export class AddMemberView extends LiteElement {
     } else {
       if (!user['userphotobgURL'] || !user['userphotoURL']) {
          if (confirm('Doorgaan zonder foto?')) {
-          if (!user['userphotoURL']) user['userphotoURL'] = 'https://firebasestorage.googleapis.com/v0/b/poho-app.appspot.com/o/members%2Fundefineddefaultavatar_300x300?alt=media&token=1966b208-796b-4a29-9385-899faceeefe2'
-          if (!user['userphotobgURL']) user['userphotobgURL'] = 'https://firebasestorage.googleapis.com/v0/b/poho-app.appspot.com/o/members%2Fundefineddefaultbackground_300x300?alt=media&token=2a3b7409-4d4a-4cea-9a12-7ee7cc5a7a24'
+          if (!user['userphotoURL']) user['userphotoURL'] = 'https://firebasestorage.googleapis.com/v0/b/poho-app.appspot.com/o/members%2Fundefineddefaultavatar_300x300?alt=media&token=8077832e-4de9-4497-94f0-90628234988f'
+          if (!user['userphotobgURL']) user['userphotobgURL'] = 'https://firebasestorage.googleapis.com/v0/b/poho-app.appspot.com/o/members%2Fundefineddefaultbackground_300x300?alt=media&token=81fda580-89dd-4888-b919-a3883822cf84'
          } else {
         return
          }
