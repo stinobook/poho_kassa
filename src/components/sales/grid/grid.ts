@@ -74,7 +74,7 @@ export class SalesGrid extends LiteElement {
       }
 
       flex-container {
-        max-width: -webkit-fill-available;
+        max-width: 100%;
       }
 
       flex-container h4:first-child {
@@ -97,7 +97,7 @@ export class SalesGrid extends LiteElement {
 
   renderGrid(items = this.products) {
     return Object.entries(items).map(([category, products]) =>
-      products && category !== 'Lidgeld'
+      products //&& category !== 'Lidgeld'
         ? html`
             <flex-container>
               <flex-row width="100%">
