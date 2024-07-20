@@ -54,6 +54,7 @@ export default html`
       <span name="groups">@symbol-groups</span>
       <span name="event">@symbol-event</span>
       <span name="calendar_month">@symbol-calendar_month</span>
+      <span name="topic">@symbol-topic</span>
       <span name="view_agenda">@symbol-view_agenda</span>
       <span name="card_membership">@symbol-card_membership</span>
       <span name="settings">@symbol-settings</span>

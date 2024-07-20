@@ -8,7 +8,6 @@ import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import '@vandeurenglenn/lite-elements/tabs.js'
 import '@vandeurenglenn/lite-elements/selector.js'
-import '@material/web/button/filled-button.js'
 import { Sales, Member } from '../types.js'
 import style from './bookkeeping-css.js'
 

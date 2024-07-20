@@ -67,6 +67,8 @@ export class PoHoShell extends LiteElement {
 
   @property({ provides: true }) accessor roles
 
+  @property({ provides: true, batchDelay: 70 }) accessor files
+
   @property() accessor attendanceDate = new Date().toISOString().slice(0, 10)
 
   @query('custom-drawer-layout') accessor drawerLayout: CustomDrawerLayout
@@ -125,7 +127,8 @@ export class PoHoShell extends LiteElement {
     users: ['members', 'users'],
     events: ['events', 'categories'],
     planning: [{ name: 'planning', type: 'object' }],
-    calendar: ['members', { name: 'planning', type: 'object' }, { name: 'calendar', type: 'object' }]
+    calendar: ['members', { name: 'planning', type: 'object' }, { name: 'calendar', type: 'object' }],
+    files: ['members',{ name: 'files', type: 'object' }]
   }
 
   setupPropertyProvider(propertyProvider, type = 'array', events?: PropertyProviderEvents) {
@@ -465,6 +468,13 @@ export class PoHoShell extends LiteElement {
           --md-filled-button-container-color: var(--md-sys-color-on-error-container);
           --md-filled-button-label-text-color: var(--md-sys-color-on-error);
         }
+        .version {
+          position: absolute;
+          bottom: 0;
+        }
+        custom-selector {
+          overflow-y: auto;
+        }
 
         ${scrollbar}
       </style>
@@ -563,6 +573,13 @@ export class PoHoShell extends LiteElement {
               slot="end"
               icon="calendar_month"></custom-icon
           ></custom-drawer-item>
+          <custom-drawer-item route="files">
+            Bestanden
+            <flex-it></flex-it>
+            <custom-icon
+              slot="end"
+              icon="topic"></custom-icon
+          ></custom-drawer-item>
           <custom-divider middle-inset></custom-divider>
           <custom-drawer-item route="events">
             Evenementinstellingen
@@ -601,7 +618,6 @@ export class PoHoShell extends LiteElement {
               slot="end"
               icon="settings"></custom-icon>
           </custom-drawer-item>
-          <flex-it></flex-it>
           <custom-drawer-item
             route="logout"
             class="logout">
@@ -612,9 +628,8 @@ export class PoHoShell extends LiteElement {
               icon="logout"></custom-icon>
           </custom-drawer-item>
         </custom-selector>
-        <flex-row slot="drawer-footer">
-          <small>version</small>
-          <flex-it></flex-it>
+        <flex-row slot="drawer-footer" class="version">
+          <small>V</small>
           <small>@version</small>
         </flex-row>
         <custom-pages attr-for-selected="route">
@@ -630,6 +645,7 @@ export class PoHoShell extends LiteElement {
           <add-event-view route="add-event"> </add-event-view>
           <products-view route="products"> </products-view>
           <calendar-view route="calendar"> </calendar-view>
+          <files-view route="files"> </files-view>
           <planning-view route="planning"> </planning-view>
           <settings-view route="settings"> </settings-view>
           <users-view route="users"> </users-view>
