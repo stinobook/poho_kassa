@@ -150,3 +150,8 @@ export type PropertyProviderEvents = {
   onChildRemoved: (val) => void
   onChildAdded: (val) => void
 }
+export interface File {
+  title: string
+  group: string
+  fileURL: string
+}

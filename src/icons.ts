@@ -59,6 +59,7 @@ export default html`
       <span name="card_membership">@symbol-card_membership</span>
       <span name="settings">@symbol-settings</span>
       <span name="logout">@symbol-logout</span>
+      <span name="download">@symbol-download</span>
     </template>
   </custom-icon-set>
 `

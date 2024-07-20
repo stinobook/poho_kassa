@@ -1,27 +1,19 @@
 import { html, LiteElement, property, customElement, css } from '@vandeurenglenn/lite'
-import '@material/web/list/list.js'
-import '@material/web/list/list-item.js'
-import '@material/web/textfield/filled-text-field.js'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import '@vandeurenglenn/lite-elements/tabs.js'
 import '@vandeurenglenn/lite-elements/selector.js'
-import '@vandeurenglenn/lite-elements/icon-button.js'
-import '@vandeurenglenn/lite-elements/icon.js'
-import '@material/web/textfield/outlined-text-field.js'
-import '@material/web/dialog/dialog.js'
-import '@material/web/button/outlined-button.js'
-import { Member } from '../types.js'
-import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
+import { Member, File } from '../types.js'
+import './../components/card/filecard.js'
 
 @customElement('files-view')
 export class FilesView extends LiteElement {
-  @property({ type: Array, consumer: true }) accessor members: { Type: Member[] }
+  @property({ type: Object, consumer: true }) accessor members: { Type: Member[] }
   @property({ type: Object, consumer: true }) accessor files
-  @property({ type: Object,}) accessor filesOfGroup: {}
-  @property({ type: Array,}) accessor categories: string[]
+  @property({ type: Object}) accessor filesOfCategory: { [key: string]: File}
+  @property({ type: Array}) accessor categories: string[]
 
   static styles = [
     css`
@@ -33,6 +25,7 @@ export class FilesView extends LiteElement {
         align-items: center;
         border-radius: var(--md-sys-shape-corner-extra-large);
         overflow-y: auto;
+        overflow-x: hidden;
       }
       ::-webkit-scrollbar {
         width: 8px;
@@ -104,14 +97,16 @@ export class FilesView extends LiteElement {
         font-size: 1.2em;
         font-weight: bold;
       }
-      md-list-item {
-        background: var(--md-sys-color-surface-container-high);
-        border: 1px solid rgba(0, 0, 0, 0.34);
-        border-radius: 48px;
-        margin-top: 8px;
-        width: 100%;
-        --md-list-item-leading-space: 24px;
-        cursor: pointer;
+      .files {
+        position:relative;
+        flex-flow: row wrap;
+        gap:12px;
+        height:100%;
+        margin: 0 auto;
+        align-items:stretch;
+      }
+      flex-container {
+        padding: 0;
       }
     `
   ]
@@ -120,13 +115,11 @@ export class FilesView extends LiteElement {
     this.shadowRoot.addEventListener('click', this._onclick.bind(this))
   }
 
-  async onChange(propertyKey: any, value: any) {
-    console.log({ propertyKey, value })
-    
+  async onChange(propertyKey: any, value: any) {    
     if (propertyKey === 'files') {
       let group = firebase.userDetails.group
-      this.filesOfGroup = Object.values(this.files[group])
       this.categories = Object.keys(this.files[group])
+      this.filesOfCategory = this.files[firebase.userDetails.group][this.categories[0]]
     }
   }
   
@@ -140,6 +133,9 @@ export class FilesView extends LiteElement {
       download.classList.add('toggle')
       upload.classList.remove('toggle')
     }
+  }
+  async selectCategory(selected) {
+    this.filesOfCategory = this.files[firebase.userDetails.group][selected.detail]
   }
   async _onclick(event) {
     const target = event.target as HTMLElement
@@ -173,7 +169,26 @@ export class FilesView extends LiteElement {
   }
 
   renderFiles() {
-    
+    return html`
+    <custom-tabs round=""
+    attr-for-selected="category"
+    @selected=${this.selectCategory.bind(this)}>
+    ${this.categories.map((category) =>
+      html`<custom-tab category=${category}>${category.replace(/_/g, ' ')}</custom-tab>`
+    )}
+    </custom-tabs>
+    <flex-container class='files'>
+    ${this.filesOfCategory ?
+      Object.values(this.filesOfCategory).map((file) =>
+        html`<filecard-element
+              .headline=${file.title}
+              icon="download"
+              @click=${() => window.open(file.fileURL, '_blank')}
+              ></filecard-element>
+              `)
+    : ''}
+    </flex-container>
+    `    
   }
   
   render() {
@@ -183,10 +198,10 @@ export class FilesView extends LiteElement {
           attr-for-selected="page"
           @selected=${this.select.bind(this)}>
           <custom-tab page="download">Downloaden</custom-tab>
-          ${this.filesOfGroup ? this.renderFiles() : ''}
           <custom-tab page="upload">Uploaden</custom-tab>
         </custom-tabs>
         <flex-container class="download">
+        ${this.categories ? this.renderFiles() : ''}
         </flex-container>
         <flex-container class="upload toggle">
           <flex-row class="card">
