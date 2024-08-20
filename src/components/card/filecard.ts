@@ -17,10 +17,9 @@ export class FilecardElement extends LiteElement {
         background: var(--md-sys-color-surface-variant);
         color: var(--md-sys-color-on-surface-variant);
         display: flex;
-        width: 100%;
-        max-width: 240px;
         justify-content: center;
-        flex: 1 1 100%;
+        flex: 1 1 30%;
+        min-width: 175px;
       }
       .card:hover {
         background: var(--md-sys-color-outline-variant);

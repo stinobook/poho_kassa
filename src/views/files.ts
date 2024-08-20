@@ -65,6 +65,7 @@ export class FilesView extends LiteElement {
         box-sizing: border-box;
         padding: 12px;
         margin-top: 12px;
+        margin-bottom: 50px;
       }
       input, select {
         padding: 10px 10px 10px 15px;
@@ -193,25 +194,27 @@ export class FilesView extends LiteElement {
 
   renderFiles() {
     return html`
-    <label>
-      Categorie
-      <select id="dlcategory">
-        ${this.categories ? this.categories.map((category) =>
-          html`<option value=${category}>${category.replace(/_/g, ' ')}</option>`
-        ) : ''}
-      </select>
-    </label>
-    <flex-container class='files'>
-    ${this.filesOfCategory ?
-      Object.values(this.filesOfCategory).map((file) =>
-        html`<filecard-element
-              .headline=${file.title}
-              icon="download"
-              @click=${() => window.open(file.fileURL, '_blank')}
-              ></filecard-element>
-              `)
-    : ''}
-    </flex-container>
+    <flex-row class='card'>
+      <label>
+        Categorie
+        <select id="dlcategory">
+          ${this.categories ? this.categories.map((category) =>
+            html`<option value=${category}>${category.replace(/_/g, ' ')}</option>`
+          ) : ''}
+        </select>
+      </label>
+      <flex-container class='files'>
+      ${this.filesOfCategory ?
+        Object.values(this.filesOfCategory).map((file) =>
+          html`<filecard-element
+                .headline=${file.title}
+                icon="download"
+                @click=${() => window.open(file.fileURL, '_blank')}
+                ></filecard-element>
+                `)
+      : ''}
+      </flex-container>
+    </flex-row>
     `    
   }
   
