@@ -26,6 +26,7 @@ export class FilesView extends LiteElement {
         border-radius: var(--md-sys-shape-corner-extra-large);
         overflow-y: auto;
         overflow-x: hidden;
+        padding: 12px;
       }
       ::-webkit-scrollbar {
         width: 8px;
@@ -113,6 +114,10 @@ export class FilesView extends LiteElement {
 
   connectedCallback() {
     this.shadowRoot.addEventListener('click', this._onclick.bind(this))
+    this.shadowRoot.querySelector('#dlcategory').addEventListener('change', event => {
+      let category = (this.shadowRoot.getElementById('dlcategory') as HTMLSelectElement).value
+      this.filesOfCategory = this.files[firebase.userDetails.group][category]
+    })
   }
 
   async onChange(propertyKey: any, value: any) {    
@@ -134,9 +139,7 @@ export class FilesView extends LiteElement {
       upload.classList.remove('toggle')
     }
   }
-  async selectCategory(selected) {
-    this.filesOfCategory = this.files[firebase.userDetails.group][selected.detail]
-  }
+
   async _onclick(event) {
     const target = event.target as HTMLElement
     const action = target.getAttribute('action')
@@ -149,34 +152,55 @@ export class FilesView extends LiteElement {
     this.shadowRoot.querySelector('#errortext').innerHTML = ""
     let title = this.shadowRoot.querySelector('[name="filename"]') as HTMLInputElement
     let file = this.shadowRoot.querySelector('[name="file"]') as HTMLInputElement
-    let category = this.shadowRoot.querySelector('select').value
+    let category = (this.shadowRoot.getElementById('ulcategory') as HTMLSelectElement).value
     if (category === 'new') category = await prompt('Naam categorie?').replace(/ /g, '_').toLowerCase()
-    if (!title.value || !file.files[0]) {
+    if ((!title.value && file.files.length === 1) || !file.files[0]) {
       this.shadowRoot.querySelector('#errortext').innerHTML = "Bestand of naam ontbreekt!"
     } else {
-      let fileData = {
-        group: firebase.userDetails.group,
-        title: title.value,
-        date: new Date()
+      if (file.files.length > 1) {
+        for (const i of file.files) {
+          let fileData = {
+            group: firebase.userDetails.group,
+            title: i.name,
+            date: new Date()
+          }
+          let fileKey = await firebase.push('files/' + firebase.userDetails.group + '/' + category, fileData)
+          let uploadFile = await firebase.uploadBytes(
+            firebase.userDetails.group + '/' + category + '/' + fileKey, i
+          )
+          let fileURL = await firebase.getDownloadURL(uploadFile.ref)
+          await firebase.set('files/' + firebase.userDetails.group + '/' + category + '/' + fileKey + '/fileURL', fileURL)
+        }
+        title.value = ""
+        file.value = null
+      } else {
+        let fileData = {
+          group: firebase.userDetails.group,
+          title: title.value,
+          date: new Date()
+        }
+        let fileKey = await firebase.push('files/' + firebase.userDetails.group + '/' + category, fileData)
+        let uploadFile = await firebase.uploadBytes(
+          firebase.userDetails.group + '/' + category + '/' + fileKey, file.files[0]
+        )
+        let fileURL = await firebase.getDownloadURL(uploadFile.ref)
+        await firebase.set('files/' + firebase.userDetails.group + '/' + category + '/' + fileKey + '/fileURL', fileURL)
+        title.value = ""
+        file.value = null
       }
-      let fileKey = await firebase.push('files/' + firebase.userDetails.group + '/' + category, fileData)
-      let uploadFile = await firebase.uploadBytes(
-        firebase.userDetails.group + '/' + category + '/' + fileKey, file.files[0]
-      )
-      let fileURL = await firebase.getDownloadURL(uploadFile.ref)
-      await firebase.set('files/' + firebase.userDetails.group + '/' + category + '/' + fileKey + '/fileURL', fileURL)
     }
   }
 
   renderFiles() {
     return html`
-    <custom-tabs round=""
-    attr-for-selected="category"
-    @selected=${this.selectCategory.bind(this)}>
-    ${this.categories.map((category) =>
-      html`<custom-tab category=${category}>${category.replace(/_/g, ' ')}</custom-tab>`
-    )}
-    </custom-tabs>
+    <label>
+      Categorie
+      <select id="dlcategory">
+        ${this.categories ? this.categories.map((category) =>
+          html`<option value=${category}>${category.replace(/_/g, ' ')}</option>`
+        ) : ''}
+      </select>
+    </label>
     <flex-container class='files'>
     ${this.filesOfCategory ?
       Object.values(this.filesOfCategory).map((file) =>
@@ -208,7 +232,7 @@ export class FilesView extends LiteElement {
           <span class='title'>Bestand uploaden</span>
           <label>
             Categorie
-            <select>
+            <select id="ulcategory">
               ${this.categories ? this.categories.map((category) =>
                 html`<option value=${category}>${category.replace(/_/g, ' ')}</option>`
               ) : ''}
@@ -224,6 +248,7 @@ export class FilesView extends LiteElement {
             >Bestand<input
               type="file"
               name="file"
+              multiple
           /></label>
             <span id="errortext"></span>
             <md-filled-button action="upload">Uploaden</md-filled-button>
