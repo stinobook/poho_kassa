@@ -23,10 +23,8 @@ export class FilesView extends LiteElement {
         width: 100%;
         height: 100%;
         align-items: center;
-        border-radius: var(--md-sys-shape-corner-extra-large);
         overflow-y: auto;
         overflow-x: hidden;
-        padding: 12px;
       }
       ::-webkit-scrollbar {
         width: 8px;
@@ -44,14 +42,14 @@ export class FilesView extends LiteElement {
         transform: translatex(0%);
         z-index: 0;
         opacity: 1;
-        position: absolute;
-        top: 60px;
+        position: relative;
       }
       .toggle {
         transform: translatex(300%);
         z-index: 1;
         opacity: 0;
         position: absolute;
+        top: 60px;
       }
       .card {
         display: flex;
@@ -108,7 +106,10 @@ export class FilesView extends LiteElement {
         align-items:stretch;
       }
       flex-container {
-        padding: 0;
+        padding: 0
+      }
+      .container {
+        padding: 12px;
       }
     `
   ]
@@ -220,7 +221,7 @@ export class FilesView extends LiteElement {
   
   render() {
     return html`
-      <flex-container>
+      <flex-container class='container'>
         <custom-tabs
           attr-for-selected="page"
           @selected=${this.select.bind(this)}>
