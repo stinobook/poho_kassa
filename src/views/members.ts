@@ -14,6 +14,8 @@ import type { Member } from '../types.js'
 export class MembersView extends LiteElement {
   @property({ type: Array, consumer: true })
   accessor members: { [group: string]: Member[] }
+  @property({ consumer: true, renders: false })
+  accessor attendance: { [key: string]: string[] }
 
   static styles = [
     css`
@@ -68,6 +70,9 @@ export class MembersView extends LiteElement {
         width: 100%;
         display: block;
       }
+      .content {
+        margin-top: 24px;
+      }
     `
   ]
   async willChange(propertyKey: string, value: any): Promise<any> {
@@ -101,6 +106,24 @@ export class MembersView extends LiteElement {
   _edit = target => {
     location.hash = Router.bang(`add-member?edit=${target}`)
   }
+  countAttendance(member: string) {
+    var data = {};
+    for (const [key, value] of Object.entries(this.attendance)) {
+      if (value.includes(member)) {
+        let Year = key.slice(0,4)
+        if (Year in data) {
+          data[Year]++
+        } else {
+          data[Year] = 1
+        }
+      }
+    }
+
+    var htmlData = Object.entries(data).map(([key, value]) =>
+      html`<span>${key}: ${value}</span>`
+    )
+    return(htmlData)
+  }
 
   renderMembers() {
     return Object.entries(this.members).map(([group, members]) =>
@@ -123,6 +146,10 @@ export class MembersView extends LiteElement {
                         >
                         <flex-it></flex-it>
                         <div class="content">
+                          <span>
+                            <strong>Aanwezigheden:</strong>
+                            ${this.countAttendance(member.key)}
+                          </span>
                         </div>
                       </card-element>
                     `

@@ -106,7 +106,7 @@ export class CardElement extends LiteElement {
 
   _renderHeadline() {
     if (!this.headline) return ''
-    return html`<custom-typography type="title">${this.headline}</custom-typography>`
+    return html`<custom-typography type="title" size='large'>${this.headline}</custom-typography>`
   }
 
   _renderSubline() {
