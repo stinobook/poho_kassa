@@ -32,10 +32,26 @@ export class SettingsView extends LiteElement {
       section {
         width: 100%;
       }
+      flex-container {
+        gap: 12px;
+      }
 
       md-filled-button {
         height: var(--sales-input-height, 64px);
         font-size: var(--sales-input-font-size, 0.95em);
+      }
+
+      .card {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        background-color: var(--md-sys-color-surface-container-high);
+        color: var(--md-sys-color-on-surface-container-high);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        gap: 12px;
+        box-sizing: border-box;
+        padding: 12px;
       }
     `
   ]
@@ -71,10 +87,10 @@ export class SettingsView extends LiteElement {
   render(): TemplateResult<1> {
     return html`
       <flex-container>
-        <custom-typography>settings</custom-typography>
+        <custom-typography><h2>Instellingen</h2></custom-typography>
         <section>
-          <flex-row center>
-            <custom-typography size="medium">sales input button size</custom-typography>
+          <flex-row center class='card'>
+            <custom-typography size="medium">Verkoopscherm knop grootte</custom-typography>
             <flex-it></flex-it>
             <md-slider
               @change=${this.onSalesInputButtonSizeChange.bind(this)}
@@ -83,13 +99,13 @@ export class SettingsView extends LiteElement {
               ticks
               step="5"
               value=${this.user?.salesInputButtonSize || 0}></md-slider>
+              <md-filled-button>Voorbeeld</md-filled-button>
           </flex-row>
 
-          <md-filled-button>neuzeke</md-filled-button>
         </section>
         <section>
-          <flex-row center>
-            <custom-typography size="medium">Default page</custom-typography>
+          <flex-row center class='card'>
+            <custom-typography size="medium">Standaardpagina bij openen app</custom-typography>
             <flex-it></flex-it>
             <md-outlined-select
               name="defaultpage"
