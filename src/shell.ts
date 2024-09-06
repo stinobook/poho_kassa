@@ -99,6 +99,18 @@ export class PoHoShell extends LiteElement {
       if (this.#inMem) this.categories = this.#inMem
       this.#inMem = this.categories
       this.categories = this.categories.filter(category => category.toLowerCase().includes(ev.detail))
+    } else if (this.pages.selected === 'members') {
+      if (this.#inMem) this.members = this.#inMem
+      this.#inMem = this.members
+      let varMem = this.members.filter(member => {
+        if (member.name.toLowerCase().includes(ev.detail.toLowerCase())) return true
+        if (member.lastname.toLowerCase().includes(ev.detail.toLowerCase())) return true
+      })
+      for (const extra of varMem) {
+        if (extra.extra && !varMem.map((key) => key.key).includes(extra.extra))          
+          varMem.push(this.members.filter(member => member.key === extra.extra )[0])
+      }
+      this.members = varMem
     }
   }
 
@@ -201,6 +213,9 @@ export class PoHoShell extends LiteElement {
 
       if (this.pages.selected === 'categories') {
         this.categories = this.#inMem
+      }
+      if (this.pages.selected === 'members') {
+        this.members = this.#inMem
       }
       this.#inMem = undefined
       this._searchInput.value = ''
@@ -305,6 +320,7 @@ export class PoHoShell extends LiteElement {
       case 'products':
       case 'categories':
       case 'sales':
+      case 'members':
         return html` <search-input></search-input> `
 
       default:
