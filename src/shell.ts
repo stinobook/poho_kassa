@@ -384,7 +384,6 @@ export class PoHoShell extends LiteElement {
       }
     }
     let dividers = this.shadowRoot.querySelectorAll('custom-divider')
-    console.log(firebase.userRoles)
 
     if (
       !(

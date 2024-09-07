@@ -72,8 +72,6 @@ export class AddMemberView extends LiteElement {
     this.userphotoURL = undefined
     this.userphotobgURL = undefined
     this.editing = undefined
-    console.log(this.userphotoURL)
-
     this.requestRender()
   }
 
@@ -207,6 +205,7 @@ export class AddMemberView extends LiteElement {
         justify-content: center;
         width: 100%;
         height: 100%;
+        flex-wrap: wrap;
       }
       flex-column {
         width: auto;
@@ -223,6 +222,15 @@ export class AddMemberView extends LiteElement {
         overflow-y: auto;
         width: 100%;
         align-items: center;
+        max-height: calc(100% - 80px);
+      }
+      .menubuttons {
+        width: 100%;
+        height: 80px;
+        display: flex;
+        padding: 12px;
+        flex-wrap: wrap;
+        flex-direction: row;
       }
       md-outlined-text-field,
       md-outlined-select,
@@ -232,11 +240,6 @@ export class AddMemberView extends LiteElement {
       }
       md-select-option {
         text-transform: capitalize;
-      }
-      md-fab {
-        position: absolute;
-        right: 24px;
-        bottom: 24px;
       }
       md-checkbox {
         margin-right: 12px;
@@ -326,10 +329,9 @@ export class AddMemberView extends LiteElement {
     this.shadowRoot.addEventListener('click', event => {
       if (event.target instanceof Element)
         if (event.target.getAttribute('name') === 'extra') {
+          this.requestRender()
           let dialogMembers = this.shadowRoot.querySelector('custom-dialog.dialogMembers') as HTMLDialogElement
           dialogMembers.open = true
-        } else if (event.target.getAttribute('action') === 'autofill') {
-          this.autoFill()
         }
     })
     this.memberCheck()
@@ -339,79 +341,46 @@ export class AddMemberView extends LiteElement {
       this.updateExtra({ event })
     })
   }
-  async autoFill() {
-    let paste = (await navigator.clipboard.readText()).split('	')
-    let member = confirm('Is dit het hoofdlid?');
-    (this.shadowRoot.querySelector('[name="extra"]') as HTMLElement).classList.remove('hidden');
-    (this.shadowRoot.querySelector('[name="status"]') as HTMLElement).classList.remove('hidden');
-    (this.shadowRoot.querySelector('[name="paydate"]') as HTMLElement).classList.remove('hidden');
-    (this.shadowRoot.querySelector('[name="title"]') as HTMLElement).classList.add('hidden');
-    (this.shadowRoot.querySelector('[name="group"]') as HTMLInputElement).value = 'leden';
-    (this.shadowRoot.querySelector('[name="status"]') as HTMLInputElement).value = 'nieuw';
-    if (member) {
-      (this.shadowRoot.querySelector('[name="email"]') as HTMLInputElement).value = paste[1];
-      (this.shadowRoot.querySelector('[name="name"]') as HTMLInputElement).value = paste[2];
-      (this.shadowRoot.querySelector('[name="lastname"]') as HTMLInputElement).value = paste[3];
-      (this.shadowRoot.querySelector('[name="birthday"]') as HTMLInputElement).value = new Date(paste[4]).toISOString().slice(0, 10);
-      (this.shadowRoot.querySelector('[name="street"]') as HTMLInputElement).value = paste[5];
-      (this.shadowRoot.querySelector('[name="community"]') as HTMLInputElement).value = paste[6];
-      (this.shadowRoot.querySelector('[name="postalcode"]') as HTMLInputElement).value = paste[7];
-      (this.shadowRoot.querySelector('[name="phone"]') as HTMLInputElement).value = paste[8];
-      (this.shadowRoot.querySelector('[name="dogname"]') as HTMLInputElement).value = paste[12];
-      (this.shadowRoot.querySelector('[name="dograce"]') as HTMLInputElement).value = paste[13];
-      (this.shadowRoot.querySelector('[name="chipnumber"]') as HTMLInputElement).value = paste[14];
-      (this.shadowRoot.querySelector('[name="pedigree"]') as HTMLInputElement).value = paste[15];
-      (this.shadowRoot.querySelector('[name="store"]') as HTMLInputElement).value = paste[16];
-      (this.shadowRoot.querySelector('[name="buyage"]') as HTMLInputElement).value = paste[17];
-      (this.shadowRoot.querySelector('[name="experience"]') as HTMLInputElement).value = paste[18];
 
-    } else {
-      (this.shadowRoot.querySelector('[name="name"]') as HTMLInputElement).value = paste[9];
-      (this.shadowRoot.querySelector('[name="lastname"]') as HTMLInputElement).value = paste[10];
-      (this.shadowRoot.querySelector('[name="birthday"]') as HTMLInputElement).value = paste[11];
-      (this.shadowRoot.querySelector('[name="email"]') as HTMLInputElement).value = paste[1];
-      (this.shadowRoot.querySelector('[name="street"]') as HTMLInputElement).value = paste[5];
-      (this.shadowRoot.querySelector('[name="community"]') as HTMLInputElement).value = paste[6];
-      (this.shadowRoot.querySelector('[name="postalcode"]') as HTMLInputElement).value = paste[7];
-      (this.shadowRoot.querySelector('[name="phone"]') as HTMLInputElement).value = paste[8];
-      (this.shadowRoot.querySelector('[name="dogname"]') as HTMLInputElement).value = paste[12];
-      (this.shadowRoot.querySelector('[name="dograce"]') as HTMLInputElement).value = paste[13];
-      (this.shadowRoot.querySelector('[name="chipnumber"]') as HTMLInputElement).value = paste[14];
-      (this.shadowRoot.querySelector('[name="pedigree"]') as HTMLInputElement).value = paste[15];
-      (this.shadowRoot.querySelector('[name="store"]') as HTMLInputElement).value = paste[16];
-      (this.shadowRoot.querySelector('[name="buyage"]') as HTMLInputElement).value = paste[17];
-      (this.shadowRoot.querySelector('[name="experience"]') as HTMLInputElement).value = paste[18];
+  updateExtra({ event }) {
+    if (!(event.detail === 'cancel' || event.detail === 'close')) {
+      let extraMember = this.members['leden'].filter((member) => member.key === event.detail)[0]
+      if (!extraMember.extra) {
+        let extra = this.shadowRoot.querySelector('[name="extra"]') as HTMLInputElement
+        extra.setAttribute('key', event.detail)
+        let member = this.members['leden'].filter(member => member.key === event.detail)[0]
+        extra.value = member.name + ' ' + member.lastname
+      } else {
+        alert('Heeft al een 2e lid!')
+      }
     }
   }
 
-  updateExtra({ event }) {
-    let extra = this.shadowRoot.querySelector('[name="extra"]') as HTMLInputElement
-    extra.setAttribute('key', event.detail)
-    let member = this.members['leden'].filter(member => member.key === event.detail)[0]
-    extra.value = member.name + ' ' + member.lastname
-  }
-
   renderMembers() {
-    return Object.entries(this.members).map(([group, members]) =>
-      (members?.length > 0 && group === 'leden')
-        ? members.map( member =>
-          html`
-            <custom-button
-              action=${member.key}
-              .label=${member.name + ' ' + member.lastname}
-              >${member.name + ' ' + member.lastname}</custom-button
-            >
-          `
-        ) : ''
-      )
+    if (this.editing) {
+      let key = this.params.edit
+      let editMember = this.members['leden'].filter((member) => member.key === key)[0]
+      let possibleMember = this.members['leden'].filter((member) => member.chipnumber === editMember.chipnumber && member.key !== editMember.key)[0]
+      if (possibleMember) {
+        return html`
+                <custom-button
+                  action=${possibleMember.key}
+                  .label=${possibleMember.name + ' ' + possibleMember.lastname}
+                  >${possibleMember.name + ' ' + possibleMember.lastname}</custom-button
+                >
+              `
+      } else {
+        return html`
+        <span>Geen ander lid met zelfde chipnummer bij de hond.</span>
+        `
+      }
+      }
   }
 
   render() {
     return html`
       <image-selector-dialog></image-selector-dialog>
-
       <flex-column class="wrapper">
-      <custom-button action="autofill" label="Automatisch invullen"></custom-button>
         <flex-container>
           <flex-column>
             <label><custom-typography>Lid</custom-typography></label>
@@ -571,19 +540,21 @@ export class AddMemberView extends LiteElement {
               </flex-wrap-between>
         </flex-container>
       </flex-column>
-
-      <md-fab
-        @click=${this.back.bind(this)}
-        class="back"
-        ><custom-icon
-          slot="icon"
-          icon="arrow_back"></custom-icon
-      ></md-fab>
-      <md-fab @click=${this.save.bind(this)}
-        ><custom-icon
-          slot="icon"
-          icon="save"></custom-icon
-      ></md-fab>
+      <flex-column class='menubuttons'>
+        <md-fab
+          @click=${this.back.bind(this)}
+          class="back"
+          ><custom-icon
+            slot="icon"
+            icon="arrow_back"></custom-icon
+        ></md-fab>
+        <flex-it></flex-it>
+        <md-fab @click=${this.save.bind(this)}
+          ><custom-icon
+            slot="icon"
+            icon="save"></custom-icon
+        ></md-fab>
+        </flex-column>
 
       <image-editor></image-editor>
 

@@ -55,6 +55,7 @@ export class MembersView extends LiteElement {
         margin-bottom: 16px;
         margin-top: 16px;
         max-width: 1248px;
+        align-items: stretch;
       }
       flex-column {
         width: 100%;
