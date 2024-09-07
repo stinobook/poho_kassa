@@ -140,7 +140,9 @@ export default css`
   }
   .card-input {
     display: flex;
-    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     width: 100%;
     background-color: var(--md-sys-color-surface-container-high);
     border-radius: var(--md-sys-shape-corner-extra-large);
@@ -193,8 +195,7 @@ export default css`
     transform: translateY(0%);
     z-index: 0;
     opacity: 1;
-    position: absolute;
-    top: 60px;
+    position: relative;
   }
   .toggle {
     transform: translateY(1000%);
