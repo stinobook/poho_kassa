@@ -358,8 +358,13 @@ export class AddMemberView extends LiteElement {
 
   renderMembers() {
     if (this.editing) {
-      let key = this.params.edit
-      let editMember = this.members['leden'].filter((member) => member.key === key)[0]
+      let editMember
+      let keyValue = this.params.edit
+      for (const key of Object.keys(this.members)) {
+        if (this.members[key].filter((member) => member.key === keyValue)[0]) {
+          editMember = this.members[key].filter((member) => member.key === keyValue)[0]
+        }
+      }
       let possibleMember = this.members['leden'].filter((member) => member.chipnumber === editMember.chipnumber && member.key !== editMember.key)[0]
       if (possibleMember) {
         return html`
