@@ -180,8 +180,8 @@ export class MembersView extends LiteElement {
                               <span>Betaald op: ${member.paydate}</span>
                               ${member.extra ? html`
                                 <span>2e Lid: 
-                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
-                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
+                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0]?.name + ' ' + 
+                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0]?.lastname
                                   } 
                                 </span>
                               ` : ''}
@@ -214,8 +214,8 @@ export class MembersView extends LiteElement {
                               <span>Betaald op: ${member.paydate}</span>
                               ${member.extra ? html`
                                 <span>2e Lid: 
-                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
-                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
+                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0]?.name + ' ' + 
+                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0]?.lastname
                                   } 
                                 </span>
                               ` : ''}
@@ -248,8 +248,8 @@ export class MembersView extends LiteElement {
                               <span>Betaald op: ${member.paydate}</span>
                               ${member.extra ? html`
                                 <span>2e Lid: 
-                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
-                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
+                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0]?.name + ' ' + 
+                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0]?.lastname
                                   } 
                                 </span>
                               ` : ''}
@@ -282,8 +282,8 @@ export class MembersView extends LiteElement {
                               <span>Betaald op: ${member.paydate}</span>
                               ${member.extra ? html`
                                 <span>2e Lid: 
-                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].name + ' ' + 
-                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0].lastname
+                                  ${this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0]?.name + ' ' + 
+                                  this.members['leden'].filter(mainmem => mainmem.key === member.extra)[0]?.lastname
                                   } 
                                 </span>
                               ` : ''}

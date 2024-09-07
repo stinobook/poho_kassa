@@ -307,31 +307,40 @@ export class SalesPad extends LiteElement {
   async expirationTransaction({event}) {
     if (!(event.detail === 'cancel' || event.detail === 'close')) {
       let member: Member = Object.values(this.expiredMembersList).filter(member => member.key === event.detail)[0]
-      let ReceiptItem 
-      if (member?.extra) {
-        ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price > 100)[0]
+      let extraMember
+      let mainMember
+      let ReceiptItem
+      if (member.extra) {
+        extraMember = Object.values(this.expiredMembersList).filter(extra => extra.key === member.extra )[0]
+        mainMember = member
+      } else if (Object.values(this.expiredMembersList).filter((key) => key.extra === member.key).length > 0) {
+        mainMember = Object.values(this.expiredMembersList).filter((key) => key.extra === member.key)[0]
+        extraMember = member
       } else {
-        ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price < 100)[0]
+        mainMember = member
+        extraMember = null
       }
-      ReceiptItem['description'] = member.name + ' ' + member.lastname + ' met ' + member.dogname
-      this.receipt.items[ReceiptItem.key] = {...ReceiptItem, amount: 1, key: ReceiptItem.key}
-      this.receipt.total += Number(ReceiptItem.price)
-      this.expirationPayment.push(member.key)
-      if (confirm('2e lid toevoegen?')) {
-        console.log(member)
-        let extraMember: Member = Object.values(this.expiredMembersList).filter(extra => extra.key === member.extra)[0]
-        if (!extraMember) { 
-          alert('Geen lid gevonden!') 
-        } else {
-          let ReceiptItem2 = Object.values(this.products['Lidgeld']).filter((product) => product.price < 100)[0]
-          ReceiptItem2['description'] = extraMember.name + ' ' + extraMember.lastname + ' van ' + member.name + ' ' + member.lastname 
-          this.receipt.items[ReceiptItem2.key] = {...ReceiptItem2, amount: 1, key: ReceiptItem2.key}
-          this.receipt.total += Number(ReceiptItem2.price)
-          this.expirationPayment.push(extraMember.key)
-        }
+        ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price > 100)[0]
+        ReceiptItem['description'] = mainMember.name + ' ' + mainMember.lastname + ' met ' + mainMember.dogname
+        this.receipt.items[ReceiptItem.key] = {...ReceiptItem, amount: 1, key: ReceiptItem.key}
+        this.receipt.total += Number(ReceiptItem.price)
+        this.expirationPayment.push(mainMember.key)
+      if (extraMember) {
+        let ReceiptItem2 = Object.values(this.products['Lidgeld']).filter((product) => product.price < 100)[0]
+        ReceiptItem2['description'] = extraMember.name + ' ' + extraMember.lastname + ' van ' + mainMember.name + ' ' + mainMember.lastname 
+        this.receipt.items[ReceiptItem2.key] = {...ReceiptItem2, amount: 1, key: ReceiptItem2.key}
+        this.receipt.total += Number(ReceiptItem2.price)
+        this.expirationPayment.push(extraMember.key)
       }
       let paymentMethod = await this.dialogPay()
-      this.inputTap(paymentMethod)
+      if (paymentMethod.detail === 'cancel' || paymentMethod.detail === 'close') {
+        this.expirationPayment = []
+        this.receipt.items = {}
+        this.receipt.total = 0
+        this.receipt.textTotalorChange = 'Geannuleerd'
+      } else {
+        this.inputTap(paymentMethod)
+      }
     }
   }
 
@@ -365,8 +374,8 @@ export class SalesPad extends LiteElement {
         this.receipt.items = {}
         this.receipt.total = 0
       }
-      if (this.expirationPayment) {
-        this.expirationPayment = null
+      if (this.expirationPayment.length > 0) {
+        this.expirationPayment = []
         this.receipt.items = {}
         this.receipt.total = 0
       }
