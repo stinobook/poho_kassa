@@ -42,6 +42,7 @@ export class AddMemberView extends LiteElement {
   async firstRender() {
     if (this.params) {
       await this.updateView(this.params)
+      this.memberCheck()
     }
   }
 
@@ -99,6 +100,17 @@ export class AddMemberView extends LiteElement {
           | HTMLImageElement
         field.value = value as string
       }
+    }
+    if (member['group'] === 'leden') {
+      (this.shadowRoot.querySelector('[name="extra"]') as HTMLElement).classList.remove('hidden');
+      (this.shadowRoot.querySelector('[name="status"]') as HTMLElement).classList.remove('hidden');
+      (this.shadowRoot.querySelector('[name="paydate"]') as HTMLElement).classList.remove('hidden');
+      (this.shadowRoot.querySelector('[name="title"]') as HTMLElement).classList.add('hidden');
+    } else {
+      (this.shadowRoot.querySelector('[name="extra"]') as HTMLElement).classList.add('hidden');
+      (this.shadowRoot.querySelector('[name="status"]') as HTMLElement).classList.add('hidden');
+      (this.shadowRoot.querySelector('[name="paydate"]') as HTMLElement).classList.add('hidden');
+      (this.shadowRoot.querySelector('[name="title"]') as HTMLElement).classList.remove('hidden');
     }
     this.memberCheck()
     this.requestRender()
@@ -351,7 +363,8 @@ export class AddMemberView extends LiteElement {
         let member = this.members['leden'].filter(member => member.key === event.detail)[0]
         extra.value = member.name + ' ' + member.lastname
       } else {
-        alert('Heeft al een 2e lid!')
+        (this.shadowRoot.querySelector('[name="extra"]') as HTMLElement).classList.add('hidden');
+        alert('Heeft al een 2e lid!')        
       }
     }
   }
@@ -406,7 +419,7 @@ export class AddMemberView extends LiteElement {
                 ></custom-button>`}
           </flex-column>
           <md-outlined-text-field
-            label="Extra lid"
+            label="2e Geleider"
             name="extra"
             readOnly
             class="leden"
