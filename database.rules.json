@@ -31,7 +31,7 @@
       ".read": "root.child('users').child(auth.uid).child('roles').hasChild('attendance') || root.child('admins').child(auth.uid).exists() === true"
     },
     "sales":{
-      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true",
+      ".write": "root.child('users').child(auth.uid).child('roles').hasChild('bookkeeping') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true",
       ".read": "root.child('users').child(auth.uid).child('roles').hasChild('bookkeeping') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true"
     },
     "payconiqTransactions":{
@@ -46,7 +46,7 @@
       ".write": "root.child('users').child(auth.uid).child('roles').hasChild('members') || root.child('admins').child(auth.uid).exists() === true",
       ".read": "root.child('users').child(auth.uid).child('roles').hasChild('calendar') || root.child('users').child(auth.uid).child('roles').hasChild('attendance') || root.child('users').child(auth.uid).child('roles').hasChild('users') || root.child('users').child(auth.uid).child('roles').hasChild('members') || root.child('users').child(auth.uid).child('roles').hasChild('bookkeeping') || root.child('users').child(auth.uid).child('roles').hasChild('attendance') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('users').child(auth.uid).child('roles').hasChild('sales') || root.child('admins').child(auth.uid).exists() === true",
       "$userId": {
-        ".write": "$userId === root.child('users').child(auth.uid).child('member').val() || root.child('admins').child(auth.uid).exists() === true",
+        ".write": "!data.exists() || $userId === root.child('users').child(auth.uid).child('member').val() || root.child('admins').child(auth.uid).exists() === true",
         ".read": "$userId === root.child('users').child(auth.uid).child('member').val() || root.child('admins').child(auth.uid).exists() === true"
       }
     },

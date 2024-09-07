@@ -384,6 +384,7 @@ export class PoHoShell extends LiteElement {
       }
     }
     let dividers = this.shadowRoot.querySelectorAll('custom-divider')
+    console.log(firebase.userRoles)
 
     if (
       !(
@@ -396,7 +397,7 @@ export class PoHoShell extends LiteElement {
 
     if (!(firebase.userRoles.includes('products') || firebase.userRoles.includes('categories'))) dividers[1].remove()
     if (!firebase.userRoles.includes('bookkeeping')) dividers[2].remove()
-    if (!firebase.userRoles.includes('calendar')) dividers[3].remove()
+    if (!(firebase.userRoles.includes('calendar') || firebase.userRoles.includes('files'))) dividers[3].remove()
     if (!firebase.userRoles.includes('settings')) dividers[4].remove()
   }
 
