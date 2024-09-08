@@ -229,7 +229,7 @@ export class FilesView extends LiteElement {
           <custom-tab page="upload">Uploaden</custom-tab>
         </custom-tabs>
         <flex-container class="download">
-        ${this.categories ? this.renderFiles() : ''}
+        ${this.filesOfCategory ? this.renderFiles() : ''}
         </flex-container>
         <flex-container class="upload toggle">
           <flex-row class="card">
