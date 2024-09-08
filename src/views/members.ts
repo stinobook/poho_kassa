@@ -77,7 +77,6 @@ export class MembersView extends LiteElement {
     `
   ]
   async willChange(propertyKey: string, value: any): Promise<any> {
-    console.log(propertyKey)
     if (propertyKey === 'members') {
       const members = {}
       for (const member of value) {
@@ -88,6 +87,11 @@ export class MembersView extends LiteElement {
     }
     return value
   }
+
+  async onChange(propertyKey: any, value: any) {  
+    if (propertyKey === 'attendance') this.requestRender()
+  }
+
   connectedCallback() {
     this.shadowRoot.addEventListener('click', this.#clickHandler.bind(this))
   }
@@ -128,7 +132,6 @@ export class MembersView extends LiteElement {
   }
 
   renderMembers() {
-    console.log(this.members)
     return Object.entries(this.members).map(([group, members]) =>
       members?.length > 0
         ? (group === 'bestuur' || group === 'instructeurs') ?
