@@ -12,10 +12,10 @@ import type { Member } from '../types.js'
 
 @customElement('members-view')
 export class MembersView extends LiteElement {
-  @property({ type: Array, consumer: true })
-  accessor members: { [group: string]: Member[] }
   @property({ consumer: true, renders: false })
   accessor attendance: { [key: string]: string[] }
+  @property({ type: Array, consumer: true })
+  accessor members: { [group: string]: Member[] }
 
   static styles = [
     css`
@@ -77,6 +77,7 @@ export class MembersView extends LiteElement {
     `
   ]
   async willChange(propertyKey: string, value: any): Promise<any> {
+    console.log(propertyKey)
     if (propertyKey === 'members') {
       const members = {}
       for (const member of value) {
@@ -127,6 +128,7 @@ export class MembersView extends LiteElement {
   }
 
   renderMembers() {
+    console.log(this.members)
     return Object.entries(this.members).map(([group, members]) =>
       members?.length > 0
         ? (group === 'bestuur' || group === 'instructeurs') ?
@@ -149,7 +151,7 @@ export class MembersView extends LiteElement {
                         <div class="content">
                           <span>
                             <strong>Aanwezigheden:</strong>
-                            ${this.countAttendance(member.key)}
+                            ${this.attendance ? this.countAttendance(member.key) : ''}
                           </span>
                         </div>
                       </card-element>

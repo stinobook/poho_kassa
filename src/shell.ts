@@ -105,6 +105,7 @@ export class PoHoShell extends LiteElement {
       let varMem = this.members.filter(member => {
         if (member.name.toLowerCase().includes(ev.detail.toLowerCase())) return true
         if (member.lastname.toLowerCase().includes(ev.detail.toLowerCase())) return true
+        if (member.group.toLowerCase().includes(ev.detail.toLowerCase())) return true
       })
       for (const extra of varMem) {
         if (extra.extra && !varMem.map((key) => key.key).includes(extra.extra))          
