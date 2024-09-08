@@ -362,10 +362,10 @@ export class PoHoShell extends LiteElement {
     }
   }
 
-  async expiredMembers() {
+  expiredMembers() {
     let expirationDate = new Date()
     expirationDate.setFullYear(expirationDate.getFullYear() - 1)
-    this.expiredMembersList = await Object.values(this.members).filter(
+    this.expiredMembersList = Object.values(this.members).filter(
       (member: Member) =>
         member.group === 'leden' &&
         (new Date(member.paydate) < expirationDate || member.status === 'nieuw') &&
