@@ -102,7 +102,6 @@ export class FilesView extends LiteElement {
         position:relative;
         flex-flow: row wrap;
         gap:12px;
-        height:100%;
         margin: 0 auto;
         align-items:stretch;
       }
@@ -117,8 +116,9 @@ export class FilesView extends LiteElement {
 
   connectedCallback() {
     this.shadowRoot.addEventListener('click', this._onclick.bind(this))
-    this.dlcategory.addEventListener('change', event => {
+    this.dlcategory.addEventListener('change', () => {
       this.filesOfCategory = this.files[firebase.userDetails.group][this.dlcategory.value]
+      this.requestRender()
     })
   }
 
@@ -147,9 +147,6 @@ export class FilesView extends LiteElement {
     const action = target.getAttribute('action')
     if (action === 'upload') {
       this.Upload()
-    }
-    if (target.tagName === 'OPTION' && target.parentElement.id === 'dlcategory') {
-      this.filesOfCategory = this.files[firebase.userDetails.group][target.value]
     }
   }
 
