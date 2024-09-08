@@ -1,4 +1,4 @@
-import { html, LiteElement, property, customElement, css } from '@vandeurenglenn/lite'
+import { html, LiteElement, property, customElement, css, query } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
@@ -14,6 +14,7 @@ export class FilesView extends LiteElement {
   @property({ type: Object, consumer: true }) accessor files
   @property({ type: Object}) accessor filesOfCategory: { [key: string]: File}
   @property({ type: Array}) accessor categories: string[]
+  @query('#dlcategory') accessor dlcategory
 
   static styles = [
     css`
@@ -116,9 +117,8 @@ export class FilesView extends LiteElement {
 
   connectedCallback() {
     this.shadowRoot.addEventListener('click', this._onclick.bind(this))
-    this.shadowRoot.querySelector('#dlcategory').addEventListener('change', event => {
-      let category = (this.shadowRoot.getElementById('dlcategory') as HTMLSelectElement).value
-      this.filesOfCategory = this.files[firebase.userDetails.group][category]
+    this.dlcategory.addEventListener('change', event => {
+      this.filesOfCategory = this.files[firebase.userDetails.group][this.dlcategory.value]
     })
   }
 
@@ -147,6 +147,9 @@ export class FilesView extends LiteElement {
     const action = target.getAttribute('action')
     if (action === 'upload') {
       this.Upload()
+    }
+    if (target.tagName === 'OPTION' && target.parentElement.id === 'dlcategory') {
+      this.filesOfCategory = this.files[firebase.userDetails.group][target.value]
     }
   }
 
