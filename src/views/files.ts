@@ -1,4 +1,4 @@
-import { html, LiteElement, property, customElement, css } from '@vandeurenglenn/lite'
+import { html, LiteElement, property, customElement, css, query } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/column.js'
@@ -14,6 +14,7 @@ export class FilesView extends LiteElement {
   @property({ type: Object, consumer: true }) accessor files
   @property({ type: Object}) accessor filesOfCategory: { [key: string]: File}
   @property({ type: Array}) accessor categories: string[]
+  @query('#dlcategory') accessor dlcategory
 
   static styles = [
     css`
@@ -101,7 +102,6 @@ export class FilesView extends LiteElement {
         position:relative;
         flex-flow: row wrap;
         gap:12px;
-        height:100%;
         margin: 0 auto;
         align-items:stretch;
       }
@@ -116,9 +116,8 @@ export class FilesView extends LiteElement {
 
   connectedCallback() {
     this.shadowRoot.addEventListener('click', this._onclick.bind(this))
-    this.shadowRoot.querySelector('#dlcategory').addEventListener('change', event => {
-      let category = (this.shadowRoot.getElementById('dlcategory') as HTMLSelectElement).value
-      this.filesOfCategory = this.files[firebase.userDetails.group][category]
+    this.dlcategory.addEventListener('change', () => {
+      this.filesOfCategory = this.files[firebase.userDetails.group][this.dlcategory.value]
     })
   }
 
@@ -127,6 +126,11 @@ export class FilesView extends LiteElement {
       let group = firebase.userDetails.group
       this.categories = Object.keys(this.files[group])
       this.filesOfCategory = this.files[firebase.userDetails.group][this.categories[0]]
+    }
+    console.log(propertyKey)
+    if (propertyKey === 'filesOfCategory') {
+      this.renderFiles()
+      this.requestRender()
     }
   }
   
@@ -195,15 +199,6 @@ export class FilesView extends LiteElement {
 
   renderFiles() {
     return html`
-    <flex-row class='card'>
-      <label>
-        Categorie
-        <select id="dlcategory">
-          ${this.categories ? this.categories.map((category) =>
-            html`<option value=${category}>${category.replace(/_/g, ' ')}</option>`
-          ) : ''}
-        </select>
-      </label>
       <flex-container class='files'>
       ${this.filesOfCategory ?
         Object.values(this.filesOfCategory).map((file) =>
@@ -215,7 +210,6 @@ export class FilesView extends LiteElement {
                 `)
       : ''}
       </flex-container>
-    </flex-row>
     `    
   }
   
@@ -229,7 +223,17 @@ export class FilesView extends LiteElement {
           <custom-tab page="upload">Uploaden</custom-tab>
         </custom-tabs>
         <flex-container class="download">
-        ${this.categories ? this.renderFiles() : ''}
+          <flex-row class='card'>
+            <label>
+              Categorie
+              <select id="dlcategory">
+                ${this.categories ? this.categories.map((category) =>
+                  html`<option value=${category}>${category.replace(/_/g, ' ')}</option>`
+                ) : ''}
+              </select>
+            </label>
+            ${this.filesOfCategory ? this.renderFiles() : ''}
+          </flex-row>
         </flex-container>
         <flex-container class="upload toggle">
           <flex-row class="card">
