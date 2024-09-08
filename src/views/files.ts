@@ -127,6 +127,7 @@ export class FilesView extends LiteElement {
       let group = firebase.userDetails.group
       this.categories = Object.keys(this.files[group])
       this.filesOfCategory = this.files[firebase.userDetails.group][this.categories[0]]
+      this.renderFiles()
     }
   }
   
