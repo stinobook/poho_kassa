@@ -48,7 +48,7 @@ export class DeviceApi {
    */
   async _createCameraStream(facingMode = 'environment') {
     if (!this.#cameraStream) {
-      const gotMedia = (mediaStream) => {
+      const gotMedia = mediaStream => {
         this.#cameraStream = mediaStream
         const mediaStreamTrack = mediaStream.getVideoTracks()[0]
         this.#imageCapture = new globalThis.ImageCapture(mediaStreamTrack)
@@ -91,9 +91,9 @@ export class DeviceApi {
    */
   get camera() {
     return {
-      preview: (el, facingMode) => this._previewCamera(el, facingMode),
-      takePhoto: async (facingMode) => {
-        if (!this.#cameraStream) await this._createCameraStream(facingMode)
+      preview: (el, facingMode) => this._previewCamera.call(this, el, facingMode),
+      takePhoto: async facingMode => {
+        if (!this.#cameraStream) await this._createCameraStream.call(this, facingMode)
         return this.#imageCapture.takePhoto()
       },
       close: this._close.bind(this)

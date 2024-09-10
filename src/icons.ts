@@ -27,7 +27,6 @@ export default html`
       <span name="check_box_outline_blank">@symbol-check_box_outline_blank</span>
       <span name="check_box">@symbol-check_box</span>
       <span name="delete">@symbol-delete</span>
-      <span name="done">@symbol-done</span>
       <span name="edit">@symbol-edit</span>
       <span name="link">@symbol-link</span>
       <span name="menu">@symbol-menu</span>
