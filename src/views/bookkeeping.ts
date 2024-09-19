@@ -57,23 +57,27 @@ export class BookkeepingView extends LiteElement {
 
   book() {
     let cashTransfer = this.shadowRoot.querySelector('[name="amount"]') as HTMLInputElement
-    this.cashVault -= Number(cashTransfer.value)
     let transferDescription = this.shadowRoot.querySelector('[name="reason"]') as HTMLInputElement
-    let name =
-      Object.values(this.members)?.filter(member => member.key === firebase.userDetails.member)[0]?.name +
-      ' ' +
-      Object.values(this.members)?.filter(member => member.key === firebase.userDetails.member)[0]?.lastname
-    let sales = {
-      date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
-      cashStartCheckout: this.cashStart,
-      cashVaultCheckout: this.cashVault,
-      transferDescription: transferDescription.value,
-      transferAmount: cashTransfer.value,
-      user: name
+    if (!cashTransfer.value || !transferDescription.value) {
+      alert('Gelieve af te boeken bedrag/reden in tevullen')
+    } else {
+      this.cashVault -= Number(cashTransfer.value)
+      let name =
+        Object.values(this.members)?.filter(member => member.key === firebase.userDetails.member)[0]?.name +
+        ' ' +
+        Object.values(this.members)?.filter(member => member.key === firebase.userDetails.member)[0]?.lastname
+      let sales = {
+        date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
+        cashStartCheckout: this.cashStart,
+        cashVaultCheckout: this.cashVault,
+        transferDescription: transferDescription.value,
+        transferAmount: cashTransfer.value,
+        user: name
+      }
+      firebase.push('sales', sales)
+      cashTransfer.value = ''
+      transferDescription.value = ''
     }
-    firebase.push('sales', sales)
-    cashTransfer.value = ''
-    transferDescription.value = ''
   }
 
   latestSales() {
