@@ -203,11 +203,36 @@ export class CheckoutView extends LiteElement {
         display: block;
         text-align: left;
       }
+      .error {
+        color: var(--md-sys-color-error);
+      }
+      .error input[type=text] {
+        background-color: var(--md-sys-color-error-container);
+        color: var(--md-sys-color-error);
+        border: 1px solid var(--md-sys-color-error);
+        outline: none;
+      }
     `
   ]
 
+  isNumeric(value) {
+    return /^\d+$/.test(value)
+  }
+
   inputCash(inputValue, inputAmount) {
-    inputAmount = inputAmount.value * 100
+    if (!this.isNumeric(inputAmount.value)) {
+      if (inputAmount.value.length === 0) {
+        (this.shadowRoot.querySelector(`[input-cash="${inputValue.detail}"]`) as HTMLElement).parentElement.classList.remove('error')
+        inputAmount.value = 0
+        inputAmount = 0
+       } else {
+        (this.shadowRoot.querySelector(`[input-cash="${inputValue.detail}"]`) as HTMLElement).parentElement.classList.add('error')
+        inputAmount = 'NaN'
+       }
+    } else {
+      (this.shadowRoot.querySelector(`[input-cash="${inputValue.detail}"]`) as HTMLElement).parentElement.classList.remove('error')
+      inputAmount = inputAmount.value * 100
+    }
     inputValue = inputValue.detail
     this.cashTotals[inputValue] = inputAmount
     this.cashTotal = 0
@@ -247,14 +272,12 @@ export class CheckoutView extends LiteElement {
   }
 
   async onChange(propertyKey: any, value: any) {
-    console.log({ propertyKey, value })
-
     if (propertyKey === 'cashVaultNew') {
       let transferCheck = this.shadowRoot.querySelector('[for=banktransfer]') as HTMLElement
       if (this.cashVaultNew > 500) {
-        transferCheck.style.setProperty('display', 'flex')
+        transferCheck?.style.setProperty('display', 'flex')
       } else {
-        transferCheck.style.setProperty('display', 'none')
+        transferCheck?.style.setProperty('display', 'none')
       }
     }
 
@@ -331,59 +354,63 @@ export class CheckoutView extends LiteElement {
   }
 
   async checkoutTap() {
-    if (this.transactions.length === 0) {
-      alert('Niets om af te boeken')
+    if (isNaN(this.cashTotal)) {
+      alert('Fout in cashtelling')
     } else {
-      if (this.cashVaultNew > 500 && !(this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
-        if (!confirm('Opgelet, bedrag in kluis te hoog, overdragen!\n Duw OK om toch af te sluiten ZONDER overdracht.'))
-          return
-      }
-      if (confirm('Geen verschil?') === true) {
-        this.cashKantine = 0
-        this.cashWinkel = 0
-        this.cashLidgeld = 0
-        this.payconiqKantine = 0
-        this.payconiqWinkel = 0
-        this.payconiqLidgeld = 0
-        Object.entries(this.transactionsByCategory).map(([key, value]) => {
-          if (key === 'Winkel') {
-            this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
-            this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-          } else if (key === 'Lidgeld') {
-            this.cashLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.cash
-            this.payconiqLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
-          } else {
-            this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
-            this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+      if (this.transactions.length === 0) {
+        alert('Niets om af te boeken')
+      } else {
+        if (this.cashVaultNew > 500 && !(this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
+          if (!confirm('Opgelet, bedrag in kluis te hoog, overdragen!\n Duw OK om toch af te sluiten ZONDER overdracht.'))
+            return
+        }
+        if (confirm('Geen verschil?') === true) {
+          this.cashKantine = 0
+          this.cashWinkel = 0
+          this.cashLidgeld = 0
+          this.payconiqKantine = 0
+          this.payconiqWinkel = 0
+          this.payconiqLidgeld = 0
+          Object.entries(this.transactionsByCategory).map(([key, value]) => {
+            if (key === 'Winkel') {
+              this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
+              this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+            } else if (key === 'Lidgeld') {
+              this.cashLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.cash
+              this.payconiqLidgeld += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+            } else {
+              this.cashKantine += this.transactionsByCategory?.[key]?.paymentAmount.cash
+              this.payconiqKantine += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
+            }
+          })
+          if ((this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
+            this.cashBank = this.cashVaultNew - 100
+            this.cashVaultNew = 100
           }
-        })
-        if ((this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
-          this.cashBank = this.cashVaultNew - 100
-          this.cashVaultNew = 100
-        }
 
-        let sales = {
-          date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
-          cashDifferenceCheckout: this.cashDifference,
-          cashStartCheckout: this.cashStartNew,
-          cashTransferCheckout: this.cashTransfer,
-          cashKantine: this.cashKantine,
-          cashWinkel: this.cashWinkel,
-          cashLidgeld: this.cashLidgeld,
-          payconiqKantine: this.payconiqKantine,
-          payconiqWinkel: this.payconiqWinkel,
-          payconiqLidgeld: this.payconiqLidgeld,
-          cashVaultCheckout: this.cashVaultNew,
-          cashBank: this.cashBank,
-          transactions: this.transactions
+          let sales = {
+            date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
+            cashDifferenceCheckout: this.cashDifference,
+            cashStartCheckout: this.cashStartNew,
+            cashTransferCheckout: this.cashTransfer,
+            cashKantine: this.cashKantine,
+            cashWinkel: this.cashWinkel,
+            cashLidgeld: this.cashLidgeld,
+            payconiqKantine: this.payconiqKantine,
+            payconiqWinkel: this.payconiqWinkel,
+            payconiqLidgeld: this.payconiqLidgeld,
+            cashVaultCheckout: this.cashVaultNew,
+            cashBank: this.cashBank,
+            transactions: this.transactions
+          }
+          await firebase.push('sales', sales)
+          await firebase.set('transactions', null)
+          await firebase.set('promo', null)
+          this.transactionsByCategory = {}
+          this.cashExpected = this.cashStartNew
+          this.shadowRoot.querySelectorAll('input').forEach(input => (input.value = ''))
+          location.hash = Router.bang('bookkeeping')
         }
-        await firebase.push('sales', sales)
-        await firebase.set('transactions', null)
-        await firebase.set('promo', null)
-        this.transactionsByCategory = {}
-        this.cashExpected = this.cashStartNew
-        this.shadowRoot.querySelectorAll('input').forEach(input => (input.value = ''))
-        location.hash = Router.bang('bookkeeping')
       }
     }
   }
@@ -535,9 +562,9 @@ export class CheckoutView extends LiteElement {
                                 ${transaction.paymentMethod === 'promo'
                                   ? html`
                                       <span slot="headline"
-                                        >${Object.values(this.members)
+                                        >${this.members ? Object.values(this.members)
                                           .filter(member => member.key === transaction.member)
-                                          .map(member => member.name + ' ' + member.lastname)}</span
+                                          .map(member => member.name + ' ' + member.lastname) : ''}</span
                                       >
                                     `
                                   : ''}
