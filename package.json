@@ -23,7 +23,7 @@
     "custom-element-decorator": "^0.6.0",
     "glob": "^11.0.0",
     "rimraf": "^6.0.1",
-    "rollup": "^4.21.2",
+    "rollup": "^4.22.5",
     "rollup-plugin-material-symbols": "^2.1.5",
     "rollup-plugin-modify": "^3.0.0",
     "tslib": "^2.7.0",
