@@ -13,6 +13,9 @@ import { scrollbar } from './../mixins/styles.js'
 export class EventsView extends LiteElement {
   @property({ consumer: true })
   accessor events: Evenement[]
+  
+  @property({ type: Array, consumer: true })
+  accessor categories: string[]
 
   static styles = [
     css`

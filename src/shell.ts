@@ -141,7 +141,8 @@ export class PoHoShell extends LiteElement {
     events: ['events', 'categories'],
     planning: [{ name: 'planning', type: 'object' }],
     calendar: ['members', { name: 'planning', type: 'object' }, { name: 'calendar', type: 'object' }],
-    files: ['members',{ name: 'files', type: 'object' }]
+    files: ['members',{ name: 'files', type: 'object' }],
+    'add-event': ['events', 'categories', 'products']
   }
 
   setupPropertyProvider(propertyProvider, type = 'array', events?: PropertyProviderEvents) {
@@ -223,6 +224,10 @@ export class PoHoShell extends LiteElement {
     }
     this.selector.select(selected)
     this.pages.select(selected)
+
+    if (this.pages.selected === 'add-event') {
+      this.handlePropertyProvider(selected);
+    }
 
     if (this.roles.includes(selected)) this.handlePropertyProvider(selected)
     this.drawerLayout.drawerOpen = false

@@ -18,7 +18,7 @@ export class AddEventView extends LiteElement {
   @queryAll('[label]')
   accessor labels
 
-  @property({ consumer: true })
+  @property({ type: Array, consumer: true })
   accessor categories: string[] = []
 
   @property()
@@ -189,7 +189,8 @@ export class AddEventView extends LiteElement {
 
         <custom-typography><h4>adjustments</h4></custom-icon></custom-typography>
 
-        ${this.categories.map(
+        ${this.categories
+          ? this.categories.map(
           (category) =>
             html`
               <md-outlined-text-field
@@ -201,7 +202,8 @@ export class AddEventView extends LiteElement {
                 required
               ></md-outlined-text-field>
             `
-        )}
+          )
+        : ''}
       </flex-container>
       <md-fab class="back"><custom-icon slot="icon" icon="arrow_back"></custom-icon></md-fab>
       <md-fab class="save"><custom-icon slot="icon">save</custom-icon></md-fab>
