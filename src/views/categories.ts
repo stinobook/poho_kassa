@@ -138,7 +138,7 @@ export class CategoriesView extends LiteElement {
         if (!this.targetEdit.includes(key)) {
           this.targetEdit.push(key)
         } else {
-          const field = this.shadowRoot.querySelector(`md-outlined-text-field[key="${key}"]`)?.value
+          const field = (this.shadowRoot.querySelector(`md-outlined-text-field[key="${key}"]`) as HTMLInputElement)?.value
           if (!field) return
           const categories = [...this.categories]
           if (field !== key) {

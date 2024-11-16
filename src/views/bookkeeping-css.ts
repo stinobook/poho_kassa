@@ -233,4 +233,8 @@ export default css`
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
   }
+
+  .article {
+    border-bottom: 1px dotted var(--md-sys-color-secondary);
+  }
 `

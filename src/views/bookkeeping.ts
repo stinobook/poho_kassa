@@ -8,7 +8,7 @@ import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import '@vandeurenglenn/lite-elements/tabs.js'
 import '@vandeurenglenn/lite-elements/selector.js'
-import { Sales, Member } from '../types.js'
+import { Sales, Member, Transaction, ReceiptItem } from '../types.js'
 import style from './bookkeeping-css.js'
 
 const formatDate = () => {
@@ -20,10 +20,11 @@ const formatDate = () => {
 
 @customElement('bookkeeping-view')
 export class BookkeepingView extends LiteElement {
-  @property({ type: Array, consumer: true }) accessor members: { Type: Member[] }
+  @property({ type: Object, consumer: true }) accessor members: { Type: Member[] }
   @property() accessor books: { [key: string]: Sales }
   @property({ type: Number }) accessor cashVault: number
   @property({ type: Number }) accessor cashStart: number
+  
 
   static styles = [style]
 
@@ -187,7 +188,7 @@ export class BookkeepingView extends LiteElement {
                   ${value.transactions?.map(transaction => {
                     if (transaction.paymentMethod === 'payconiq') {
                       let items = Object.entries(transaction.transactionItems).map(
-                        ([key, transactionItem]) =>
+                        ([, transactionItem]) =>
                           html`
                             <md-list-item>
                               <span slot="headline">${transactionItem.description}</span>
@@ -218,9 +219,9 @@ export class BookkeepingView extends LiteElement {
                     let paymentAmount = transaction.paymentAmount
                     let paymentMethod = transaction.paymentMethod
                     let transactionItemLidgeld = Object.entries(transaction.transactionItems)
-                      .filter(([key, transactionItem]) => transactionItem.category === 'Lidgeld')
+                      .filter(([, transactionItem]) => transactionItem.category === 'Lidgeld')
                       .map(
-                        ([key, transactionItem]) =>
+                        ([, transactionItem]) =>
                           html`
                             <md-list-item>
                               <span slot="headline">${transactionItem.description}</span>
@@ -253,7 +254,7 @@ export class BookkeepingView extends LiteElement {
                         .filter(member => member.key === transaction.member)
                         .map(member => member.name + ' ' + member.lastname)
                       let item = Object.entries(transaction.transactionItems).map(
-                        ([key, transactionItem]) => transactionItem.name
+                        ([, transactionItem]) => transactionItem.name
                       )
                       let summary = html`
                         <md-list>
@@ -268,11 +269,54 @@ export class BookkeepingView extends LiteElement {
                   })}
                 </details>
               </div>
+            <div id="card-sub-wide">
+              <details>
+                <summary>
+                  <span>Transacties per artikel</span>
+                </summary>
+                ${value.transactions ? Object.entries(this.getTransactionsByName(value.transactions)).map(([name, transaction]: [string, any]) => {
+                  return html`
+                    <md-list class="article">
+                      <md-list-item>
+                        <span slot="start">${name}</span>
+                        <span slot="end">${transaction.amount}</span>
+                      </md-list-item>
+                    </md-list>
+                  `;
+                }) : ''}	
+              </details>
+            </div>
             </div>
           `
         : ''
     )
   }
+
+  getTransactionsByName(transactions: Transaction[]) {
+    const transactionsByName = {}
+    for (const transaction of transactions) {
+      for (const [, transactionItem] of Object.entries(transaction.transactionItems)) {
+        if (!transactionsByName[transactionItem.name]) {
+          transactionsByName[transactionItem.name] = {
+            paymentAmount: { cash: 0, payconiq: 0 },
+            amount: 0,
+            transactionItems: [{ paymentMethod: transaction.paymentMethod, ...transactionItem }]
+          }
+        } else {
+          transactionsByName[transactionItem.name].transactionItems.push({
+            paymentMethod: transaction.paymentMethod,
+            ...transactionItem
+          })
+        }
+        transactionsByName[transactionItem.name].paymentAmount[transaction.paymentMethod] +=
+          transactionItem.amount * transactionItem.price
+        transactionsByName[transactionItem.name].amount += transactionItem.amount
+      }
+    }
+    console.log(transactionsByName)
+    return transactionsByName;
+  }
+
 
   render() {
     return html`
