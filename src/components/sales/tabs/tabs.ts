@@ -10,7 +10,7 @@ import type { Tab, ReceiptItem } from '../../../types.js'
 
 @customElement('tabs-grid')
 export class TabsGrid extends LiteElement {
-  @property({ type: Array, consumer: true }) 
+  @property({ type: Array, consumes: true }) 
   accessor tabs: Tab[]
 
   static styles = [

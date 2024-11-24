@@ -12,9 +12,9 @@ import type { Member } from '../types.js'
 
 @customElement('members-view')
 export class MembersView extends LiteElement {
-  @property({ consumer: true, renders: false })
+  @property({ consumes: true, renders: false })
   accessor attendance: { [key: string]: string[] }
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor members: { [group: string]: Member[] }
 
   static styles = [

@@ -11,10 +11,10 @@ import type { Evenement, Product } from '../types.js'
 import { scrollbar } from './../mixins/styles.js'
 @customElement('events-view')
 export class EventsView extends LiteElement {
-  @property({ consumer: true })
+  @property({ consumes: true })
   accessor events: Evenement[]
   
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor categories: string[]
 
   static styles = [

@@ -10,11 +10,11 @@ export class PresenceElement extends LiteElement {
   @property() accessor date
   @property() accessor presence
   @property({type: Boolean}) accessor presenceCheck = false
-  @property({ type: Object, consumer: true })
+  @property({ type: Object, consumes: true })
   accessor calendar
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor members
-  @property({ type: Object, consumer: true })
+  @property({ type: Object, consumes: true })
   accessor planning
   
 

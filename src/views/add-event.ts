@@ -18,7 +18,7 @@ export class AddEventView extends LiteElement {
   @queryAll('[label]')
   accessor labels
 
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor categories: string[] = []
 
   @property()

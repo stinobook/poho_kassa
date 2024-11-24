@@ -12,14 +12,14 @@ import { CustomNotifications } from '@vandeurenglenn/lite-elements/notifications
 
 @customElement('sales-pad')
 export class SalesPad extends LiteElement {
-  @property({ consumer: true, renders: false })
+  @property({ consumes: true, renders: false })
   accessor promo: { [key: string]: Boolean }
   transaction: { [key: string]: Transaction[] } = {}
-  @property({ type: Object, consumer: true })
+  @property({ type: Object, consumes: true })
   accessor members: { Type: Member }
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor tabs: Tab[]
-  @property({ type: Object, consumer: true })
+  @property({ type: Object, consumes: true })
   accessor expiredMembersList: { Type: Member }
   currentSelectedProduct: string
   currentProductAmount: string = ''
@@ -40,7 +40,7 @@ export class SalesPad extends LiteElement {
 
   productsByCategory: { [index: string]: Product[] } = {}
 
-  @property({ consumer: true })
+  @property({ consumes: true })
   accessor products: { [index: string]: Product[] }
 
   async willChange(propertyKey: any, value: any) {

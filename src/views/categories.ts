@@ -23,7 +23,7 @@ export type Products = Product[]
 export class CategoriesView extends LiteElement {
   @property({ value: [] }) accessor targetEdit = []
 
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor categories: string[]
 
   static styles = [

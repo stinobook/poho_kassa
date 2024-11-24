@@ -20,7 +20,7 @@ export class SalesReceipt extends LiteElement {
   @query('flex-container')
   accessor _container
 
-  @property({ consumer: true })
+  @property({ consumes: true })
   accessor currentEvent: Evenement
 
   static styles = [

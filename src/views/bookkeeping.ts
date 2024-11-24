@@ -8,7 +8,7 @@ import '@vandeurenglenn/flex-elements/column.js'
 import '@material/web/button/filled-button.js'
 import '@vandeurenglenn/lite-elements/tabs.js'
 import '@vandeurenglenn/lite-elements/selector.js'
-import { Sales, Member, Transaction, ReceiptItem } from '../types.js'
+import { Sales, Member, Transaction } from '../types.js'
 import style from './bookkeeping-css.js'
 
 const formatDate = () => {
@@ -20,7 +20,7 @@ const formatDate = () => {
 
 @customElement('bookkeeping-view')
 export class BookkeepingView extends LiteElement {
-  @property({ type: Object, consumer: true }) accessor members: { Type: Member[] }
+  @property({ type: Object, consumes: true }) accessor members: { Type: Member[] }
   @property() accessor books: { [key: string]: Sales }
   @property({ type: Number }) accessor cashVault: number
   @property({ type: Number }) accessor cashStart: number
@@ -29,7 +29,7 @@ export class BookkeepingView extends LiteElement {
   static styles = [style]
 
   connectedCallback() {
-    this.shadowRoot.addEventListener('input', ({ detail }: CustomEvent) => {
+    this.shadowRoot.addEventListener('input', () => {
       this.loadBooks()
     })
     this.shadowRoot.addEventListener('click', this.#clickHandler)
@@ -64,10 +64,10 @@ export class BookkeepingView extends LiteElement {
     } else {
       this.cashVault -= Number(cashTransfer.value)
       let name =
-        Object.values(this.members)?.filter(member => member.key === firebase.userDetails.member)[0]?.name +
-        ' ' +
-        Object.values(this.members)?.filter(member => member.key === firebase.userDetails.member)[0]?.lastname
-      let sales = {
+      Object.values(this.members.Type)?.filter(member => member.key === firebase.userDetails.member)[0]?.name +
+      ' ' +
+      Object.values(this.members.Type)?.filter(member => member.key === firebase.userDetails.member)[0]?.lastname
+    let sales = {
         date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
         cashStartCheckout: this.cashStart,
         cashVaultCheckout: this.cashVault,
@@ -98,7 +98,7 @@ export class BookkeepingView extends LiteElement {
     if (data) {
       let filteredData = Object.fromEntries(
         Object.entries(data).filter(
-          ([key, value]) =>
+          ([, value]) =>
             new Date((value as Sales).date.slice(0, 10)).toISOString() >= fromDate.toISOString() &&
             new Date((value as Sales).date.slice(0, 10)).toISOString() <= toDate.toISOString()
         )
@@ -108,7 +108,7 @@ export class BookkeepingView extends LiteElement {
   }
 
   renderBooks() {
-    return Object.entries(this.books).map(([key, value]) =>
+    return Object.entries(this.books).map(([, value]) =>
       (this.books as { [key: string]: Sales })
         ? html`
             <div id="card-main">
@@ -250,9 +250,9 @@ export class BookkeepingView extends LiteElement {
                   </summary>
                   ${value.transactions?.map(transaction => {
                     if (transaction.paymentMethod === 'promo') {
-                      let name = Object.values(this.members)
+                        let name = Object.values(this.members)
                         .filter(member => member.key === transaction.member)
-                        .map(member => member.name + ' ' + member.lastname)
+                        .map((member) => member.name + ' ' + member.lastname)
                       let item = Object.entries(transaction.transactionItems).map(
                         ([, transactionItem]) => transactionItem.name
                       )
@@ -272,7 +272,7 @@ export class BookkeepingView extends LiteElement {
             <div id="card-sub-wide">
               <details>
                 <summary>
-                  <span>Transacties per artikel</span>
+                  <span>Details Artikelen</span>
                 </summary>
                 ${value.transactions ? Object.entries(this.getTransactionsByName(value.transactions)).map(([name, transaction]: [string, any]) => {
                   return html`
@@ -313,7 +313,6 @@ export class BookkeepingView extends LiteElement {
         transactionsByName[transactionItem.name].amount += transactionItem.amount
       }
     }
-    console.log(transactionsByName)
     return transactionsByName;
   }
 

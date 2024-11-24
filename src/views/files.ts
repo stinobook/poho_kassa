@@ -10,8 +10,8 @@ import './../components/card/filecard.js'
 
 @customElement('files-view')
 export class FilesView extends LiteElement {
-  @property({ type: Object, consumer: true }) accessor members: { Type: Member[] }
-  @property({ type: Object, consumer: true }) accessor files
+  @property({ type: Object, consumes: true }) accessor members: { Type: Member[] }
+  @property({ type: Object, consumes: true }) accessor files
   @property({ type: Object}) accessor filesOfCategory: { [key: string]: File}
   @property({ type: Array}) accessor categories: string[]
   @query('#dlcategory') accessor dlcategory
@@ -121,13 +121,12 @@ export class FilesView extends LiteElement {
     })
   }
 
-  async onChange(propertyKey: any, value: any) {    
+  async onChange(propertyKey: any) {    
     if (propertyKey === 'files') {
       let group = firebase.userDetails.group
       this.categories = Object.keys(this.files[group])
       this.filesOfCategory = this.files[firebase.userDetails.group][this.categories[0]]
     }
-    console.log(propertyKey)
     if (propertyKey === 'filesOfCategory') {
       this.renderFiles()
       this.requestRender()

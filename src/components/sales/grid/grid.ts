@@ -9,7 +9,7 @@ import { calculateSalesInputButtonSize } from '../../../utils/resize-sales-input
 export class SalesGrid extends LiteElement {
   productsByCategory: { [index: string]: Product[] } = {}
 
-  @property({ consumer: true })
+  @property({ consumes: true })
   accessor products: { [index: string]: Product[] }
 
   async willChange(propertyKey: any, value: any) {

@@ -18,7 +18,7 @@ export class CheckoutView extends LiteElement {
   @property({ type: Number }) accessor cashStartNew: number = 0
   @property({ type: Number }) accessor cashVault: number
   @property({ type: Number }) accessor cashVaultNew: number = 0
-  @property({ type: Array, consumer: true, renders: false }) accessor transactions: Transaction[]
+  @property({ type: Array, consumes: true, renders: false }) accessor transactions: Transaction[]
   @property({ type: Array }) accessor cashTotals: Cashtotal[] = []
   @property({ type: Number }) accessor cashTotal: number = 0
   @property({ type: Number }) accessor cashDifference: number = 0
@@ -30,9 +30,17 @@ export class CheckoutView extends LiteElement {
   @property({ type: Number }) accessor payconiqWinkel: number = 0
   @property({ type: Number }) accessor payconiqLidgeld: number = 0
   @property({ type: Number }) accessor cashBank: number = 0
-  @property() accessor transactionsByCategory: { [category: string]: Transaction[] }
+  @property() accessor transactionsByCategory: { 
+    [category: string]: { 
+      paymentAmount: { 
+        cash: number, 
+        payconiq: number 
+      }, 
+      transactionItems: Transaction[] 
+    } 
+  }
   @property() accessor transactionsByName: { [name: string]: Transaction[] }
-  @property({ type: Array, consumer: true }) accessor members: { Type: Member }
+  @property({ type: Object, consumes: true }) accessor members: { Type: Member }
 
   static styles = [
     css`
@@ -254,7 +262,7 @@ export class CheckoutView extends LiteElement {
     this.shadowRoot.addEventListener('input', ({ target }: CustomEvent) => {
       // @ts-ignore
       if (target.id !== 'banktransfer') {
-        let inputValue = new CustomEvent('inputCash', { detail: target.getAttribute('input-cash') })
+        let inputValue = new CustomEvent('inputCash', { detail: (target as HTMLElement).getAttribute('input-cash') })
         this.inputCash(inputValue, target)
       }
     })
@@ -271,7 +279,7 @@ export class CheckoutView extends LiteElement {
     this.shadowRoot.removeEventListener('click', this.#clickHandler)
   }
 
-  async onChange(propertyKey: any, value: any) {
+  async onChange(propertyKey: any) {
     if (propertyKey === 'cashVaultNew') {
       let transferCheck = this.shadowRoot.querySelector('[for=banktransfer]') as HTMLElement
       if (this.cashVaultNew > 500) {
@@ -294,7 +302,7 @@ export class CheckoutView extends LiteElement {
           if (transaction.paymentMethod === 'cash') {
             this.cashExpected += transaction.paymentAmount
           }
-          for (const [key, transactionItem] of Object.entries(transaction.transactionItems)) {
+          for (const [, transactionItem] of Object.entries(transaction.transactionItems)) {
             if (!transactionsByCategory[transactionItem.category]) {
               transactionsByCategory[transactionItem.category] = {
                 paymentAmount: { cash: 0, payconiq: 0 },
@@ -312,7 +320,7 @@ export class CheckoutView extends LiteElement {
         }
         const transactionsByName = {}
         for (const transaction of this.transactions) {
-          for (const [key, transactionItem] of Object.entries(transaction.transactionItems)) {
+          for (const [, transactionItem] of Object.entries(transaction.transactionItems)) {
             if (!transactionsByName[transactionItem.name]) {
               transactionsByName[transactionItem.name] = {
                 paymentAmount: { cash: 0, payconiq: 0 },
@@ -371,7 +379,7 @@ export class CheckoutView extends LiteElement {
           this.payconiqKantine = 0
           this.payconiqWinkel = 0
           this.payconiqLidgeld = 0
-          Object.entries(this.transactionsByCategory).map(([key, value]) => {
+          Object.entries(this.transactionsByCategory).map(([key,]) => {
             if (key === 'Winkel') {
               this.cashWinkel += this.transactionsByCategory?.[key]?.paymentAmount.cash
               this.payconiqWinkel += this.transactionsByCategory?.[key]?.paymentAmount.payconiq
@@ -556,7 +564,7 @@ export class CheckoutView extends LiteElement {
                           >
                         </summary>
                         ${Object.entries(transaction.transactionItems).map(
-                          ([key, transactionItem]) =>
+                          ([, transactionItem]) =>
                             html`
                               <md-list-item>
                                 ${transaction.paymentMethod === 'promo'

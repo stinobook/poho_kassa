@@ -12,7 +12,7 @@ import type { Product } from '../types.js'
 import { scrollbar } from './../mixins/styles.js'
 @customElement('products-view')
 export class ProductsView extends LiteElement {
-  @property({ consumer: true })
+  @property({ type: Array, consumes: true })
   accessor products: Product[]
 
   static styles = [

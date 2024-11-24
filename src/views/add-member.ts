@@ -30,7 +30,7 @@ export class AddMemberView extends LiteElement {
   @query('image-selector-dialog')
   accessor dialog
   
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor members: { [group: string]: Member[] }
 
   editing

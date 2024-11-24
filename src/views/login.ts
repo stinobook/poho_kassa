@@ -1,4 +1,4 @@
-import { html, css, LiteElement, query, property } from '@vandeurenglenn/lite'
+import { html, css, LiteElement, query } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@material/web/button/filled-button.js'
@@ -29,7 +29,7 @@ export class LoginView extends LiteElement {
       await firebase.update('users/' + firebase.auth.currentUser.uid, { email: email })
       location.href = location.href.split('index')[0]
     } else {
-      await firebase.signInWithEmailAndPassword(email, password).then((userCredential) => {
+      await firebase.signInWithEmailAndPassword(email, password).then(() => {
       })
       .catch((error) => {
         const errorCode = error.code;

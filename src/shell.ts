@@ -22,7 +22,6 @@ export class PoHoShell extends LiteElement {
   router: Router
   #propertyProviders = []
   #inMem
-
   @query('search-input') accessor _searchInput
 
   @query('custom-selector') accessor selector: CustomSelector
@@ -33,29 +32,29 @@ export class PoHoShell extends LiteElement {
 
   @property() accessor selected
   @property() accessor userPhoto
-  @property({ provider: true }) accessor expiredMembersList
+  @property({ provides: true }) accessor expiredMembersList
 
-  @property({ provider: true, batches: true, batchDelay: 70 }) accessor products
+  @property({ provides: true, batches: true, batchDelay: 70 }) accessor products
 
-  @property({ provider: true, batchDelay: 70 }) accessor categories
+  @property({ provides: true, batchDelay: 70 }) accessor categories
 
-  @property({ provider: true, batchDelay: 70 }) accessor eventMode = false
+  @property({ type: Boolean, provides: true, batchDelay: 70 }) accessor eventMode: boolean = false
 
-  @property({ provider: true, batchDelay: 70 }) accessor currentEvent: Evenement
+  @property({ type: Object, provides: true, batchDelay: 70 }) accessor currentEvent: Evenement
 
-  @property({ provider: true, batchDelay: 70 }) accessor events
+  @property({ provides: true, batchDelay: 70 }) accessor events
 
-  @property({ provider: true, batchDelay: 70 }) accessor transactions
+  @property({ provides: true, batchDelay: 70 }) accessor transactions
 
-  @property({ provider: true, batchDelay: 70 }) accessor members
+  @property({ provides: true, batchDelay: 70 }) accessor members
 
-  @property({ provider: true, batchDelay: 70 }) accessor attendance
+  @property({ provides: true, batchDelay: 70 }) accessor attendance
 
-  @property({ provider: true, batchDelay: 70 }) accessor promo
+  @property({ provides: true, batchDelay: 70 }) accessor promo
 
-  @property({ provider: true, batchDelay: 70 }) accessor tabs
+  @property({ provides: true, batchDelay: 70 }) accessor tabs
 
-  @property({ provider: true, batchDelay: 70 }) accessor payconiqTransactions
+  @property({ provides: true, batchDelay: 70 }) accessor payconiqTransactions
 
   @property({ provides: true, batchDelay: 70 }) accessor planning
 
@@ -273,7 +272,7 @@ export class PoHoShell extends LiteElement {
           this.userPhoto = document.createElement('input')
           this.userPhoto.setAttribute('type', 'file')
           this.userPhoto.click()
-          this.userPhoto.addEventListener('change', event => {
+          this.userPhoto.addEventListener('change', () => {
             this.updatePhoto()
           })
         }
@@ -348,7 +347,7 @@ export class PoHoShell extends LiteElement {
           <md-filled-button input-tap="cash">Cash</md-filled-button>
           <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
           <md-filled-button input-tap="tabs">Rekeningen</md-filled-button>
-          ${this.promo
+          ${this.promo && this.promo.includes(true)
             ? Object.values(this.promo).includes(true)
               ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>`
               : ''
@@ -370,12 +369,14 @@ export class PoHoShell extends LiteElement {
   expiredMembers() {
     let expirationDate = new Date()
     expirationDate.setFullYear(expirationDate.getFullYear() - 1)
-    this.expiredMembersList = Object.values(this.members).filter(
-      (member: Member) =>
-        member.group === 'leden' &&
-        (new Date(member.paydate) < expirationDate || member.status === 'nieuw') &&
-        member.status !== 'inactief'
-    )
+    if (this.members) { 
+      this.expiredMembersList = Object.values(this.members).filter(
+        (member: Member) =>
+          member.group === 'leden' &&
+          (new Date(member.paydate) < expirationDate || member.status === 'nieuw') &&
+          member.status !== 'inactief'
+      )
+    }
   }
 
   renderMenu() {
@@ -406,7 +407,7 @@ export class PoHoShell extends LiteElement {
     if (!firebase.userRoles.includes('settings')) dividers[4].remove()
   }
 
-  onChange(propertyKey: string, value: any): void {
+  onChange(propertyKey: string): void {
     if (propertyKey === 'members' || propertyKey === 'promo') {
       this.expiredMembers()
       this.renderPayBar()

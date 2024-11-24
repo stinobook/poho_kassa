@@ -9,10 +9,10 @@ import { scrollbar } from '../mixins/styles.js'
 
 @customElement('users-view')
 export class UsersView extends LiteElement {
-  @property({ type: Object, consumer: true }) accessor members: { Type: Member }
+  @property({ type: Object, consumes: true }) accessor members: { Type: Member }
 
-  @property({ consumer: true }) accessor users: User[]
-  @property({ consumer: true }) accessor roles
+  @property({ type: Array, consumes: true }) accessor users: User[]
+  @property({ consumes: true }) accessor roles
 
   @query('input[label="email"]') accessor email: HTMLInputElement
 

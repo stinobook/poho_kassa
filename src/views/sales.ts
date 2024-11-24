@@ -12,7 +12,7 @@ import { CustomIcon } from '@vandeurenglenn/lite-elements/icon'
 export class SalesView extends LiteElement {
   fabIcon = 'shopping_cart_checkout'
 
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor tabs: Tab[]
 
   @query('sales-pad')
@@ -235,7 +235,7 @@ export class SalesView extends LiteElement {
         }
         let tabAdd: Tab
         tabAdd = Object.values(this.tabs).filter(tab => tab.key === tabKey)[0]
-        for (const [key, item] of Object.entries(this.salesPad.receipt.items)) {
+        for (const [key, item] of Object.entries<ReceiptItem>(this.salesPad.receipt.items)) {
           if (Object.keys(tabAdd.transactionItems).includes(key)) {
             tabAdd.transactionItems[key].amount += item.amount
           } else {

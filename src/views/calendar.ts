@@ -1,4 +1,4 @@
-import { html, css, LiteElement, property, query } from '@vandeurenglenn/lite'
+import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
 import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/lite-elements/tabs.js'
@@ -8,11 +8,11 @@ import { scrollbar } from '../mixins/styles.js'
 
 @customElement('calendar-view')
 export class CalendarView extends LiteElement {
-  @property({ type: Object, consumer: true })
+  @property({ type: Object, consumes: true })
   accessor planning
-  @property({ type: Object, consumer: true })
+  @property({ type: Object, consumes: true })
   accessor calendar
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor members
   @property() accessor selected
   @property() accessor year

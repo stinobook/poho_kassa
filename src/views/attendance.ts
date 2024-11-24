@@ -7,14 +7,19 @@ import './../components/chip/chip.js'
 
 @customElement('attendance-view')
 export class AttendanceView extends LiteElement {
-  @property({ consumer: true, renders: false })
+  @property({ consumes: true, renders: false })
   accessor attendance
 
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor members: { [group: string]: Member[] }
 
-  @property({ consumer: true, renders: false })
-  accessor promo: { [key: string]: Boolean } = {}
+  @property({ type: Object, consumes: true })
+  accessor promo: { [key: string]: boolean }
+  
+  constructor() {
+    super();
+    this.promo = {};
+  }
 
   @queryAll('.custom-selected')
   accessor currentAttendance
@@ -122,17 +127,22 @@ export class AttendanceView extends LiteElement {
     }
     await firebase.set(
       `attendance/${this.attendanceDate}`,
-      this.currentAttendance.map(el => el.getAttribute('key'))
+      this.currentAttendance.map((el: Element) => el.getAttribute('key'))
     )
-    let attendanceKeys = this.currentAttendance.map(el => el.getAttribute('key'))
-
-    for (const key of attendanceKeys) {
-      if (!Object.keys(this.promo).includes(key)) this.promo[key] = true
+    let attendanceKeys = this.currentAttendance.map((el: Element) => el.getAttribute('key'));
+    for (const key in this.promo) {
+      if (attendanceKeys.includes(key) && this.promo[key] !== false) {
+      this.promo[key] = true;
+      } else if (this.promo[key] !== false) {
+      delete this.promo[key];
+      }
     }
-    for (const [key, value] of Object.entries(this.promo)) {
-      if (value && !attendanceKeys.includes(key)) delete this.promo[key]
-    }
-    await firebase.set('promo', this.promo)
+    attendanceKeys.forEach(key => {
+      if (!(key in this.promo)) {
+      this.promo[key] = true;
+      }
+    });
+    await firebase.set(`promo`, this.promo);
   }
 
   renderMembers() {

@@ -24,7 +24,7 @@ export class AddProductView extends LiteElement {
   @property({ type: Object })
   accessor params
 
-  @property({ type: Array, consumer: true })
+  @property({ type: Array, consumes: true })
   accessor categories: string[]
 
   @query('md-outlined-select')
