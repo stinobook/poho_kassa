@@ -15,11 +15,6 @@ export class AttendanceView extends LiteElement {
 
   @property({ type: Object, consumes: true })
   accessor promo: { [key: string]: boolean }
-  
-  constructor() {
-    super();
-    this.promo = {};
-  }
 
   @queryAll('.custom-selected')
   accessor currentAttendance
@@ -112,7 +107,11 @@ export class AttendanceView extends LiteElement {
           element.select(value[this.attendanceDate])
         })
       }
-    } else if (propertyKey === 'members' && this.attendance && Object.keys(this.attendance || [])?.includes(this.attendanceDate)) {
+    } else if (
+      propertyKey === 'members' &&
+      this.attendance &&
+      Object.keys(this.attendance || [])?.includes(this.attendanceDate)
+    ) {
       this.selectors.forEach(element => {
         element.select(this.attendance[this.attendanceDate])
       })
@@ -129,25 +128,26 @@ export class AttendanceView extends LiteElement {
       `attendance/${this.attendanceDate}`,
       this.currentAttendance.map((el: Element) => el.getAttribute('key'))
     )
-    let attendanceKeys = this.currentAttendance.map((el: Element) => el.getAttribute('key'));
+    let attendanceKeys = this.currentAttendance.map((el: Element) => el.getAttribute('key'))
+    if (!this.promo) this.promo = {}
     for (const key in this.promo) {
       if (attendanceKeys.includes(key) && this.promo[key] !== false) {
-      this.promo[key] = true;
+        this.promo[key] = true
       } else if (this.promo[key] !== false) {
-      delete this.promo[key];
+        delete this.promo[key]
       }
     }
     attendanceKeys.forEach(key => {
       if (!(key in this.promo)) {
-      this.promo[key] = true;
+        this.promo[key] = true
       }
-    });
-    await firebase.set(`promo`, this.promo);
+    })
+    await firebase.set(`promo`, this.promo)
   }
 
   renderMembers() {
     return Object.entries(this.members).map(([group, members]) =>
-      (members?.length > 0 && group !== 'leden')
+      members?.length > 0 && group !== 'leden'
         ? html`
             <custom-typography><h4>${group}</h4></custom-typography>
             <custom-selector

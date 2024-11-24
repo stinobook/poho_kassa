@@ -107,8 +107,8 @@ export class PoHoShell extends LiteElement {
         if (member.group.toLowerCase().includes(ev.detail.toLowerCase())) return true
       })
       for (const extra of varMem) {
-        if (extra.extra && !varMem.map((key) => key.key).includes(extra.extra))          
-          varMem.push(this.members.filter(member => member.key === extra.extra )[0])
+        if (extra.extra && !varMem.map(key => key.key).includes(extra.extra))
+          varMem.push(this.members.filter(member => member.key === extra.extra)[0])
       }
       this.members = varMem
     }
@@ -140,12 +140,14 @@ export class PoHoShell extends LiteElement {
     events: ['events', 'categories'],
     planning: [{ name: 'planning', type: 'object' }],
     calendar: ['members', { name: 'planning', type: 'object' }, { name: 'calendar', type: 'object' }],
-    files: ['members',{ name: 'files', type: 'object' }],
+    files: ['members', { name: 'files', type: 'object' }],
     'add-event': ['events', 'categories', 'products']
   }
 
   setupPropertyProvider(propertyProvider, type = 'array', events?: PropertyProviderEvents) {
     this.#propertyProviders.push(propertyProvider)
+
+    if (!this[propertyProvider]) this[propertyProvider] = type === 'object' ? {} : []
 
     const deleteOrReplace = async (propertyProvider, snap, task = 'replace') => {
       const val = await snap.val()
@@ -225,7 +227,7 @@ export class PoHoShell extends LiteElement {
     this.pages.select(selected)
 
     if (this.pages.selected === 'add-event') {
-      this.handlePropertyProvider(selected);
+      this.handlePropertyProvider(selected)
     }
 
     if (this.roles.includes(selected)) this.handlePropertyProvider(selected)
@@ -369,7 +371,7 @@ export class PoHoShell extends LiteElement {
   expiredMembers() {
     let expirationDate = new Date()
     expirationDate.setFullYear(expirationDate.getFullYear() - 1)
-    if (this.members) { 
+    if (this.members) {
       this.expiredMembersList = Object.values(this.members).filter(
         (member: Member) =>
           member.group === 'leden' &&
@@ -651,7 +653,9 @@ export class PoHoShell extends LiteElement {
               icon="logout"></custom-icon>
           </custom-drawer-item>
         </custom-selector>
-        <flex-row slot="drawer-footer" class="version">
+        <flex-row
+          slot="drawer-footer"
+          class="version">
           <small>V</small>
           <small>@version</small>
         </flex-row>
