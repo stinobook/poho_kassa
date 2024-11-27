@@ -93,6 +93,7 @@ export class BookkeepingView extends LiteElement {
   async loadBooks() {
     let fromDate = new Date((this.shadowRoot.querySelector('#fromDate') as HTMLInputElement).value)
     let toDate = new Date((this.shadowRoot.querySelector('#toDate') as HTMLInputElement).value)
+    const yearOverview = (this.shadowRoot.querySelector('#yearOverview') as HTMLInputElement).checked
     const data = await firebase.get('sales')
 
     if (data) {
@@ -103,7 +104,27 @@ export class BookkeepingView extends LiteElement {
             new Date((value as Sales).date.slice(0, 10)).toISOString() <= toDate.toISOString()
         )
       )
-      this.books = filteredData as { [key: string]: Sales }
+
+      if (yearOverview) {
+        const totals = Object.values(filteredData).reduce((acc, curr: Sales) => {
+          acc.cashDifferenceCheckout = Math.round(((acc.cashDifferenceCheckout || 0) + (curr.cashDifferenceCheckout || 0)) * 100) / 100;
+          acc.cashVaultCheckout = curr.cashVaultCheckout || 0;
+          acc.cashBank = Math.round(((acc.cashBank || 0) + (curr.cashBank || 0)) * 100) / 100;
+          acc.cashKantine = Math.round(((acc.cashKantine || 0) + (curr.cashKantine || 0)) * 100) / 100;
+          acc.payconiqKantine = Math.round(((acc.payconiqKantine || 0) + (curr.payconiqKantine || 0)) * 100) / 100;
+          acc.cashWinkel = Math.round(((acc.cashWinkel || 0) + (curr.cashWinkel || 0)) * 100) / 100;
+          acc.payconiqWinkel = Math.round(((acc.payconiqWinkel || 0) + (curr.payconiqWinkel || 0)) * 100) / 100;
+          acc.cashLidgeld = Math.round(((acc.cashLidgeld || 0) + (curr.cashLidgeld || 0)) * 100) / 100;
+          acc.payconiqLidgeld = Math.round(((acc.payconiqLidgeld || 0) + (curr.payconiqLidgeld || 0)) * 100) / 100;
+          acc.transactions = [...(acc.transactions || []), ...(curr.transactions || [])];
+          return acc;
+        }, {} as Sales);
+
+        totals.date = `${fromDate.getFullYear()} Overzicht`;
+        this.books = { 'yearly': totals };
+      } else {
+        this.books = filteredData as { [key: string]: Sales };
+      }
     }
   }
 
@@ -182,7 +203,8 @@ export class BookkeepingView extends LiteElement {
                     </div>
                   `
                 : ''}
-              <div id="card-sub-wide">
+            ${((this.shadowRoot.querySelector('#yearOverview') as HTMLInputElement).checked) ? '' : 
+              html`<div id="card-sub-wide">
                 <span>Payconiq betalingen</span>
                 <div id="card-sub-details">
                   ${value.transactions?.map(transaction => {
@@ -268,7 +290,8 @@ export class BookkeepingView extends LiteElement {
                     }
                   })}
                 </details>
-              </div>
+              </div>`
+            }
             <div id="card-sub-wide">
               <details>
                 <summary>
@@ -347,6 +370,24 @@ export class BookkeepingView extends LiteElement {
                 id="toDate"
                 value=${formatDate()} />
             </flex-row>
+            <flex-column>
+              <label for="yearOverview">Jaaroverzicht</label>
+              <input 
+                type="checkbox" 
+                id="yearOverview" 
+                @change=${(e) => {
+                  const fromDate = this.shadowRoot.querySelector('#fromDate') as HTMLInputElement;
+                  const toDate = this.shadowRoot.querySelector('#toDate') as HTMLInputElement;
+                  if (e.target.checked) {
+                    fromDate.value = `${new Date().getFullYear()}-01-01`;
+                    toDate.value = `${new Date().getFullYear()}-12-31`;
+                  } else {
+                    fromDate.value = formatDate();
+                    toDate.value = formatDate();
+                  }
+                  this.loadBooks();
+                }}/>
+            </flex-column>
           </flex-row>
           ${this.books ? this.renderBooks() : ''}
         </flex-container>

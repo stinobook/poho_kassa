@@ -349,7 +349,7 @@ export class PoHoShell extends LiteElement {
           <md-filled-button input-tap="cash">Cash</md-filled-button>
           <md-filled-button input-tap="payconiq">Payconiq</md-filled-button>
           <md-filled-button input-tap="tabs">Rekeningen</md-filled-button>
-          ${this.promo && this.promo.includes(true)
+          ${this.promo && Object.values(this.promo).includes(true)
             ? Object.values(this.promo).includes(true)
               ? html`<md-filled-button input-tap="promo">Promo</md-filled-button>`
               : ''
