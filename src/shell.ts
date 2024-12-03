@@ -136,7 +136,7 @@ export class PoHoShell extends LiteElement {
     categories: ['categories'],
     members: ['members', { name: 'attendance', type: 'object' }],
     bookkeeping: ['members'],
-    users: ['members', 'users'],
+    users: ['members', 'users', 'transactions'],
     events: ['events', 'categories'],
     planning: [{ name: 'planning', type: 'object' }],
     calendar: ['members', { name: 'planning', type: 'object' }, { name: 'calendar', type: 'object' }],

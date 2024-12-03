@@ -4,7 +4,7 @@ import '@vandeurenglenn/flex-elements/container.js'
 import '@vandeurenglenn/flex-elements/row.js'
 import '@vandeurenglenn/lite-elements/button.js'
 import '@vandeurenglenn/lite-elements/dialog.js'
-import { Member, User } from '../types.js'
+import { Member, Sales, Transaction, User } from '../types.js'
 import { scrollbar } from '../mixins/styles.js'
 
 @customElement('users-view')
@@ -13,6 +13,7 @@ export class UsersView extends LiteElement {
 
   @property({ type: Array, consumes: true }) accessor users: User[]
   @property({ consumes: true }) accessor roles
+  @property({ type: Array, consumes: true, renders: false }) accessor transactions: Transaction[]
 
   @query('input[label="email"]') accessor email: HTMLInputElement
 
@@ -202,6 +203,19 @@ export class UsersView extends LiteElement {
     firebase.update('users/' + this.editUser, updates)
   }
 
+  reopenSession() {
+    if (!this.transactions) {
+      firebase.limitToLast('sales', 1, snapshot => {
+        const lastCheckout = snapshot.val() as Sales
+        const lastCheckoutValue = Object.values(lastCheckout)[0]
+        firebase.set('transactions', lastCheckoutValue.transactions)
+        console.log(Object.keys(lastCheckout)[0])
+      })
+    } else {
+      alert("Kassa is nog open!")
+    }
+  }
+
   render() {
     return html`
     <flex-container>
@@ -221,6 +235,12 @@ export class UsersView extends LiteElement {
         <span class="title">Userlist</span>
         <span  class="userlist">
         ${this.users ? this.renderUsers() : ''}
+        </span>
+      </flex-row>
+      <flex-row>
+        <span class="title">Kassa heropenen</span>
+        <span class="userlist">
+        <custom-button @click=${this.reopenSession} label="Heropen"></custom-button>
         </span>
       </flex-row>
       <custom-dialog class="dialogEdit">
