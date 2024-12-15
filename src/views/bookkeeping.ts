@@ -196,7 +196,7 @@ export class BookkeepingView extends LiteElement {
                       class="wide">
                       <span>Cashbetaling</span>
                       <div id="card-sub-details">
-                        <span>Bedrag: &euro;${value.transferAmount}</span>
+                        <span>Bedrag: &euro;${(Math.sign(value.transferAmount) > 0) ? Math.abs(value.transferAmount) + ' Betaald van kluis.' : Math.abs(value.transferAmount) + ' Ontvangen in kluis.'}</span>
                         <span>Reden: ${value.transferDescription}</span>
                         <span>Door: ${value.user}</span>
                       </div>

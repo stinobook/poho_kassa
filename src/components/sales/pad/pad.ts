@@ -208,7 +208,7 @@ export class SalesPad extends LiteElement {
           if (Object.keys(this.receipt.items).length === 0) {
             alert('Nothing to sell')
             break
-          } else if (Object.keys(this.receipt.items).length > 1 || Object.values(this.receipt.items)[0].amount > 1) {
+          } else if (Object.keys(this.receipt.items).length > 1 || (Object.values(this.receipt.items)[0] as ReceiptItem).amount > 1) {
             alert('Max 1 item!')
             break
           } else {
@@ -320,6 +320,7 @@ export class SalesPad extends LiteElement {
         mainMember = member
         extraMember = null
       }
+        this.receipt.total = 0
         ReceiptItem = Object.values(this.products['Lidgeld']).filter((product) => product.price > 100)[0]
         ReceiptItem['description'] = mainMember.name + ' ' + mainMember.lastname + ' met ' + mainMember.dogname
         this.receipt.items[ReceiptItem.key] = {...ReceiptItem, amount: 1, key: ReceiptItem.key}

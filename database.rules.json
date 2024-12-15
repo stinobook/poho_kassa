@@ -28,7 +28,7 @@
     },
     "attendance":{
       ".write": "root.child('users').child(auth.uid).child('roles').hasChild('attendance') || root.child('admins').child(auth.uid).exists() === true",
-      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('attendance') || root.child('admins').child(auth.uid).exists() === true"
+      ".read": "root.child('users').child(auth.uid).child('roles').hasChild('attendance') || root.child('users').child(auth.uid).child('roles').hasChild('members') || root.child('admins').child(auth.uid).exists() === true"
     },
     "sales":{
       ".write": "root.child('users').child(auth.uid).child('roles').hasChild('bookkeeping') || root.child('users').child(auth.uid).child('roles').hasChild('checkout') || root.child('admins').child(auth.uid).exists() === true",
