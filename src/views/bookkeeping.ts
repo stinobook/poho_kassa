@@ -380,8 +380,8 @@ export class BookkeepingView extends LiteElement {
                 id="toDate"
                 value=${formatDate()} />
             </flex-row>
-            <flex-column>
-              <label for="yearOverview">Jaaroverzicht</label>
+            <flex-row class="wide">
+              <label>Jaaroverzicht</label>
               <input 
                 type="checkbox" 
                 id="yearOverview" 
@@ -397,7 +397,8 @@ export class BookkeepingView extends LiteElement {
                   }
                   this.loadBooks();
                 }}/>
-            </flex-column>
+                <label for="yearOverview" class='pill'></label>
+            </flex-row>
           </flex-row>
           ${this.books ? this.renderBooks() : ''}
         </flex-container>

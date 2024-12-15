@@ -159,9 +159,41 @@ export default css`
     border-radius: var(--md-sys-shape-corner-full);
     outline: 0;
   }
+  
+  .pill {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 28px;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    transition: all 0.3s;
+    padding: 0;
+    margin-right: 24px;
+    margin-left: auto;
+  }
+  .pill::after {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius:50%;
+    background-color: var(--md-sys-color-on-primary);
+    top: 1px;
+    left: 1px;
+    transition: all 0.3s;
+  }
 
+  #yearOverview:checked + .pill::after {
+    left : 27px;
+  }
+
+  #yearOverview:checked + .pill {
+    background-color: var(--md-sys-color-primary);
+  }
   #card-sub-wide:not(:has(details)),
-  #card-sub-wide:not(:has(md-list)) {
+  #card-sub-wide:not(:has(md-list)),
+  #yearOverview {
     display: none;
   }
   .wide {
