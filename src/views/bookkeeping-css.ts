@@ -206,7 +206,8 @@ export default css`
   .cash #card-sub {
     width: 100%
   }
-  .cash input {
+  .cash input, 
+  .cash select {
     padding: 10px 10px 10px 15px;
     font-size: 1rem;
     color: var(--md-sys-color-on-secondary);

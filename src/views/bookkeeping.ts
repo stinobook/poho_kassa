@@ -20,7 +20,7 @@ const formatDate = () => {
 
 @customElement('bookkeeping-view')
 export class BookkeepingView extends LiteElement {
-  @property({ type: Object, consumes: true }) accessor members: { Type: Member[] }
+  @property({ type: Object, consumes: true }) accessor members: { [key: string]: Member }
   @property() accessor books: { [key: string]: Sales }
   @property({ type: Number }) accessor cashVault: number
   @property({ type: Number }) accessor cashStart: number
@@ -55,24 +55,31 @@ export class BookkeepingView extends LiteElement {
     const action = event.target.getAttribute('action')
     if (action === 'book') this.book()
   }
+  isNumeric(value) {
+    return /^\d+(\.\d{0,2})?$/.test(value)
+  }
 
   book() {
-    let cashTransfer = this.shadowRoot.querySelector('[name="amount"]') as HTMLInputElement
+    let cashTransfer = this.shadowRoot.querySelector('[name="amount"]') as HTMLInputElement    
     let transferDescription = this.shadowRoot.querySelector('[name="reason"]') as HTMLInputElement
+    let transferDirectionSelect = this.shadowRoot.querySelector('[name="direction"]') as HTMLSelectElement
+    let directionTransfer: number = (transferDirectionSelect.selectedIndex === 0) ? -Math.abs(Number(cashTransfer.value)) : Math.abs(Number(cashTransfer.value))
     if (!cashTransfer.value || !transferDescription.value) {
       alert('Gelieve af te boeken bedrag/reden in tevullen')
+    } else if (!this.isNumeric(cashTransfer.value)) {
+      alert('Gelieve een geldig bedrag in te vullen')
     } else {
-      this.cashVault -= Number(cashTransfer.value)
+      this.cashVault -= directionTransfer
       let name =
-      Object.values(this.members.Type)?.filter(member => member.key === firebase.userDetails.member)[0]?.name +
+      Object.values(this.members)?.filter((member: Member) => member.key === firebase.userDetails.member)[0]?.name +
       ' ' +
-      Object.values(this.members.Type)?.filter(member => member.key === firebase.userDetails.member)[0]?.lastname
+      Object.values(this.members)?.filter((member: Member) => member.key === firebase.userDetails.member)[0]?.lastname
     let sales = {
         date: new Date().toISOString().slice(0, 10) + ' ' + new Date().toLocaleTimeString('nl-BE').slice(0, 5),
         cashStartCheckout: this.cashStart,
         cashVaultCheckout: this.cashVault,
         transferDescription: transferDescription.value,
-        transferAmount: cashTransfer.value,
+        transferAmount: directionTransfer,
         user: name
       }
       firebase.push('sales', sales)
@@ -401,6 +408,13 @@ export class BookkeepingView extends LiteElement {
                 value=${this.cashVault}
                 readonly
             /></label>
+            <label>
+              Richting
+              <select class="cashInputfield" name="direction">
+                <option value="out">In kluis plaatsen</option>
+                <option value="in">Uit kluis nemen</option>
+              </select>
+            </label>
             <label
               >Bedrag<input
                 class="cashInputfield"
