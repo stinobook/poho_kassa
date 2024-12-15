@@ -60,6 +60,7 @@ export interface Sales extends Transaction {
   cashVaultCheckout: number
   cashBank?: number
   transferDescription?: string
+  transferDirection?: string
   transferAmount?: number
   user?: string
   transactions?: Transaction[]

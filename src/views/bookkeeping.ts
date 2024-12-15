@@ -70,6 +70,7 @@ export class BookkeepingView extends LiteElement {
       alert('Gelieve een geldig bedrag in te vullen')
     } else {
       this.cashVault -= directionTransfer
+      if (transferDirectionSelect.selectedIndex === 2) this.cashStart += directionTransfer
       let name =
       Object.values(this.members)?.filter((member: Member) => member.key === firebase.userDetails.member)[0]?.name +
       ' ' +
@@ -79,6 +80,7 @@ export class BookkeepingView extends LiteElement {
         cashStartCheckout: this.cashStart,
         cashVaultCheckout: this.cashVault,
         transferDescription: transferDescription.value,
+        transferDirection: transferDirectionSelect.options[transferDirectionSelect.selectedIndex].text,
         transferAmount: directionTransfer,
         user: name
       }
@@ -203,7 +205,8 @@ export class BookkeepingView extends LiteElement {
                       class="wide">
                       <span>Cashbetaling</span>
                       <div id="card-sub-details">
-                        <span>Bedrag: &euro;${(Math.sign(value.transferAmount) > 0) ? Math.abs(value.transferAmount) + ' Betaald van kluis.' : Math.abs(value.transferAmount) + ' Ontvangen in kluis.'}</span>
+                        <span>Bedrag: &euro;${Math.abs(value.transferAmount)}</span>
+                        <span>Richting: ${value.transferDirection}</span>
                         <span>Reden: ${value.transferDescription}</span>
                         <span>Door: ${value.user}</span>
                       </div>
@@ -401,7 +404,15 @@ export class BookkeepingView extends LiteElement {
         <flex-container class="cash toggle">
           <flex-row id="card-sub">
             <label
-              >Beschikbaar<input
+              >Startgeld kassa<input
+                class="readonly"
+                class="cashInputfield"
+                type="text"
+                value=${this.cashStart}
+                readonly
+            /></label>
+            <label
+              >Beschikbaar kluis<input
                 class="readonly"
                 class="cashInputfield"
                 type="text"
@@ -413,6 +424,7 @@ export class BookkeepingView extends LiteElement {
               <select class="cashInputfield" name="direction">
                 <option value="out">In kluis plaatsen</option>
                 <option value="in">Uit kluis nemen</option>
+                <option value="in">In kassa plaatsen vanuit kluis</option>
               </select>
             </label>
             <label
