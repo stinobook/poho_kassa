@@ -471,6 +471,9 @@ export class PoHoShell extends LiteElement {
           pointer-events: auto;
           margin-bottom: 12px;
         }
+        custom-divider {
+          width: calc(100% - 26px);
+        }
         @media (max-width: 689px) {
           .pay-bar {
             position: absolute;
