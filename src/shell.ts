@@ -468,6 +468,7 @@ export class PoHoShell extends LiteElement {
           border-radius: var(--md-sys-shape-corner-extra-large);
         }
         custom-selector {
+          pointer-events: auto;
           margin-bottom: 12px;
         }
         @media (max-width: 689px) {
