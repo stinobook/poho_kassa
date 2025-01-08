@@ -1,6 +1,5 @@
 import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
-import '@material/web/list/list-item.js'
 import '@material/web/button/filled-button.js'
 import { Product } from '../../../types.js'
 import { calculateSalesInputButtonSize } from '../../../utils/resize-sales-input-button.js'
