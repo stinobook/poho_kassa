@@ -7,11 +7,12 @@ import { calculateSalesInputButtonSize } from '../../../utils/resize-sales-input
 
 @customElement('sales-grid')
 export class SalesGrid extends LiteElement {
-  productsByCategory: { [index: string]: Product[] } = {}
-
   @property({ consumes: true })
   accessor products: { [index: string]: Product[] }
 
+  // This is a lifecycle method that will be called when the property changes
+  // It will return the value that will be set to the property
+  // This is useful to transform the data before it is set to the property and the component is rerendered
   async willChange(propertyKey: any, value: any) {
     if (propertyKey === 'products') {
       const productsByCategory = {}
@@ -118,6 +119,6 @@ export class SalesGrid extends LiteElement {
   }
 
   render() {
-    return html` ${this.productsByCategory ? this.renderGrid() : ''}`
+    return html` ${this.products ? this.renderGrid() : '<h3>No Products Found</h3>'} `
   }
 }
