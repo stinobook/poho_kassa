@@ -438,7 +438,6 @@ export class PoHoShell extends LiteElement {
         .logout {
           background: var(--md-sys-color-on-error-container);
           color: var(--md-sys-color-on-error);
-          width: auto;
         }
         .logout custom-icon {
           --custom-icon-color: var(--md-sys-color-on-error);
@@ -469,10 +468,11 @@ export class PoHoShell extends LiteElement {
         }
         custom-selector {
           pointer-events: auto;
-          margin-bottom: 12px;
+          padding: 12px;
+          box-sizing: border-box;
         }
         custom-divider {
-          width: calc(100% - 26px);
+          width: calc(100% - 32px);
         }
         @media (max-width: 689px) {
           .pay-bar {
@@ -489,20 +489,16 @@ export class PoHoShell extends LiteElement {
         }
         chip-element {
           pointer-events: none;
-          margin: 12px;
-          border-radius: var(--md-sys-shape-corner-extra-large);
-          box-shadow: unset;
+          height: 48px;
+          box-shadow: unset
         }
         .expired {
           --md-filled-button-container-color: var(--md-sys-color-on-error-container);
           --md-filled-button-label-text-color: var(--md-sys-color-on-error);
         }
-        .version {
-          position: absolute;
-          bottom: 0;
-        }
         custom-selector {
           overflow-y: auto;
+          overflow-x: hidden;
         }
 
         ${scrollbar}
