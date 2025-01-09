@@ -81,6 +81,10 @@ export class SalesGrid extends LiteElement {
         margin-top: 0;
       }
 
+      h4 {
+        font-size: var(--sales-input-font-size, 0.95em);
+      }
+
       @media (max-width: 689px) {
         :host {
           padding: 0 12px;
