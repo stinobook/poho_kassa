@@ -1,6 +1,4 @@
-import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
-import { customElement } from 'lit/decorators.js'
-import '@material/web/button/filled-button.js'
+import { html, css, LiteElement, property, customElement } from '@vandeurenglenn/lite'
 import { Product } from '../../../types.js'
 import { calculateSalesInputButtonSize } from '../../../utils/resize-sales-input-button.js'
 import '@vandeurenglenn/lite-elements/button.js'
@@ -73,16 +71,18 @@ export class SalesGrid extends LiteElement {
         width: 100%;
       }
 
-      flex-container {
-        max-width: 100%;
+      div {
+        padding: 12px;
+        box-sizing: border-box;
       }
 
-      flex-container h4:first-child {
+      div h4:first-child {
         margin-top: 0;
       }
 
       h4 {
         font-size: var(--sales-input-font-size, 0.95em);
+        pointer-events: none;
       }
 
       @media (max-width: 689px) {
@@ -103,10 +103,9 @@ export class SalesGrid extends LiteElement {
     return Object.entries(items).map(([category, products]) =>
       products
         ? html`
-            <flex-container>
-              <flex-row width="100%">
-                <custom-typography><h4>${category}</h4></custom-typography> </flex-row
-              ><span class="grid">
+            <div>
+              <custom-typography><h4>${category}</h4></custom-typography>
+              <span class="grid">
                 ${[...products].map(product => {
                   return html`<custom-button
                     type="filled"
@@ -114,7 +113,7 @@ export class SalesGrid extends LiteElement {
                     .label=${product.name}></custom-button>`
                 })}
               </span>
-            </flex-container>
+            </div>
           `
         : ''
     )

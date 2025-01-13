@@ -1,23 +1,12 @@
-import { html, css, LiteElement } from '@vandeurenglenn/lite'
-import { customElement, property } from 'lit/decorators.js'
-import '@material/web/list/list.js'
-import '@material/web/list/list-item.js'
-import '@material/web/button/filled-button.js'
-import '@material/web/button/outlined-button.js'
-import '@vandeurenglenn/flex-elements/row.js'
-import '@vandeurenglenn/flex-elements/container.js'
-import '@vandeurenglenn/lite-elements/tabs.js'
-import '@vandeurenglenn/lite-elements/tab.js'
-import '@vandeurenglenn/lite-elements/divider.js'
-import '@vandeurenglenn/lite-elements/icon-button.js'
+import { html, css, LiteElement, customElement } from '@vandeurenglenn/lite'
 import '@vandeurenglenn/lite-elements/button.js'
-import '@vandeurenglenn/lite-elements/card.js'
-import './receipt.js'
 import '@vandeurenglenn/flex-elements/wrap-evenly.js'
+import './receipt.js'
 
 @customElement('sales-input')
 export class SalesInput extends LiteElement {
   connectedCallback() {
+    super.connectedCallback()
     this.shadowRoot.addEventListener('click', ({ target }: CustomEvent) => {
       // @ts-ignore
       this.dispatchEvent(new CustomEvent('input-click', { detail: target.getAttribute('input-tap') }))
@@ -40,6 +29,7 @@ export class SalesInput extends LiteElement {
       custom-elevation {
         border-radius: var(--md-sys-shape-corner-extra-large);
       }
+
       flex-wrap-evenly {
         background-color: var(--md-sys-color-surface-container-high);
         border-radius: var(--md-sys-shape-corner-extra-large);
@@ -49,16 +39,12 @@ export class SalesInput extends LiteElement {
         position: relative;
       }
 
-      md-outlined-button,
       custom-button {
         margin-top: 6px;
         height: 50px;
         width: 64px;
         margin-bottom: 6px;
         border-radius: var(--md-sys-shape-corner-extra-large);
-      }
-      md-outlined-button,
-      md-filled-button {
         pointer-events: auto;
       }
     `
@@ -68,19 +54,79 @@ export class SalesInput extends LiteElement {
     return html`
       <flex-wrap-evenly>
         <custom-elevation level="1"></custom-elevation>
-        <md-outlined-button input-tap="1">1</md-outlined-button>
-        <md-outlined-button input-tap="2">2</md-outlined-button>
-        <md-outlined-button input-tap="3">3</md-outlined-button>
-        <md-outlined-button input-tap="4">4</md-outlined-button>
-        <md-outlined-button input-tap="5">5</md-outlined-button>
-        <md-outlined-button input-tap="6">6</md-outlined-button>
-        <md-outlined-button input-tap="7">7</md-outlined-button>
-        <md-outlined-button input-tap="8">8</md-outlined-button>
-        <md-outlined-button input-tap="9">9</md-outlined-button>
-        <md-outlined-button input-tap="+1"><custom-typography>+1</custom-typography></md-outlined-button>
-        <md-outlined-button input-tap="0">0</md-outlined-button>
+        <custom-button
+          type="filled"
+          input-tap="1"
+          label="1"
+          >1</custom-button
+        >
+        <custom-button
+          input-tap="2"
+          type="filled"
+          label="2"
+          >2</custom-button
+        >
+        <custom-button
+          input-tap="3"
+          type="filled"
+          label="3"
+          >3</custom-button
+        >
+        <custom-button
+          input-tap="4"
+          type="filled"
+          label="4"
+          >4</custom-button
+        >
+        <custom-button
+          input-tap="5"
+          type="filled"
+          label="5"
+          >5</custom-button
+        >
+        <custom-button
+          input-tap="6"
+          type="filled"
+          label="6"
+          >6</custom-button
+        >
+        <custom-button
+          input-tap="7"
+          type="filled"
+          label="7"
+          >7</custom-button
+        >
+        <custom-button
+          input-tap="8"
+          type="filled"
+          label="8"
+          >8</custom-button
+        >
+        <custom-button
+          input-tap="9"
+          type="filled"
+          label="9"
+          >9</custom-button
+        >
+        <custom-button
+          input-tap="+1"
+          type="filled"
+          label="+1"
+          ><custom-typography>+1</custom-typography></custom-button
+        >
+        <custom-button
+          input-tap="0"
+          type="filled"
+          label="0"
+          >0</custom-button
+        >
 
-        <md-outlined-button input-tap="R">R</md-outlined-button>
+        <custom-button
+          input-tap="R"
+          type="filled"
+          label="R"
+          >R</custom-button
+        >
       </flex-wrap-evenly>
     `
   }
