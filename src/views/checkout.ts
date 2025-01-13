@@ -282,7 +282,7 @@ export class CheckoutView extends LiteElement {
   async onChange(propertyKey: any) {
     if (propertyKey === 'cashVaultNew') {
       let transferCheck = this.shadowRoot.querySelector('[for=banktransfer]') as HTMLElement
-      if (this.cashVaultNew > 500) {
+      if (this.cashVaultNew > 650) {
         transferCheck?.style.setProperty('display', 'flex')
       } else {
         transferCheck?.style.setProperty('display', 'none')
@@ -368,7 +368,7 @@ export class CheckoutView extends LiteElement {
       if (this.transactions.length === 0) {
         alert('Niets om af te boeken')
       } else {
-        if (this.cashVaultNew > 500 && !(this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
+        if (this.cashVaultNew > 650 && !(this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
           if (!confirm('Opgelet, bedrag in kluis te hoog, overdragen!\n Duw OK om toch af te sluiten ZONDER overdracht.'))
             return
         }
@@ -392,8 +392,8 @@ export class CheckoutView extends LiteElement {
             }
           })
           if ((this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
-            this.cashBank = this.cashVaultNew - 100
-            this.cashVaultNew = 100
+            this.cashBank = this.cashVaultNew - 150
+            this.cashVaultNew = 150
           }
 
           let sales = {
@@ -528,7 +528,7 @@ export class CheckoutView extends LiteElement {
                   <flex-it></flex-it> &euro;${this.cashVaultNew}
                 </flex-row>
                 <flex-row>
-                  <label>Nieuw startgeld kassa::</label>
+                  <label>Nieuw startgeld kassa:</label>
                   <flex-it></flex-it> &euro;${this.cashStartNew}
                 </flex-row>
               </div>
