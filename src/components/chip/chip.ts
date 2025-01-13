@@ -41,8 +41,7 @@ export class ChipElement extends LiteElement {
       }
 
       .avatar {
-        height: 64px;
-        width: 64px;
+        height: 98%;
         border-radius: 50%;
 
         margin-right: 12px;
@@ -57,7 +56,12 @@ export class ChipElement extends LiteElement {
 
   _renderAvatar() {
     if (!this.avatar) return ''
-    return html` <img class="avatar" loading="lazy" src=${this.avatar} /> `
+    return html`
+      <img
+        class="avatar"
+        loading="lazy"
+        src=${this.avatar} />
+    `
   }
 
   render() {

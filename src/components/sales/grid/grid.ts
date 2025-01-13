@@ -1,17 +1,18 @@
 import { html, css, LiteElement, property } from '@vandeurenglenn/lite'
 import { customElement } from 'lit/decorators.js'
-import '@material/web/list/list-item.js'
 import '@material/web/button/filled-button.js'
 import { Product } from '../../../types.js'
 import { calculateSalesInputButtonSize } from '../../../utils/resize-sales-input-button.js'
-
+import '@vandeurenglenn/lite-elements/button.js'
 @customElement('sales-grid')
 export class SalesGrid extends LiteElement {
-  productsByCategory: { [index: string]: Product[] } = {}
+  @property({ consumes: true }) accessor products: { [index: string]: Product[] }
 
-  @property({ consumes: true })
-  accessor products: { [index: string]: Product[] }
+  @property({ type: String, consumes: true }) accessor user: string
 
+  // This is a lifecycle method that will be called when the property changes
+  // It will return the value that will be set to the property
+  // This is useful to transform the data before it is set to the property and the component is rerendered
   async willChange(propertyKey: any, value: any) {
     if (propertyKey === 'products') {
       const productsByCategory = {}
@@ -26,20 +27,22 @@ export class SalesGrid extends LiteElement {
     return value
   }
 
-  connectedCallback() {
-    let settings = localStorage.getItem('settings') as string | { salesInputButtonSize }
-    if (settings) {
-      settings = JSON.parse(settings as string) as { salesInputButtonSize }
-      if (settings.salesInputButtonSize !== undefined) {
-        const { height, fontSize } = calculateSalesInputButtonSize(settings.salesInputButtonSize)
-
+  onChange(propertyKey: string, value: any): void {
+    if (propertyKey === 'user' && value) {
+      if (value.salesInputButtonSize !== undefined) {
+        const { height, fontSize } = calculateSalesInputButtonSize(value.salesInputButtonSize)
         document.body.style.setProperty('--sales-input-height', `${height}px`)
         document.body.style.setProperty('--sales-input-font-size', `${fontSize}em`)
       }
     }
-    this.addEventListener('click', event => {
+  }
+
+  firstRender() {
+    // auto cleanup the event listener
+    this.addListener('click', event => {
       const paths = event.composedPath() as HTMLElement[]
-      const key = paths[2]?.hasAttribute ? paths[2].getAttribute('key') : paths[3].getAttribute('key')
+      const key = paths[0].getAttribute('key')
+
       if (key != null) {
         this.dispatchEvent(new CustomEvent('product-click', { detail: key }))
       }
@@ -56,12 +59,9 @@ export class SalesGrid extends LiteElement {
         flex-direction: column;
         overflow-y: auto;
       }
-      md-filled-button {
-        pointer-events: auto;
+      custom-button {
         height: var(--sales-input-height, 64px);
         font-size: var(--sales-input-font-size, 0.95em);
-        text-wrap: wrap;
-        line-height: normal;
         text-transform: uppercase;
       }
       .grid {
@@ -81,11 +81,15 @@ export class SalesGrid extends LiteElement {
         margin-top: 0;
       }
 
+      h4 {
+        font-size: var(--sales-input-font-size, 0.95em);
+      }
+
       @media (max-width: 689px) {
         :host {
           padding: 0 12px;
         }
-        md-filled-button {
+        custom-button {
           font-size: 1em;
         }
         .grid {
@@ -97,18 +101,17 @@ export class SalesGrid extends LiteElement {
 
   renderGrid(items = this.products) {
     return Object.entries(items).map(([category, products]) =>
-      products //&& category !== 'Lidgeld'
+      products
         ? html`
             <flex-container>
               <flex-row width="100%">
                 <custom-typography><h4>${category}</h4></custom-typography> </flex-row
               ><span class="grid">
                 ${[...products].map(product => {
-                  return html`<md-filled-button
+                  return html`<custom-button
+                    type="filled"
                     key=${product.key}
-                    label=${product.name}
-                    >${product.name}</md-filled-button
-                  >`
+                    .label=${product.name}></custom-button>`
                 })}
               </span>
             </flex-container>
@@ -118,6 +121,6 @@ export class SalesGrid extends LiteElement {
   }
 
   render() {
-    return html` ${this.productsByCategory ? this.renderGrid() : ''}`
+    return html` ${this.products ? this.renderGrid() : '<h3>No Products Found</h3>'} `
   }
 }
