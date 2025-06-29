@@ -392,8 +392,8 @@ export class CheckoutView extends LiteElement {
             }
           })
           if ((this.shadowRoot.querySelector('#banktransfer') as HTMLInputElement).checked) {
-            this.cashBank = this.cashVaultNew - 150
-            this.cashVaultNew = 150
+            this.cashBank = Math.floor((this.cashVaultNew - 150) / 5) * 5;
+            this.cashVaultNew -= this.cashBank;
           }
 
           let sales = {
