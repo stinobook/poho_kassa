@@ -239,7 +239,7 @@ export class CheckoutView extends LiteElement {
        }
     } else {
       (this.shadowRoot.querySelector(`[input-cash="${inputValue.detail}"]`) as HTMLElement).parentElement.classList.remove('error')
-      inputAmount = inputAmount.value * 100
+      inputAmount = this.toCents(inputAmount.value)
     }
     inputValue = inputValue.detail
     this.cashTotals[inputValue] = inputAmount
@@ -251,12 +251,20 @@ export class CheckoutView extends LiteElement {
     })
     this.cashDifference = this.cashTotal - this.cashExpected * 100
     this.cashTransfer = Math.round((this.cashTotal - 10000) / 500) * 500
-    this.cashStartNew = (this.cashTotal - this.cashTransfer) / 100
-    this.cashVaultNew = this.cashVault + this.cashTransfer / 100
-    this.cashTotal = this.cashTotal / 100
-    this.cashDifference = this.cashDifference / 100
-    this.cashTransfer = this.cashTransfer / 100
+    this.cashStartNew = this.fromCents(this.cashTotal - this.cashTransfer);
+    this.cashVaultNew = this.fromCents(this.cashVault * 100 + this.cashTransfer);
+    this.cashTotal = this.fromCents(this.cashTotal);
+    this.cashDifference = this.fromCents(this.cashDifference);
+    this.cashTransfer = this.fromCents(this.cashTransfer);
   }
+
+    toCents(value: string | number): number {
+    return Math.round(Number(value) * 100);
+    }
+
+    fromCents(value: number): number {
+    return Number((value / 100).toFixed(2));
+    }
 
   async connectedCallback(): Promise<void> {
     this.shadowRoot.addEventListener('input', ({ target }: CustomEvent) => {
