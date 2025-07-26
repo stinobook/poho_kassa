@@ -200,7 +200,7 @@ export class MembersView extends LiteElement {
                   </flex-wrap-center>
                   <custom-typography>Nieuwe & Vervallen ${group}</custom-typography>
                   <flex-wrap-center>
-                    ${members.filter( member => member.status === 'nieuw' || (new Date(member.paydate)) < (new Date(new Date().setFullYear((new Date().getFullYear())-1)))).map(
+                    ${members.filter( member => member.status === 'nieuw' || (member.status !== 'inactief' && (new Date(member.paydate)) < (new Date(new Date().setFullYear((new Date().getFullYear())-1))))).map(
                       member =>
                         html`
                           <card-element
