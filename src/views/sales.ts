@@ -218,6 +218,7 @@ export class SalesView extends LiteElement {
         const name = await this.dialogInput()
         let tab: Tab = {
           name: name,
+          timestamp: new Date().toISOString(),
           transactionItems: this.salesPad.receipt.items
         }
         await firebase.push('tabs', tab)

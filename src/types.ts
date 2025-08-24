@@ -21,6 +21,8 @@ export interface Transaction {
   paymentAmount: number
   payment?: PayconiqPayment
   member?: string
+  timestamp?: string
+  tab?: string
   transactionItems: ReceiptItem[]
 }
 
@@ -28,7 +30,8 @@ export type Tabs = Tab[]
 
 export interface Tab {
   key?: string
-  name: string
+  name: string,
+  timestamp?: string
   transactionItems: ReceiptItem[]
 }
 

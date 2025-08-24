@@ -390,6 +390,8 @@ export class SalesPad extends LiteElement {
         paymentMethod: 'payconiq',
         paymentAmount: total,
         payment: this.#currentPayconiqTransaction,
+        timestamp: new Date().toISOString(),
+        tab: String(tabPay),
         transactionItems: this.receipt.items
       }
       await firebase.push('transactions', transaction)
@@ -403,6 +405,7 @@ export class SalesPad extends LiteElement {
         paymentMethod: 'promo',
         paymentAmount: 0,
         member: event.detail,
+        timestamp: new Date().toISOString(),
         transactionItems: this.receipt.items
       }
       await firebase.push('transactions', transaction)
@@ -425,6 +428,8 @@ export class SalesPad extends LiteElement {
         let transaction: Transaction = {
           paymentMethod: 'cash',
           paymentAmount: total,
+          timestamp: new Date().toISOString(),
+          tab: String(tabPay),
           transactionItems: this.receipt.items
         }
         await firebase.push('transactions', transaction)
